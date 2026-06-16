@@ -69,10 +69,34 @@ export default function ReviewApp() {
     getToken().then(token =>
       fetch("/api/status", { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
-        .then(d => setReviewsUsed(d.reviewsUsed || 0))
+        .then(d => {
+          setReviewsUsed(d.reviewsUsed || 0);
+          if (d.plan) setPlan(d.plan);
+        })
         .catch(() => {})
     );
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "success") {
+      setPlan("pro");
+      window.history.replaceState({}, "", "/");
+    }
   }, [user]);
+
+  async function handleCheckout() {
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else setError(data.error || "Erreur paiement");
+    } catch {
+      setError("Erreur lors de la redirection vers le paiement");
+    }
+  }
 
   async function handleReview() {
     if (!canReview) { setShowUpgrade(true); return; }
@@ -136,13 +160,19 @@ export default function ReviewApp() {
               {reviewsUsed}/{PLANS.free.reviews} reviews
             </span>
           )}
-          <button onClick={() => setPlan(p => p === "free" ? "pro" : "free")} style={{
-            padding: "5px 12px", borderRadius: "6px", border: "none", cursor: "pointer",
-            background: plan === "pro" ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "#ffffff15",
-            color: "#fff", fontSize: "11px", fontWeight: "600", fontFamily: "inherit",
-          }}>
-            {plan === "pro" ? "✦ PRO" : "Passer Pro"}
-          </button>
+          {plan === "pro" ? (
+            <span style={{
+              padding: "5px 12px", borderRadius: "6px",
+              background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+              color: "#fff", fontSize: "11px", fontWeight: "600",
+            }}>✦ PRO</span>
+          ) : (
+            <button onClick={handleCheckout} style={{
+              padding: "5px 12px", borderRadius: "6px", border: "none", cursor: "pointer",
+              background: "#ffffff15", color: "#fff", fontSize: "11px",
+              fontWeight: "600", fontFamily: "inherit",
+            }}>Passer Pro</button>
+          )}
           <span style={{ fontSize: "12px", color: "#ffffff60" }}>
             {user?.firstName || user?.emailAddresses?.[0]?.emailAddress}
           </span>
@@ -296,7 +326,7 @@ export default function ReviewApp() {
                 <div style={{ fontSize: "28px", fontWeight: "800", color: "#a855f7" }}>9€<span style={{ fontSize: "14px", color: "#ffffff50" }}>/mois</span></div>
                 <div style={{ fontSize: "12px", color: "#ffffff60", marginTop: "4px" }}>Reviews illimitées • Fixes détaillés • Priorité</div>
               </div>
-              <button onClick={() => { setPlan("pro"); setShowUpgrade(false); }} style={{
+              <button onClick={() => { setShowUpgrade(false); handleCheckout(); }} style={{
                 width: "100%", padding: "14px",
                 background: "linear-gradient(135deg, #7c3aed, #a855f7)",
                 border: "none", borderRadius: "8px", color: "#fff",
