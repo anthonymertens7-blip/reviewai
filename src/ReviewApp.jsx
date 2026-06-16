@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useUser, useClerk, UserButton } from "@clerk/clerk-react";
+import { useState, useEffect } from "react";
+import { useUser, useAuth, UserButton } from "@clerk/clerk-react";
 
 const PLANS = {
   free: { name: "Free", reviews: 3 },
@@ -30,45 +30,6 @@ async function getUser(userId) {
 const password = "admin1234";
 const apiKey = "sk-prod-abc123xyz";`;
 
-async function analyzeCodeWithClaude(code) {
-  const prompt = `Tu es un expert en code review. Analyse ce code et retourne UNIQUEMENT un objet JSON valide (sans markdown, sans backticks, sans texte avant ou après).
-
-Le JSON doit avoir exactement cette structure :
-{
-  "score": <nombre entre 0 et 100>,
-  "summary": "<résumé court en français>",
-  "issues": [
-    {
-      "type": "<bug|performance|style|security>",
-      "severity": "<high|medium|low>",
-      "title": "<titre court>",
-      "line": <numéro de ligne ou 0>,
-      "description": "<explication en français>",
-      "fix": "<exemple de correction en code>"
-    }
-  ]
-}
-
-Code à analyser :
-\`\`\`
-${code}
-\`\`\``;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-
-  const data = await response.json();
-  const text = data.content.map(i => i.text || "").join("");
-  const clean = text.replace(/```json|```/g, "").trim();
-  return JSON.parse(clean);
-}
 
 function ScoreRing({ score }) {
   const r = 36;
@@ -91,6 +52,7 @@ function ScoreRing({ score }) {
 
 export default function ReviewApp() {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const [code, setCode] = useState(SAMPLE_CODE);
   const [loading, setLoading] = useState(false);
   const [review, setReview] = useState(null);
@@ -102,6 +64,16 @@ export default function ReviewApp() {
 
   const canReview = plan === "pro" || reviewsUsed < PLANS.free.reviews;
 
+  useEffect(() => {
+    if (!user) return;
+    getToken().then(token =>
+      fetch("/api/status", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json())
+        .then(d => setReviewsUsed(d.reviewsUsed || 0))
+        .catch(() => {})
+    );
+  }, [user]);
+
   async function handleReview() {
     if (!canReview) { setShowUpgrade(true); return; }
     setLoading(true);
@@ -109,11 +81,21 @@ export default function ReviewApp() {
     setError(null);
     setActiveIssue(null);
     try {
-      const result = await analyzeCodeWithClaude(code);
-      setReview(result);
-      setReviewsUsed(r => r + 1);
-    } catch {
-      setError("Erreur lors de l'analyse. Réessaie !");
+      const token = await getToken();
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.limitReached) { setShowUpgrade(true); return; }
+        throw new Error(data.error || "Erreur inconnue");
+      }
+      setReview(data);
+      setReviewsUsed(data.reviewsUsed);
+    } catch (err) {
+      setError(err.message || "Erreur lors de l'analyse. Réessaie !");
     } finally {
       setLoading(false);
     }
