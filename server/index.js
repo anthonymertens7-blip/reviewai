@@ -22,8 +22,19 @@ const reviewCounts = new Map(); // userId → number
 const userPlans = new Map();    // userId → 'free' | 'pro'
 const FREE_REVIEW_LIMIT = 3;
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('CORS not allowed'));
+    }
+  },
   credentials: true,
 }));
 
@@ -50,7 +61,6 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
       break;
     }
     case 'customer.subscription.deleted': {
-      // In production: look up userId via DB using event.data.object.customer
       console.log('Subscription cancelled:', event.data.object.id);
       break;
     }

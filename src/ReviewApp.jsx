@@ -50,6 +50,8 @@ function ScoreRing({ score }) {
   );
 }
 
+const API = import.meta.env.VITE_API_URL || "";
+
 export default function ReviewApp() {
   const { user } = useUser();
   const { getToken } = useAuth();
@@ -67,7 +69,7 @@ export default function ReviewApp() {
   useEffect(() => {
     if (!user) return;
     getToken().then(token =>
-      fetch("/api/status", { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API}/api/status`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
         .then(d => {
           setReviewsUsed(d.reviewsUsed || 0);
@@ -86,7 +88,7 @@ export default function ReviewApp() {
   async function handleCheckout() {
     try {
       const token = await getToken();
-      const res = await fetch("/api/checkout", {
+      const res = await fetch(`${API}/api/checkout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -106,7 +108,7 @@ export default function ReviewApp() {
     setActiveIssue(null);
     try {
       const token = await getToken();
-      const res = await fetch("/api/review", {
+      const res = await fetch(`${API}/api/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ code }),
