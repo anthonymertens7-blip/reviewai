@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Fiche de Révision IA",
+  title: "IAexam",
   description: "Génère une fiche de révision à partir de ton cours grâce à l'IA",
 };
 

@@ -53,9 +53,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-3xl font-bold text-center mb-2">
-        📚 Générateur de Fiche de Révision
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-2">📚 IAexam</h1>
       <p className="text-center text-slate-500 mb-8">
         Colle ton cours, l'IA te génère une fiche de révision structurée.
       </p>
