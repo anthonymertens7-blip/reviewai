@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-3-5-sonnet-20241022";
+const MODEL = "claude-sonnet-5";
 
 export async function POST(request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -39,7 +39,8 @@ ${course}
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1500,
+        max_tokens: 4096,
+        output_config: { effort: "low" },
         messages: [{ role: "user", content: prompt }],
       }),
     });
