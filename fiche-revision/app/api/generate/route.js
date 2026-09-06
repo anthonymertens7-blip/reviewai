@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getUsageCount, incrementUsageCount, FREE_LIMIT } from "@/lib/usage";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-5";
@@ -9,6 +12,23 @@ export async function POST(request) {
     return NextResponse.json(
       { error: "ANTHROPIC_API_KEY n'est pas configurée sur le serveur." },
       { status: 500 }
+    );
+  }
+
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json(
+      { error: "Connecte-toi pour générer une fiche." },
+      { status: 401 }
+    );
+  }
+
+  const userId = session.user.email;
+  const used = await getUsageCount(userId);
+  if (used >= FREE_LIMIT) {
+    return NextResponse.json(
+      { error: "Limite de fiches gratuites atteinte.", limitReached: true },
+      { status: 403 }
     );
   }
 
@@ -55,8 +75,9 @@ ${course}
 
     const data = await response.json();
     const fiche = data.content?.map((block) => block.text || "").join("") ?? "";
+    const count = await incrementUsageCount(userId);
 
-    return NextResponse.json({ fiche });
+    return NextResponse.json({ fiche, count });
   } catch {
     return NextResponse.json(
       { error: "Impossible de contacter l'API Anthropic." },
