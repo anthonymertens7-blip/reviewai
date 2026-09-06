@@ -117,7 +117,17 @@ export default function Home() {
 
       {fiche && (
         <div className="prose prose-slate mt-8 max-w-none rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <ReactMarkdown>{fiche}</ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              strong: ({ children }) => (
+                <strong className="rounded bg-amber-200/60 px-1 font-semibold text-slate-900">
+                  {children}
+                </strong>
+              ),
+            }}
+          >
+            {fiche}
+          </ReactMarkdown>
         </div>
       )}
     </main>
