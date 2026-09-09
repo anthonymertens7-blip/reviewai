@@ -1,0 +1,59 @@
+import Link from "next/link";
+import { getAuthContext } from "@/lib/auth";
+
+export default async function DashboardPage() {
+  const { db, organizationId } = await getAuthContext();
+
+  const [programCount, recentPrograms] = await Promise.all([
+    db.program.count(),
+    db.program.findMany({
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      select: { id: true, name: true, city: true, updatedAt: true },
+    }),
+  ]);
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div>
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <p className="text-sm text-gray-500">Organisation active : {organizationId}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="rounded-lg border bg-white p-4">
+          <p className="text-sm text-gray-500">Programmes</p>
+          <p className="text-2xl font-semibold">{programCount}</p>
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-medium">Programmes récents</h2>
+          <Link href="/programs" className="text-sm text-blue-600 hover:underline">
+            Voir tous les programmes
+          </Link>
+        </div>
+        {recentPrograms.length === 0 ? (
+          <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+            Aucun programme pour le moment.{" "}
+            <Link href="/programs" className="text-blue-600 hover:underline">
+              Créer le premier programme
+            </Link>
+          </p>
+        ) : (
+          <ul className="divide-y rounded-lg border bg-white">
+            {recentPrograms.map((program) => (
+              <li key={program.id} className="flex items-center justify-between px-4 py-3">
+                <Link href={`/programs/${program.id}`} className="font-medium hover:underline">
+                  {program.name}
+                </Link>
+                <span className="text-sm text-gray-500">{program.city}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
