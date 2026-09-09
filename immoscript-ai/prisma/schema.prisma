@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id            String         @id // = Clerk organization id
+  name          String
+  plan          String         @default("trial") // trial, starter, pro, agency
+  createdAt     DateTime       @default(now())
+  users         User[]
+  programs      Program[]
+  usageCounters UsageCounter[]
+}
+
+model User {
+  id             String   @id // = Clerk user id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  role           Role     @default(COLLABORATEUR)
+  email          String
+  name           String?
+  createdAt      DateTime @default(now())
+
+  programAccess ProgramAccess[]
+  generatedBy   GeneratedContent[]
+
+  @@index([organizationId])
+}
+
+enum Role {
+  ADMIN
+  PROMOTEUR
+  COLLABORATEUR
+}
+
+model Program {
+  id                String   @id @default(cuid())
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  name              String
+  address           String?
+  city              String
+  district          String?
+  description       String?
+  deliveryDate      DateTime?
+  programType       String? // neuf, rénové, ...
+  unitsCount        Int?
+  environment       String?
+  transport         String?
+  schools           String?
+  shops             String?
+  pointsOfInterest  String?
+  amenities         String?
+  features          String?
+  advantages        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lots     Lot[]
+  access   ProgramAccess[]
+  contents GeneratedContent[]
+
+  @@index([organizationId])
+}
+
+// Scoping des collaborateurs : accès explicite programme par programme
+model ProgramAccess {
+  id        String  @id @default(cuid())
+  programId String
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, userId])
+}
+
+model Lot {
+  id              String   @id @default(cuid())
+  programId       String
+  program         Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  reference       String
+  propertyType    String // T1, T2, maison, ...
+  roomsCount      Int?
+  livingArea      Float?
+  outdoorArea     Float?
+  floor           Int?
+  orientation     String?
+  exposure        String?
+  view            String?
+  hasBalcony      Boolean  @default(false)
+  hasTerrace      Boolean  @default(false)
+  hasGarden       Boolean  @default(false)
+  hasParking      Boolean  @default(false)
+  hasCellar       Boolean  @default(false)
+  price           Float?
+  pricePerSqm     Float?
+  availability    String? // disponible, réservé, vendu
+  specialFeatures String?
+  customFields    Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  contents GeneratedContent[]
+
+  @@index([programId])
+}
+
+// Une "requête de génération" = un clic sur Générer, avec ses paramètres marketing
+model GenerationRequest {
+  id             String   @id @default(cuid())
+  programId      String
+  lotId          String?
+  organizationId String
+  requestedById  String
+  positioning    String[] // premium, familial, investissement, ...
+  target         String?
+  tone           String?
+  languageLevel  String?
+  length         String?
+  commercialGoal String?
+  mainArgument   String?
+  cta            String?
+  requestedTypes String[] // ["listing_full", "instagram", "video_30s_emotion", ...]
+  promptVersion  String
+  status         String   @default("pending") // pending, done, failed
+  createdAt      DateTime @default(now())
+
+  contents GeneratedContent[]
+
+  @@index([organizationId])
+  @@index([programId])
+}
+
+// Un contenu généré individuel = régénérable/éditable indépendamment
+model GeneratedContent {
+  id                   String            @id @default(cuid())
+  generationRequestId  String
+  generationRequest    GenerationRequest @relation(fields: [generationRequestId], references: [id], onDelete: Cascade)
+  programId            String
+  program              Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  lotId                String?
+  lot                  Lot?              @relation(fields: [lotId], references: [id])
+  type                 String // listing_full, listing_short, portal, website, instagram,
+                                // facebook, linkedin, tiktok, video_script
+  angle                String? // emotion, investissement, visite, storytelling, urgence
+  duration             Int? // pour les scripts vidéo (30, 45, 60)
+  content              Json
+  status               String   @default("current") // current, edited, archived
+  editedByUserId       String?
+  createdByUserId      String
+  createdBy            User     @relation(fields: [createdByUserId], references: [id])
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([programId])
+  @@index([generationRequestId])
+}
+
+model UsageCounter {
+  id               String   @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id])
+  periodStart      DateTime
+  periodEnd        DateTime
+  generationsUsed  Int      @default(0)
+  generationsQuota Int
+
+  @@unique([organizationId, periodStart])
+}
+
+model PromptTemplate {
+  id        String   @id @default(cuid())
+  key       String // "listing_full", "video_script", ...
+  version   Int
+  content   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([key, version])
+}
