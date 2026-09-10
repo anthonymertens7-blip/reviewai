@@ -11,7 +11,7 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     title: "Zéro invention",
-    description: "L'IA n'utilise que les informations que tu as renseignées, jamais de détail fabriqué.",
+    description: "L'IA n'utilise que les informations que vous avez renseignées, jamais de détail fabriqué.",
   },
   {
     icon: Video,
@@ -29,7 +29,7 @@ export default function HomePage() {
         </span>
         <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">ImmoScript AI</h1>
         <p className="max-w-xl text-lg text-gray-600">
-          Génère en un clic les annonces, réseaux sociaux et scripts vidéo de tes programmes immobiliers.
+          Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos programmes immobiliers.
         </p>
         <SignedOut>
           <Link
