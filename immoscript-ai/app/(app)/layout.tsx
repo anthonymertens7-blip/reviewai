@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { Building2, Library } from "lucide-react";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { orgId } = await auth();
@@ -40,6 +41,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
         </nav>
         <div className="flex items-center gap-4">
+          <FeedbackButton />
           <OrganizationSwitcher hidePersonal afterSelectOrganizationUrl="/dashboard" />
           <UserButton />
         </div>

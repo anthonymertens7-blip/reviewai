@@ -183,3 +183,14 @@ model PromptTemplate {
 
   @@unique([key, version])
 }
+
+model Feedback {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  message        String
+  page           String? // chemin de la page depuis laquelle le feedback a été envoyé
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId])
+}
