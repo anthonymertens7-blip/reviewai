@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { Building2, Library } from "lucide-react";
+import { Building2, Library, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
+import { isOwner } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { orgId } = await auth();
+  const showOwnerLink = orgId ? await isOwner() : false;
 
   if (!orgId) {
     return (
@@ -39,6 +41,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Library className="h-4 w-4" />
             Bibliothèque
           </Link>
+          {showOwnerLink && (
+            <Link href="/admin/feedback" className="flex items-center gap-1.5 hover:text-brand-600">
+              <ShieldCheck className="h-4 w-4" />
+              Feedback
+            </Link>
+          )}
         </nav>
         <div className="flex items-center gap-4">
           <FeedbackButton />
