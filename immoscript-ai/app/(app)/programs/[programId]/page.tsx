@@ -23,7 +23,7 @@ export default async function ProgramDetailPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{program.name}</h1>
           <p className="text-sm text-gray-500">
@@ -31,18 +31,31 @@ export default async function ProgramDetailPage({
             {program.city}
           </p>
         </div>
-        <Link
-          href={`/programs/${program.id}/generate`}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-        >
-          Générer du contenu
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/programs/${program.id}/edit`} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50">
+            Modifier
+          </Link>
+          <Link href={`/library/${program.id}`} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50">
+            Historique
+          </Link>
+          <Link
+            href={`/programs/${program.id}/generate`}
+            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          >
+            Générer du contenu
+          </Link>
+        </div>
       </div>
 
       {program.description && <p className="text-sm text-gray-700">{program.description}</p>}
 
       <div>
-        <h2 className="mb-3 text-lg font-medium">Lots ({program.lots.length})</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-medium">Lots ({program.lots.length})</h2>
+          <Link href={`/programs/${program.id}/lots`} className="text-sm text-blue-600 hover:underline">
+            Gérer les lots
+          </Link>
+        </div>
         {program.lots.length === 0 ? (
           <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
             Aucun lot pour le moment.

@@ -4,7 +4,8 @@ import { getAuthContext } from "@/lib/auth";
 export default async function DashboardPage() {
   const { db, organizationId } = await getAuthContext();
 
-  const [programCount, recentPrograms] = await Promise.all([
+  const [organization, programCount, recentPrograms] = await Promise.all([
+    db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.program.count(),
     db.program.findMany({
       orderBy: { updatedAt: "desc" },
@@ -17,7 +18,7 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-gray-500">Organisation active : {organizationId}</p>
+        <p className="text-sm text-gray-500">Organisation active : {organization?.name ?? organizationId}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
