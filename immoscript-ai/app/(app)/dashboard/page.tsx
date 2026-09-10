@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { Building2, FileText } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 
 export default async function DashboardPage() {
   const { db, organizationId } = await getAuthContext();
 
-  const [organization, programCount, recentPrograms] = await Promise.all([
+  const [organization, programCount, contentCount, recentPrograms] = await Promise.all([
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.program.count(),
+    db.generatedContent.count({ where: { status: { not: "archived" } } }),
     db.program.findMany({
       orderBy: { updatedAt: "desc" },
       take: 5,
@@ -22,23 +24,37 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border bg-white p-4">
-          <p className="text-sm text-gray-500">Programmes</p>
-          <p className="text-2xl font-semibold">{programCount}</p>
+        <div className="flex items-center gap-3 rounded-lg border bg-white p-4">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+            <Building2 className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm text-gray-500">Programmes</p>
+            <p className="text-2xl font-semibold">{programCount}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border bg-white p-4">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+            <FileText className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm text-gray-500">Contenus générés</p>
+            <p className="text-2xl font-semibold">{contentCount}</p>
+          </div>
         </div>
       </div>
 
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-medium">Programmes récents</h2>
-          <Link href="/programs" className="text-sm text-blue-600 hover:underline">
+          <Link href="/programs" className="text-sm text-brand-600 hover:underline">
             Voir tous les programmes
           </Link>
         </div>
         {recentPrograms.length === 0 ? (
           <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
             Aucun programme pour le moment.{" "}
-            <Link href="/programs" className="text-blue-600 hover:underline">
+            <Link href="/programs" className="text-brand-600 hover:underline">
               Créer le premier programme
             </Link>
           </p>

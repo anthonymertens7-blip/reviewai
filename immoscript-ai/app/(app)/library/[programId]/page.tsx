@@ -40,7 +40,7 @@ export default async function ProgramLibraryPage({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <Link href="/library" className="text-sm text-blue-600 hover:underline">
+        <Link href="/library" className="text-sm text-brand-600 hover:underline">
           ← Tous les programmes
         </Link>
         <h1 className="mt-1 text-2xl font-semibold">{program.name}</h1>

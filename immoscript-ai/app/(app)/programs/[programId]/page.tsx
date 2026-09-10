@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { History, Pencil, Sparkles } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 
@@ -32,16 +33,25 @@ export default async function ProgramDetailPage({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/programs/${program.id}/edit`} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50">
+          <Link
+            href={`/programs/${program.id}/edit`}
+            className="flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            <Pencil className="h-4 w-4" />
             Modifier
           </Link>
-          <Link href={`/library/${program.id}`} className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50">
+          <Link
+            href={`/library/${program.id}`}
+            className="flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+          >
+            <History className="h-4 w-4" />
             Historique
           </Link>
           <Link
             href={`/programs/${program.id}/generate`}
-            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+            className="flex items-center gap-1.5 rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
           >
+            <Sparkles className="h-4 w-4" />
             Générer du contenu
           </Link>
         </div>
@@ -52,7 +62,7 @@ export default async function ProgramDetailPage({
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-medium">Lots ({program.lots.length})</h2>
-          <Link href={`/programs/${program.id}/lots`} className="text-sm text-blue-600 hover:underline">
+          <Link href={`/programs/${program.id}/lots`} className="text-sm text-brand-600 hover:underline">
             Gérer les lots
           </Link>
         </div>
