@@ -60,7 +60,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
     setIsGenerating(false);
 
     if (!res.ok && res.status !== 502) {
-      setError("La génération a échoué. Vérifie les paramètres et réessaie.");
+      setError("La génération a échoué. Vérifiez les paramètres et réessayez.");
       return;
     }
 

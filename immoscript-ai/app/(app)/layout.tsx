@@ -10,7 +10,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4">
         <div className="text-center">
-          <h1 className="text-xl font-semibold">Crée ou sélectionne une organisation</h1>
+          <h1 className="text-xl font-semibold">Créez ou sélectionnez une organisation</h1>
           <p className="mt-1 text-sm text-gray-500">
             ImmoScript AI organise les programmes par organisation (une organisation = une équipe/un promoteur).
           </p>

@@ -27,7 +27,7 @@ export default async function EditProgramPage({
     return (
       <div className="mx-auto max-w-2xl">
         <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
-          Tu n&apos;as pas les droits pour modifier ce programme.
+          Vous n&apos;avez pas les droits pour modifier ce programme.
         </p>
       </div>
     );

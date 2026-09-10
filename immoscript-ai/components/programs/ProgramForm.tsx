@@ -97,7 +97,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     setIsSubmitting(false);
 
     if (!res.ok) {
-      setError("L'enregistrement a échoué. Vérifie les champs et réessaie.");
+      setError("L'enregistrement a échoué. Vérifiez les champs et réessayez.");
       return;
     }
 

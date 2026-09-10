@@ -110,7 +110,7 @@ export function LotForm({ programId }: { programId: string }) {
             .map(([field, messages]) => `${field} : ${messages.join(", ")}`)
             .join(" · ")
         : undefined;
-      setError(detail || "La création a échoué. Vérifie les champs et réessaie.");
+      setError(detail || "La création a échoué. Vérifiez les champs et réessayez.");
       return;
     }
 
