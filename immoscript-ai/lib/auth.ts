@@ -75,3 +75,17 @@ export async function getAuthContext(): Promise<AuthContext> {
     db: getScopedPrismaClient(orgId),
   };
 }
+
+/**
+ * Vrai uniquement pour le compte configuré via OWNER_EMAIL — indépendant du
+ * rôle Clerk (un autre membre peut devenir "org:admin" sans obtenir cet accès).
+ * Réservé aux vues cross-organisation (ex: /admin/feedback) qui sortent
+ * volontairement du scoping tenant habituel.
+ */
+export async function isOwner(): Promise<boolean> {
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail) return false;
+
+  const user = await currentUser();
+  return user?.primaryEmailAddress?.emailAddress?.toLowerCase() === ownerEmail.toLowerCase();
+}
