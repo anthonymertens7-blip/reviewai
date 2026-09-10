@@ -1,7 +1,24 @@
 import Link from "next/link";
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const { orgId } = await auth();
+
+  if (!orgId) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold">Crée ou sélectionne une organisation</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            ImmoScript AI organise les programmes par organisation (une organisation = une équipe/un promoteur).
+          </p>
+        </div>
+        <CreateOrganization afterCreateOrganizationUrl="/dashboard" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b bg-white px-6 py-3">
