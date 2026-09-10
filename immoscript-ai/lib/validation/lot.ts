@@ -3,9 +3,9 @@ import { z } from "zod";
 export const createLotSchema = z.object({
   reference: z.string().min(1, "La référence est requise"),
   propertyType: z.string().min(1, "Le type de bien est requis"),
-  roomsCount: z.coerce.number().int().positive().optional(),
-  livingArea: z.coerce.number().positive().optional(),
-  outdoorArea: z.coerce.number().positive().optional(),
+  roomsCount: z.coerce.number().int().nonnegative().optional(),
+  livingArea: z.coerce.number().nonnegative().optional(),
+  outdoorArea: z.coerce.number().nonnegative().optional(),
   floor: z.coerce.number().int().optional(),
   orientation: z.string().optional(),
   exposure: z.string().optional(),
@@ -15,8 +15,8 @@ export const createLotSchema = z.object({
   hasGarden: z.boolean().optional(),
   hasParking: z.boolean().optional(),
   hasCellar: z.boolean().optional(),
-  price: z.coerce.number().positive().optional(),
-  pricePerSqm: z.coerce.number().positive().optional(),
+  price: z.coerce.number().nonnegative().optional(),
+  pricePerSqm: z.coerce.number().nonnegative().optional(),
   availability: z.string().optional(),
   specialFeatures: z.string().optional(),
 });

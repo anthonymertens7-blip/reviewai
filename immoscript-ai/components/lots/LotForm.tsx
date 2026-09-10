@@ -102,7 +102,15 @@ export function LotForm({ programId }: { programId: string }) {
     setIsSubmitting(false);
 
     if (!res.ok) {
-      setError("La création a échoué. Vérifie les champs et réessaie.");
+      const body = await res.json().catch(() => null);
+      const fieldErrors = body?.details?.fieldErrors as Record<string, string[]> | undefined;
+      const detail = fieldErrors
+        ? Object.entries(fieldErrors)
+            .filter(([, messages]) => messages.length > 0)
+            .map(([field, messages]) => `${field} : ${messages.join(", ")}`)
+            .join(" · ")
+        : undefined;
+      setError(detail || "La création a échoué. Vérifie les champs et réessaie.");
       return;
     }
 
