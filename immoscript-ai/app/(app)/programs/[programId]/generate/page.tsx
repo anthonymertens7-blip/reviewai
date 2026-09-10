@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
@@ -24,8 +25,10 @@ export default async function GeneratePage({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Générer du contenu</h1>
-        <p className="text-sm text-gray-500">{program.name}</p>
+        <Link href={`/programs/${programId}`} className="text-sm text-blue-600 hover:underline">
+          ← {program.name}
+        </Link>
+        <h1 className="mt-1 text-2xl font-semibold">Générer du contenu</h1>
       </div>
       <GeneratorForm programId={program.id} lots={program.lots} />
     </div>
