@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
  */
 
 // Modèles portant directement un scalaire organizationId.
-const DIRECT_ORG_FIELD_MODELS = new Set(["Program", "GenerationRequest", "UsageCounter", "User"]);
+const DIRECT_ORG_FIELD_MODELS = new Set(["Program", "GenerationRequest", "UsageCounter", "User", "Feedback"]);
 
 // Modèles scopés via leur programme parent (pas de organizationId direct).
 const PROGRAM_RELATION_MODELS = new Set(["Lot", "GeneratedContent", "ProgramAccess"]);
