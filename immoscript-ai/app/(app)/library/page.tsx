@@ -28,7 +28,7 @@ export default async function LibraryPage() {
         <ul className="divide-y rounded-lg border bg-white">
           {programsWithCounts.map(({ program, count }) => (
             <li key={program.id} className="flex items-center justify-between px-4 py-3">
-              <Link href={`/programs/${program.id}`} className="font-medium hover:underline">
+              <Link href={`/library/${program.id}`} className="font-medium hover:underline">
                 {program.name}
               </Link>
               <span className="text-sm text-gray-500">{count} contenu(s)</span>
