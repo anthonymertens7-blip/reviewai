@@ -23,7 +23,7 @@ export function PositioningSelector({
             type="button"
             onClick={() => toggle(option)}
             className={`rounded-full border px-3 py-1 text-sm ${
-              value.includes(option) ? "border-gray-900 bg-gray-900 text-white" : "border-gray-300 hover:bg-gray-50"
+              value.includes(option) ? "border-brand-600 bg-brand-600 text-white" : "border-gray-300 hover:bg-gray-50"
             }`}
           >
             {option}

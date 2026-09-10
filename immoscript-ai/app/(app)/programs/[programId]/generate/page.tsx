@@ -25,7 +25,7 @@ export default async function GeneratePage({
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <Link href={`/programs/${programId}`} className="text-sm text-blue-600 hover:underline">
+        <Link href={`/programs/${programId}`} className="text-sm text-brand-600 hover:underline">
           ← {program.name}
         </Link>
         <h1 className="mt-1 text-2xl font-semibold">Générer du contenu</h1>

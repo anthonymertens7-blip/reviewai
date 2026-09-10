@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy, Pencil, RotateCw } from "lucide-react";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
 import type { ListingOutput, SocialOutput, VideoScriptOutput } from "@/lib/ai/schemas";
@@ -122,7 +123,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
         {isEditing ? (
           <>
-            <button onClick={handleSave} className="rounded-md bg-gray-900 px-3 py-1.5 text-white hover:bg-gray-800">
+            <button onClick={handleSave} className="rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700">
               Sauvegarder
             </button>
             <button onClick={() => setIsEditing(false)} className="rounded-md border px-3 py-1.5 hover:bg-gray-50">
@@ -131,17 +132,20 @@ export function ContentCard({ data }: { data: ContentCardData }) {
           </>
         ) : (
           <>
-            <button onClick={handleCopy} className="rounded-md border px-3 py-1.5 hover:bg-gray-50">
+            <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50">
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? "Copié !" : "Copier"}
             </button>
-            <button onClick={startEdit} className="rounded-md border px-3 py-1.5 hover:bg-gray-50">
+            <button onClick={startEdit} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50">
+              <Pencil className="h-3.5 w-3.5" />
               Modifier
             </button>
             <button
               onClick={handleRegenerate}
               disabled={isRegenerating}
-              className="rounded-md border px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
             >
+              <RotateCw className={`h-3.5 w-3.5 ${isRegenerating ? "animate-spin" : ""}`} />
               {isRegenerating ? "Régénération..." : "Régénérer"}
             </button>
           </>

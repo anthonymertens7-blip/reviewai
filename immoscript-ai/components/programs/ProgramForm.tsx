@@ -152,7 +152,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-gray-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="rounded-md bg-brand-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {isSubmitting ? "Enregistrement..." : mode === "create" ? "Créer le programme" : "Enregistrer"}
         </button>
