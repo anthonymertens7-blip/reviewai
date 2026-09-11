@@ -1,11 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 
 export function NavIcon({ href, icon: Icon, label }: { href: string; icon: LucideIcon; label: string }) {
+  const pathname = usePathname();
+  const isActive = pathname === href || pathname?.startsWith(`${href}/`);
+
   return (
     <Link
       href={href}
-      className="group relative flex h-11 w-11 items-center justify-center rounded-2xl text-gray-500 dark:text-gray-400 transition-colors hover:bg-brand-50 hover:text-brand-600"
+      className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all ${
+        isActive
+          ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
+          : "text-gray-500 shadow-transparent hover:bg-brand-50 hover:text-brand-600 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-700"
+      }`}
     >
       <Icon className="h-5 w-5" />
       <span
