@@ -47,7 +47,7 @@ export default async function ProgramLibraryPage({
         <p className="text-sm text-gray-500">{contents.length} contenu(s)</p>
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-lg border bg-white p-4" method="get">
+      <form className="flex flex-wrap items-end gap-3 rounded-3xl border bg-white p-4" method="get">
         <div>
           <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700">
             Type de contenu
@@ -89,7 +89,7 @@ export default async function ProgramLibraryPage({
       </form>
 
       {contents.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
           Aucun contenu ne correspond à ces filtres.
         </p>
       ) : (

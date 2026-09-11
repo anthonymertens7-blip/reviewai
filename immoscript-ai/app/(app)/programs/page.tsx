@@ -16,11 +16,11 @@ export default async function ProgramsPage() {
       {canCreate && <CreateProgramForm />}
 
       {programs.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
           Aucun programme accessible pour le moment.
         </p>
       ) : (
-        <ul className="divide-y rounded-lg border bg-white">
+        <ul className="divide-y rounded-3xl border bg-white">
           {programs.map((program) => (
             <li key={program.id} className="flex items-center justify-between px-4 py-3">
               <div>

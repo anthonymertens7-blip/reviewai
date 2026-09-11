@@ -99,7 +99,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-4">
+    <div className="rounded-3xl border bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium">{CONTENT_TYPE_LABELS[data.type as ContentType] ?? data.type}</h3>
         <span className="text-xs text-gray-400">{status}</span>

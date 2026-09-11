@@ -111,7 +111,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border bg-white p-6">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border bg-white p-6">
       <Section title="Identité">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Nom du programme" required {...field("name")} />
