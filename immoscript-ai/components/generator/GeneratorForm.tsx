@@ -73,7 +73,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
   return (
     <div className="space-y-8">
-      <div className="space-y-6 rounded-lg border bg-white p-6">
+      <div className="space-y-6 rounded-3xl border bg-white p-6">
         {lots.length > 0 && (
           <div>
             <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700">
@@ -157,7 +157,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
       {isGenerating && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {requestedTypes.map((type) => (
-            <div key={type} className="animate-pulse rounded-lg border bg-white p-4">
+            <div key={type} className="animate-pulse rounded-3xl border bg-white p-4">
               <div className="mb-3 h-4 w-1/3 rounded bg-gray-200" />
               <div className="h-3 w-full rounded bg-gray-100" />
               <div className="mt-2 h-3 w-5/6 rounded bg-gray-100" />

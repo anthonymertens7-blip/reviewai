@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { Building2, Library, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
+import { NavIcon } from "@/components/layout/NavIcon";
 import { isOwner } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -24,36 +25,34 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b bg-white px-6 py-3">
-        <nav className="flex items-center gap-6 text-sm font-medium text-gray-700">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-gray-900">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#151F6D] text-sm font-bold text-white">
-              I
-            </span>
+    <div className="flex min-h-screen">
+      <aside className="flex w-20 flex-col items-center gap-3 border-r bg-white py-5">
+        <Link
+          href="/dashboard"
+          className="group relative mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#151F6D] text-sm font-bold text-white"
+        >
+          I
+          <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
             ImmoScript AI
-          </Link>
-          <Link href="/programs" className="flex items-center gap-1.5 hover:text-brand-600">
-            <Building2 className="h-4 w-4" />
-            Programmes
-          </Link>
-          <Link href="/library" className="flex items-center gap-1.5 hover:text-brand-600">
-            <Library className="h-4 w-4" />
-            Bibliothèque
-          </Link>
-          {showOwnerLink && (
-            <Link href="/admin/feedback" className="flex items-center gap-1.5 hover:text-brand-600">
-              <ShieldCheck className="h-4 w-4" />
-              Feedback
-            </Link>
-          )}
+          </span>
+        </Link>
+
+        <nav className="flex flex-col items-center gap-2">
+          <NavIcon href="/programs" icon={Building2} label="Programmes" />
+          <NavIcon href="/library" icon={Library} label="Bibliothèque" />
+          {showOwnerLink && <NavIcon href="/admin/feedback" icon={ShieldCheck} label="Feedback (admin)" />}
         </nav>
-        <div className="flex items-center gap-4">
+
+        <div className="mt-auto flex flex-col items-center gap-3">
           <FeedbackButton />
-          <OrganizationSwitcher hidePersonal afterSelectOrganizationUrl="/dashboard" />
+          <OrganizationSwitcher
+            hidePersonal
+            afterSelectOrganizationUrl="/dashboard"
+            appearance={{ elements: { organizationPreviewTextContainer: "hidden", userPreviewTextContainer: "hidden" } }}
+          />
           <UserButton />
         </div>
-      </header>
+      </aside>
       <main className="flex-1 px-6 py-8">{children}</main>
     </div>
   );

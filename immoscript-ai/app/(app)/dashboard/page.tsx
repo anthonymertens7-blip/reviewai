@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-lg border bg-white p-4">
+        <div className="flex items-center gap-3 rounded-3xl border bg-white p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <Building2 className="h-5 w-5" />
           </span>
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
             <p className="text-2xl font-semibold">{programCount}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-lg border bg-white p-4">
+        <div className="flex items-center gap-3 rounded-3xl border bg-white p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <FileText className="h-5 w-5" />
           </span>
@@ -52,14 +52,14 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {recentPrograms.length === 0 ? (
-          <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+          <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
             Aucun programme pour le moment.{" "}
             <Link href="/programs" className="text-brand-600 hover:underline">
               Créer le premier programme
             </Link>
           </p>
         ) : (
-          <ul className="divide-y rounded-lg border bg-white">
+          <ul className="divide-y rounded-3xl border bg-white">
             {recentPrograms.map((program) => (
               <li key={program.id} className="flex items-center justify-between px-4 py-3">
                 <Link href={`/programs/${program.id}`} className="font-medium hover:underline">

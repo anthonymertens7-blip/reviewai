@@ -29,13 +29,13 @@ export default async function FeedbackAdminPage() {
       </div>
 
       {feedbacks.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
           Aucun feedback pour le moment.
         </p>
       ) : (
         <ul className="space-y-3">
           {feedbacks.map((feedback) => (
-            <li key={feedback.id} className="rounded-lg border bg-white p-4">
+            <li key={feedback.id} className="rounded-3xl border bg-white p-4">
               <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
                 <span>{organizationNames.get(feedback.organizationId) ?? feedback.organizationId}</span>
                 <span>

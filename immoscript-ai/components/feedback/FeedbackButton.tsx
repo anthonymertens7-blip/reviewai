@@ -46,15 +46,17 @@ export function FeedbackButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+        className="group relative flex h-11 w-11 items-center justify-center rounded-2xl text-gray-500 transition-colors hover:bg-brand-50 hover:text-brand-600"
       >
-        <MessageSquarePlus className="h-4 w-4" />
-        Feedback
+        <MessageSquarePlus className="h-5 w-5" />
+        <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
+          Feedback
+        </span>
       </button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-xl">
+          <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-semibold">Envoyer un feedback</h2>
               <button onClick={close} aria-label="Fermer" className="text-gray-400 hover:text-gray-600">

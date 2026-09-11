@@ -67,11 +67,11 @@ export default async function ProgramDetailPage({
           </Link>
         </div>
         {program.lots.length === 0 ? (
-          <p className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
+          <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
             Aucun lot pour le moment.
           </p>
         ) : (
-          <ul className="divide-y rounded-lg border bg-white">
+          <ul className="divide-y rounded-3xl border bg-white">
             {program.lots.map((lot) => (
               <li key={lot.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <span className="font-medium">{lot.reference}</span>
