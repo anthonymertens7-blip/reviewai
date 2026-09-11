@@ -5,7 +5,7 @@ export function NavIcon({ href, icon: Icon, label }: { href: string; icon: Lucid
   return (
     <Link
       href={href}
-      className="group relative flex h-11 w-11 items-center justify-center rounded-2xl text-gray-500 transition-colors hover:bg-brand-50 hover:text-brand-600"
+      className="group relative flex h-11 w-11 items-center justify-center rounded-2xl text-gray-500 dark:text-gray-400 transition-colors hover:bg-brand-50 hover:text-brand-600"
     >
       <Icon className="h-5 w-5" />
       <span

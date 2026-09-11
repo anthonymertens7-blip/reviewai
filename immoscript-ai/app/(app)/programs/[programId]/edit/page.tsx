@@ -26,7 +26,7 @@ export default async function EditProgramPage({
   if (authContext.role === Role.COLLABORATEUR) {
     return (
       <div className="mx-auto max-w-2xl">
-        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
           Vous n&apos;avez pas les droits pour modifier ce programme.
         </p>
       </div>

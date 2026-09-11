@@ -99,7 +99,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
   }
 
   return (
-    <div className="rounded-3xl border bg-white p-4">
+    <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium">{CONTENT_TYPE_LABELS[data.type as ContentType] ?? data.type}</h3>
         <span className="text-xs text-gray-400">{status}</span>
@@ -110,7 +110,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           rows={10}
-          className="w-full rounded-md border-gray-300 font-mono text-xs"
+          className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 font-mono text-xs"
         />
       ) : data.type === "video_script" ? (
         <VideoScriptCard script={content as VideoScriptOutput} />
@@ -126,24 +126,24 @@ export function ContentCard({ data }: { data: ContentCardData }) {
             <button onClick={handleSave} className="rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700">
               Sauvegarder
             </button>
-            <button onClick={() => setIsEditing(false)} className="rounded-md border px-3 py-1.5 hover:bg-gray-50">
+            <button onClick={() => setIsEditing(false)} className="rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700">
               Annuler
             </button>
           </>
         ) : (
           <>
-            <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50">
+            <button onClick={handleCopy} className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700">
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? "Copié !" : "Copier"}
             </button>
-            <button onClick={startEdit} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50">
+            <button onClick={startEdit} className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700">
               <Pencil className="h-3.5 w-3.5" />
               Modifier
             </button>
             <button
               onClick={handleRegenerate}
               disabled={isRegenerating}
-              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-gray-50 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             >
               <RotateCw className={`h-3.5 w-3.5 ${isRegenerating ? "animate-spin" : ""}`} />
               {isRegenerating ? "Régénération..." : "Régénérer"}

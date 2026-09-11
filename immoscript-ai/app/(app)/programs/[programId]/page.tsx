@@ -27,7 +27,7 @@ export default async function ProgramDetailPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{program.name}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {program.address ? `${program.address}, ` : ""}
             {program.city}
           </p>
@@ -35,14 +35,14 @@ export default async function ProgramDetailPage({
         <div className="flex flex-wrap gap-2">
           <Link
             href={`/programs/${program.id}/edit`}
-            className="flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <Pencil className="h-4 w-4" />
             Modifier
           </Link>
           <Link
             href={`/library/${program.id}`}
-            className="flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <History className="h-4 w-4" />
             Historique
@@ -57,7 +57,7 @@ export default async function ProgramDetailPage({
         </div>
       </div>
 
-      {program.description && <p className="text-sm text-gray-700">{program.description}</p>}
+      {program.description && <p className="text-sm text-gray-700 dark:text-gray-300">{program.description}</p>}
 
       <div>
         <div className="mb-3 flex items-center justify-between">
@@ -67,15 +67,15 @@ export default async function ProgramDetailPage({
           </Link>
         </div>
         {program.lots.length === 0 ? (
-          <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
+          <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
             Aucun lot pour le moment.
           </p>
         ) : (
-          <ul className="divide-y rounded-3xl border bg-white">
+          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800">
             {program.lots.map((lot) => (
               <li key={lot.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <span className="font-medium">{lot.reference}</span>
-                <span className="text-gray-500">
+                <span className="text-gray-500 dark:text-gray-400">
                   {lot.propertyType}
                   {lot.livingArea ? ` · ${lot.livingArea} m²` : ""}
                   {lot.price ? ` · ${lot.price.toLocaleString("fr-FR")} €` : ""}

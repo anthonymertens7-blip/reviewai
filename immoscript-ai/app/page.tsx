@@ -30,7 +30,7 @@ export default function HomePage() {
             IA pour l&apos;immobilier neuf
           </span>
           <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">ImmoScript AI</h1>
-          <p className="max-w-xl text-lg text-gray-600">
+          <p className="max-w-xl text-lg text-gray-600 dark:text-gray-400">
             Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos programmes immobiliers.
           </p>
           <Link
@@ -44,12 +44,12 @@ export default function HomePage() {
 
         <div className="grid w-full gap-6 sm:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="rounded-3xl border bg-white p-5">
+            <div key={title} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-50 text-brand-600">
                 <Icon className="h-5 w-5" />
               </span>
               <h2 className="mt-3 font-semibold">{title}</h2>
-              <p className="mt-1 text-sm text-gray-600">{description}</p>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{description}</p>
             </div>
           ))}
         </div>

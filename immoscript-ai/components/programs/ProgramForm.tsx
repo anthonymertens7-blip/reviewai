@@ -111,7 +111,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border bg-white p-6">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
       <Section title="Identité">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Nom du programme" required {...field("name")} />
@@ -164,7 +164,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{title}</h2>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{title}</h2>
       {children}
     </div>
   );
@@ -187,14 +187,14 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
       <input
         type={type}
         required={required}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full rounded-md border-gray-300 text-sm"
+        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
       />
     </div>
   );
@@ -211,8 +211,8 @@ function TextArea({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
-      <textarea value={value} onChange={onChange} rows={3} className="w-full rounded-md border-gray-300 text-sm" />
+      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+      <textarea value={value} onChange={onChange} rows={3} className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm" />
     </div>
   );
 }

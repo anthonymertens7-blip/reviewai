@@ -123,7 +123,7 @@ export function LotForm({ programId }: { programId: string }) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+        className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
       >
         + Ajouter un lot
       </button>
@@ -131,7 +131,7 @@ export function LotForm({ programId }: { programId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border bg-white p-4">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <LabeledInput label="Référence" required {...field("reference")} placeholder="ex: A101" />
         <LabeledInput label="Type" required {...field("propertyType")} placeholder="T1, T2, Maison..." />
@@ -145,8 +145,8 @@ export function LotForm({ programId }: { programId: string }) {
         <LabeledInput label="Prix (€)" type="number" {...field("price")} />
         <LabeledInput label="Prix/m² (€)" type="number" {...field("pricePerSqm")} />
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Disponibilité</label>
-          <select {...field("availability")} className="w-full rounded-md border-gray-300 text-sm">
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Disponibilité</label>
+          <select {...field("availability")} className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
             <option value="">—</option>
             <option value="disponible">Disponible</option>
             <option value="réservé">Réservé</option>
@@ -156,8 +156,8 @@ export function LotForm({ programId }: { programId: string }) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Caractéristiques spéciales</label>
-        <input {...field("specialFeatures")} className="w-full rounded-md border-gray-300 text-sm" />
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Caractéristiques spéciales</label>
+        <input {...field("specialFeatures")} className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm" />
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm">
@@ -181,7 +181,7 @@ export function LotForm({ programId }: { programId: string }) {
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
+          className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
         >
           Annuler
         </button>
@@ -207,14 +207,14 @@ function LabeledInput({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
       <input
         type={type}
         required={required}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full rounded-md border-gray-300 text-sm"
+        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
       />
     </div>
   );
@@ -231,7 +231,7 @@ function Checkbox({
 }) {
   return (
     <label className="flex items-center gap-2">
-      <input type="checkbox" checked={checked} onChange={onChange} className="rounded border-gray-300" />
+      <input type="checkbox" checked={checked} onChange={onChange} className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100" />
       {label}
     </label>
   );

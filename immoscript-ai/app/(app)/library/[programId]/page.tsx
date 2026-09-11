@@ -44,15 +44,15 @@ export default async function ProgramLibraryPage({
           ← Tous les programmes
         </Link>
         <h1 className="mt-1 text-2xl font-semibold">{program.name}</h1>
-        <p className="text-sm text-gray-500">{contents.length} contenu(s)</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{contents.length} contenu(s)</p>
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-3xl border bg-white p-4" method="get">
+      <form className="flex flex-wrap items-end gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4" method="get">
         <div>
-          <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700">
+          <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Type de contenu
           </label>
-          <select id="type" name="type" defaultValue={type ?? ""} className="rounded-md border-gray-300 text-sm">
+          <select id="type" name="type" defaultValue={type ?? ""} className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
             <option value="">Tous les types</option>
             {CONTENT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -64,10 +64,10 @@ export default async function ProgramLibraryPage({
 
         {program.lots.length > 0 && (
           <div>
-            <label htmlFor="lotId" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="lotId" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Lot
             </label>
-            <select id="lotId" name="lotId" defaultValue={lotId ?? ""} className="rounded-md border-gray-300 text-sm">
+            <select id="lotId" name="lotId" defaultValue={lotId ?? ""} className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
               <option value="">Tous les lots + programme</option>
               {program.lots.map((lot) => (
                 <option key={lot.id} value={lot.id}>
@@ -78,18 +78,18 @@ export default async function ProgramLibraryPage({
           </div>
         )}
 
-        <button type="submit" className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50">
+        <button type="submit" className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
           Filtrer
         </button>
         {(type || lotId) && (
-          <Link href={`/library/${programId}`} className="text-sm text-gray-500 hover:underline">
+          <Link href={`/library/${programId}`} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">
             Réinitialiser
           </Link>
         )}
       </form>
 
       {contents.length === 0 ? (
-        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
           Aucun contenu ne correspond à ces filtres.
         </p>
       ) : (
