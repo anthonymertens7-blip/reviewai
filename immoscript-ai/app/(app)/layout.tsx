@@ -28,7 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="flex items-center justify-between border-b bg-white px-6 py-3">
         <nav className="flex items-center gap-6 text-sm font-medium text-gray-700">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-gray-900">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand-600 text-sm font-bold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#151F6D] text-sm font-bold text-white">
               I
             </span>
             ImmoScript AI
