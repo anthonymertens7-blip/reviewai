@@ -131,7 +131,7 @@ export function LotForm({ programId }: { programId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <LabeledInput label="Référence" required {...field("reference")} placeholder="ex: A101" />
         <LabeledInput label="Type" required {...field("propertyType")} placeholder="T1, T2, Maison..." />

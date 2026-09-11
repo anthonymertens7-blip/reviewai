@@ -44,7 +44,7 @@ export default function HomePage() {
 
         <div className="grid w-full gap-6 sm:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-5">
+            <div key={title} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-50 text-brand-600">
                 <Icon className="h-5 w-5" />
               </span>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard } from "lucide-react";
-import { PositioningSelector } from "./PositioningSelector";
+import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2 } from "lucide-react";
+import { TargetField } from "./TargetField";
 import { ContentTypeChecklist } from "./ContentTypeChecklist";
 import { ContentCard, type ContentCardData } from "@/components/results/ContentCard";
 import { VIDEO_ANGLES } from "@/lib/ai/types";
@@ -16,7 +16,6 @@ interface Lot {
 
 export function GeneratorForm({ programId, lots }: { programId: string; lots: Lot[] }) {
   const [lotId, setLotId] = useState<string>("");
-  const [positioning, setPositioning] = useState<string[]>([]);
   const [requestedTypes, setRequestedTypes] = useState<ContentType[]>([]);
   const [angle, setAngle] = useState<VideoAngle | "">("");
   const [duration, setDuration] = useState<VideoDuration>(30);
@@ -50,7 +49,6 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
         requestedTypes,
         angle: needsVideoParams && angle ? angle : undefined,
         duration: needsVideoParams ? duration : undefined,
-        positioning,
         target: target || undefined,
         tone: tone || undefined,
         mainArgument: mainArgument || undefined,
@@ -74,34 +72,27 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
   return (
     <div className="space-y-6">
+      {lots.length > 0 && (
+        <Section icon={Building2} title="Quel bien concerné ?">
+          <select
+            id="lot"
+            value={lotId}
+            onChange={(e) => setLotId(e.target.value)}
+            className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+          >
+            <option value="">Contenu programme (aucun lot spécifique)</option>
+            {lots.map((lot) => (
+              <option key={lot.id} value={lot.id}>
+                {lot.reference}
+              </option>
+            ))}
+          </select>
+        </Section>
+      )}
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Section icon={Target} title="Pour qui écrivez-vous ?">
-          {lots.length > 0 && (
-            <div className="mb-5">
-              <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Lot concerné
-              </label>
-              <select
-                id="lot"
-                value={lotId}
-                onChange={(e) => setLotId(e.target.value)}
-                className="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
-              >
-                <option value="">Contenu programme (aucun lot spécifique)</option>
-                {lots.map((lot) => (
-                  <option key={lot.id} value={lot.id}>
-                    {lot.reference}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <PositioningSelector value={positioning} onChange={setPositioning} />
-
-          <div className="mt-5">
-            <Field label="Cible" value={target} onChange={setTarget} placeholder="ex: jeunes actifs" />
-          </div>
+          <TargetField value={target} onChange={setTarget} />
         </Section>
 
         <Section icon={MessageCircle} title="Quel message faire passer ?">
@@ -163,7 +154,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center gap-2 rounded-full bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition-transform hover:scale-[1.02] hover:bg-brand-700 disabled:scale-100 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-full bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition-transform hover:scale-[1.02] hover:bg-brand-700 active:scale-95 disabled:scale-100 disabled:opacity-50"
         >
           <Sparkles className="h-4 w-4" />
           {isGenerating
@@ -177,7 +168,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
       {isGenerating && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {requestedTypes.map((type) => (
-            <div key={type} className="animate-pulse rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+            <div key={type} className="animate-pulse rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
               <div className="mb-3 h-4 w-1/3 rounded bg-gray-200" />
               <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-700" />
               <div className="mt-2 h-3 w-5/6 rounded bg-gray-100 dark:bg-gray-700" />
@@ -208,7 +199,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.12)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]">
+    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
       <div className="mb-5 flex items-center gap-2.5">
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-gray-700">
           <Icon className="h-4 w-4" />
