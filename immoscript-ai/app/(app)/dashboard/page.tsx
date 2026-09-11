@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <Building2 className="h-5 w-5" />
           </span>
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
             <p className="text-2xl font-semibold">{programCount}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <FileText className="h-5 w-5" />
           </span>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
             </Link>
           </p>
         ) : (
-          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800">
+          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
             {recentPrograms.map((program) => (
               <li key={program.id} className="flex items-center justify-between px-4 py-3">
                 <Link href={`/programs/${program.id}`} className="font-medium hover:underline">

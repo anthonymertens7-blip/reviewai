@@ -11,9 +11,9 @@ export function NavIcon({ href, icon, label }: { href: string; icon: ReactNode; 
   return (
     <Link
       href={href}
-      className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all ${
+      className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all active:scale-90 ${
         isActive
-          ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
+          ? "bg-brand-600 text-white shadow-lg shadow-brand-600/40"
           : "text-gray-500 shadow-transparent hover:bg-brand-50 hover:text-brand-600 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-700"
       }`}
     >

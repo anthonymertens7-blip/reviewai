@@ -71,7 +71,7 @@ export default async function ProgramDetailPage({
             Aucun lot pour le moment.
           </p>
         ) : (
-          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800">
+          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
             {program.lots.map((lot) => (
               <li key={lot.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <span className="font-medium">{lot.reference}</span>

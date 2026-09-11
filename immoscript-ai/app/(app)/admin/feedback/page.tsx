@@ -35,7 +35,7 @@ export default async function FeedbackAdminPage() {
       ) : (
         <ul className="space-y-3">
           {feedbacks.map((feedback) => (
-            <li key={feedback.id} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+            <li key={feedback.id} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
               <div className="mb-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>{organizationNames.get(feedback.organizationId) ?? feedback.organizationId}</span>
                 <span>

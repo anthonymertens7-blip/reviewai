@@ -47,7 +47,7 @@ export default async function ProgramLibraryPage({
         <p className="text-sm text-gray-500 dark:text-gray-400">{contents.length} contenu(s)</p>
       </div>
 
-      <form className="flex flex-wrap items-end gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4" method="get">
+      <form className="flex flex-wrap items-end gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4" method="get">
         <div>
           <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Type de contenu

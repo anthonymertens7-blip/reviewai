@@ -24,9 +24,9 @@ export function ContentTypeChecklist({
             key={type}
             type="button"
             onClick={() => toggle(type)}
-            className={`flex items-center gap-2.5 rounded-2xl border p-3 text-left text-sm font-medium transition-all ${
+            className={`flex items-center gap-2.5 rounded-2xl border p-3 text-left text-sm font-medium transition-all active:scale-95 ${
               selected
-                ? "border-brand-600 bg-brand-50 text-brand-700 shadow-[0_6px_16px_-8px_rgba(2,132,199,0.4)]"
+                ? "border-brand-600 bg-brand-50 text-brand-700 shadow-[0_10px_22px_-8px_rgba(2,132,199,0.5)]"
                 : "border-gray-200 text-gray-600 shadow-transparent hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >

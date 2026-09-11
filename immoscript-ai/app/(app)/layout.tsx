@@ -4,6 +4,7 @@ import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nex
 import { Building2, Library, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { isOwner } from "@/lib/auth";
 
@@ -27,10 +28,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      <aside className="relative z-10 flex w-20 flex-col items-center gap-3 border-r bg-white py-5 shadow-[4px_0_16px_-8px_rgba(15,23,42,0.15)] dark:bg-gray-800 dark:shadow-[4px_0_16px_-8px_rgba(0,0,0,0.4)]">
+      <aside className="relative z-10 flex w-20 flex-col items-center gap-3 border-r bg-white py-5 shadow-[6px_0_24px_-6px_rgba(15,23,42,0.22)] dark:bg-gray-800 dark:shadow-[6px_0_24px_-6px_rgba(0,0,0,0.6)]">
         <Link
           href="/dashboard"
-          className="group relative mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#151F6D] text-sm font-bold text-white shadow-md shadow-[#151F6D]/30"
+          className="group relative mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#151F6D] text-sm font-bold text-white shadow-lg shadow-[#151F6D]/40"
         >
           I
           <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
@@ -58,7 +59,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <UserButton />
         </div>
       </aside>
-      <main className="flex-1 px-6 py-8">{children}</main>
+      <main className="flex-1 px-6 py-8">
+        <PageTransition>{children}</PageTransition>
+      </main>
     </div>
   );
 }

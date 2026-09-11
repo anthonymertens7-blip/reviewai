@@ -3,11 +3,11 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/useTheme";
 
-export function SettingsForm() {
+export function AppearanceSection() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="rounded-3xl border bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-3xl border bg-white p-6 dark:border-gray-700 dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
       <h2 className="font-semibold">Apparence</h2>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Choisissez l&apos;apparence de l&apos;interface.
