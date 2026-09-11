@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider appearance={{ variables: { colorPrimary: "#4f46e5" } }}>
       <html lang="fr" className={plusJakartaSans.variable}>
-        <body className="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased">{children}</body>
+        <body className="min-h-screen bg-[#B4B5DF] font-sans text-gray-900 antialiased">{children}</body>
       </html>
     </ClerkProvider>
   );
