@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { Building2, Library, ShieldCheck } from "lucide-react";
+import { Building2, Library, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
-import { WelcomeToast } from "@/components/layout/WelcomeToast";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { isOwner } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4">
         <div className="text-center">
           <h1 className="text-xl font-semibold">Créez ou sélectionnez une organisation</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             ImmoScript AI organise les programmes par organisation (une organisation = une équipe/un promoteur).
           </p>
         </div>
@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-20 flex-col items-center gap-3 border-r bg-white py-5">
+      <aside className="flex w-20 flex-col items-center gap-3 border-r bg-white dark:bg-gray-800 py-5">
         <Link
           href="/dashboard"
           className="group relative mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#151F6D] text-sm font-bold text-white"
@@ -45,6 +45,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="mt-auto flex flex-col items-center gap-3">
+          <NavIcon href="/settings" icon={Settings} label="Paramètres" />
+          <ThemeToggle />
           <FeedbackButton />
           <OrganizationSwitcher
             hidePersonal
@@ -54,7 +56,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <UserButton />
         </div>
       </aside>
-      <WelcomeToast />
       <main className="flex-1 px-6 py-8">{children}</main>
     </div>
   );

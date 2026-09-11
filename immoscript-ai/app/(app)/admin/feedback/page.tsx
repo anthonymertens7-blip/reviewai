@@ -25,18 +25,18 @@ export default async function FeedbackAdminPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Feedback</h1>
-        <p className="text-sm text-gray-500">{feedbacks.length} retour(s), toutes organisations confondues.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{feedbacks.length} retour(s), toutes organisations confondues.</p>
       </div>
 
       {feedbacks.length === 0 ? (
-        <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
+        <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
           Aucun feedback pour le moment.
         </p>
       ) : (
         <ul className="space-y-3">
           {feedbacks.map((feedback) => (
-            <li key={feedback.id} className="rounded-3xl border bg-white p-4">
-              <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+            <li key={feedback.id} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+              <div className="mb-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>{organizationNames.get(feedback.organizationId) ?? feedback.organizationId}</span>
                 <span>
                   {feedback.createdAt.toLocaleString("fr-FR")}

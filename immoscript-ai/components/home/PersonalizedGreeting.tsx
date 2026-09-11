@@ -8,7 +8,7 @@ export function PersonalizedGreeting() {
   const greeting = getGreeting(new Date().getHours());
 
   return (
-    <p className="max-w-xl text-lg text-gray-600">
+    <p className="max-w-xl text-lg text-gray-600 dark:text-gray-400">
       {greeting}
       {user?.firstName ? `, ${user.firstName}` : ""} — retrouvez votre espace ImmoScript AI.
     </p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { CONTENT_TYPES, type ContentType } from "@/lib/ai/types";
-import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
+import { CONTENT_TYPE_LABELS, CONTENT_TYPE_ICONS } from "@/lib/ai/labels";
 
 export function ContentTypeChecklist({
   value,
@@ -15,21 +15,32 @@ export function ContentTypeChecklist({
   }
 
   return (
-    <div>
-      <p className="mb-2 text-sm font-medium text-gray-700">Contenus à générer</p>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {CONTENT_TYPES.map((type) => (
-          <label key={type} className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={value.includes(type)}
-              onChange={() => toggle(type)}
-              className="rounded border-gray-300"
-            />
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {CONTENT_TYPES.map((type) => {
+        const Icon = CONTENT_TYPE_ICONS[type];
+        const selected = value.includes(type);
+        return (
+          <button
+            key={type}
+            type="button"
+            onClick={() => toggle(type)}
+            className={`flex items-center gap-2.5 rounded-2xl border dark:border-gray-700 p-3 text-left text-sm font-medium transition-colors ${
+              selected
+                ? "border-brand-600 bg-brand-50 text-brand-700"
+                : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
+                selected ? "bg-brand-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+            </span>
             {CONTENT_TYPE_LABELS[type]}
-          </label>
-        ))}
-      </div>
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard } from "lucide-react";
 import { PositioningSelector } from "./PositioningSelector";
 import { ContentTypeChecklist } from "./ContentTypeChecklist";
 import { ContentCard, type ContentCardData } from "@/components/results/ContentCard";
@@ -32,7 +33,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
   async function handleGenerate() {
     if (requestedTypes.length === 0) {
-      setError("Sélectionne au moins un type de contenu à générer.");
+      setError("Sélectionnez au moins un type de contenu à générer.");
       return;
     }
 
@@ -72,20 +73,20 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
   }
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-6 rounded-3xl border bg-white p-6">
+    <div className="space-y-6">
+      <Section icon={Target} title="Pour qui écrivez-vous ?">
         {lots.length > 0 && (
-          <div>
-            <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700">
-              Lot (optionnel — laisser vide pour un contenu programme)
+          <div className="mb-5">
+            <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Lot concerné
             </label>
             <select
               id="lot"
               value={lotId}
               onChange={(e) => setLotId(e.target.value)}
-              className="rounded-md border-gray-300 text-sm"
+              className="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
             >
-              <option value="">Aucun lot spécifique</option>
+              <option value="">Contenu programme (aucun lot spécifique)</option>
               {lots.map((lot) => (
                 <option key={lot.id} value={lot.id}>
                   {lot.reference}
@@ -97,8 +98,13 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
         <PositioningSelector value={positioning} onChange={setPositioning} />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-5">
           <Field label="Cible" value={target} onChange={setTarget} placeholder="ex: jeunes actifs" />
+        </div>
+      </Section>
+
+      <Section icon={MessageCircle} title="Quel message faire passer ?">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Ton" value={tone} onChange={setTone} placeholder="ex: chaleureux, premium" />
           <Field
             label="Argument principal"
@@ -108,17 +114,23 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
           />
           <Field label="Appel à l'action" value={cta} onChange={setCta} placeholder="ex: Prenez rendez-vous" />
         </div>
+      </Section>
 
+      <Section icon={LayoutGrid} title="Quels formats générer ?">
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
 
         {needsVideoParams && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="mt-5 grid grid-cols-1 gap-4 rounded-2xl bg-gray-50 dark:bg-gray-900 p-4 sm:grid-cols-2">
+            <div className="col-span-full flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Clapperboard className="h-4 w-4" />
+              Script vidéo
+            </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Angle vidéo</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Angle</label>
               <select
                 value={angle}
                 onChange={(e) => setAngle(e.target.value as VideoAngle | "")}
-                className="rounded-md border-gray-300 text-sm"
+                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
               >
                 <option value="">Laisser l&apos;IA choisir</option>
                 {VIDEO_ANGLES.map((a) => (
@@ -129,11 +141,11 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Durée</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Durée</label>
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value) as VideoDuration)}
-                className="rounded-md border-gray-300 text-sm"
+                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
               >
                 <option value={30}>30s</option>
                 <option value={45}>45s</option>
@@ -142,26 +154,32 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
             </div>
           </div>
         )}
+      </Section>
 
+      <div className="flex flex-col items-center gap-3 py-2">
         {error && <p className="text-sm text-red-600">{error}</p>}
-
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="rounded-md bg-brand-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-full bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition-transform hover:scale-[1.02] hover:bg-brand-700 disabled:scale-100 disabled:opacity-50"
         >
-          {isGenerating ? "Génération en cours..." : "Générer"}
+          <Sparkles className="h-4 w-4" />
+          {isGenerating
+            ? "Génération en cours..."
+            : requestedTypes.length > 0
+              ? `Générer (${requestedTypes.length})`
+              : "Générer"}
         </button>
       </div>
 
       {isGenerating && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {requestedTypes.map((type) => (
-            <div key={type} className="animate-pulse rounded-3xl border bg-white p-4">
+            <div key={type} className="animate-pulse rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <div className="mb-3 h-4 w-1/3 rounded bg-gray-200" />
-              <div className="h-3 w-full rounded bg-gray-100" />
-              <div className="mt-2 h-3 w-5/6 rounded bg-gray-100" />
-              <div className="mt-2 h-3 w-2/3 rounded bg-gray-100" />
+              <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-700" />
+              <div className="mt-2 h-3 w-5/6 rounded bg-gray-100 dark:bg-gray-700" />
+              <div className="mt-2 h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-700" />
             </div>
           ))}
         </div>
@@ -174,6 +192,28 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function Section({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+      <div className="mb-5 flex items-center gap-2.5">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+          <Icon className="h-4 w-4" />
+        </span>
+        <h2 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+      </div>
+      {children}
     </div>
   );
 }
@@ -191,12 +231,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border-gray-300 text-sm"
+        className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
       />
     </div>
   );

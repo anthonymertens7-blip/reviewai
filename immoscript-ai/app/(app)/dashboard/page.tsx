@@ -20,25 +20,25 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-gray-500">Organisation active : {organization?.name ?? organizationId}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Organisation active : {organization?.name ?? organizationId}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-3xl border bg-white p-4">
+        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <Building2 className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm text-gray-500">Programmes</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Programmes</p>
             <p className="text-2xl font-semibold">{programCount}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-3xl border bg-white p-4">
+        <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
             <FileText className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm text-gray-500">Contenus générés</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Contenus générés</p>
             <p className="text-2xl font-semibold">{contentCount}</p>
           </div>
         </div>
@@ -52,20 +52,20 @@ export default async function DashboardPage() {
           </Link>
         </div>
         {recentPrograms.length === 0 ? (
-          <p className="rounded-3xl border border-dashed p-6 text-center text-sm text-gray-500">
+          <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
             Aucun programme pour le moment.{" "}
             <Link href="/programs" className="text-brand-600 hover:underline">
               Créer le premier programme
             </Link>
           </p>
         ) : (
-          <ul className="divide-y rounded-3xl border bg-white">
+          <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800">
             {recentPrograms.map((program) => (
               <li key={program.id} className="flex items-center justify-between px-4 py-3">
                 <Link href={`/programs/${program.id}`} className="font-medium hover:underline">
                   {program.name}
                 </Link>
-                <span className="text-sm text-gray-500">{program.city}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{program.city}</span>
               </li>
             ))}
           </ul>
