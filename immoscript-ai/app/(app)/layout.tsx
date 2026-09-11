@@ -39,13 +39,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </Link>
 
         <nav className="flex flex-col items-center gap-2">
-          <NavIcon href="/programs" icon={Building2} label="Programmes" />
-          <NavIcon href="/library" icon={Library} label="Bibliothèque" />
-          {showOwnerLink && <NavIcon href="/admin/feedback" icon={ShieldCheck} label="Feedback (admin)" />}
+          <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Programmes" />
+          <NavIcon href="/library" icon={<Library className="h-5 w-5" />} label="Bibliothèque" />
+          {showOwnerLink && (
+            <NavIcon href="/admin/feedback" icon={<ShieldCheck className="h-5 w-5" />} label="Feedback (admin)" />
+          )}
         </nav>
 
         <div className="mt-auto flex flex-col items-center gap-3">
-          <NavIcon href="/settings" icon={Settings} label="Paramètres" />
+          <NavIcon href="/settings" icon={<Settings className="h-5 w-5" />} label="Paramètres" />
           <ThemeToggle />
           <FeedbackButton />
           <OrganizationSwitcher
