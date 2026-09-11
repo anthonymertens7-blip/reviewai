@@ -74,47 +74,49 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
   return (
     <div className="space-y-6">
-      <Section icon={Target} title="Pour qui écrivez-vous ?">
-        {lots.length > 0 && (
-          <div className="mb-5">
-            <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Lot concerné
-            </label>
-            <select
-              id="lot"
-              value={lotId}
-              onChange={(e) => setLotId(e.target.value)}
-              className="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
-            >
-              <option value="">Contenu programme (aucun lot spécifique)</option>
-              {lots.map((lot) => (
-                <option key={lot.id} value={lot.id}>
-                  {lot.reference}
-                </option>
-              ))}
-            </select>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Section icon={Target} title="Pour qui écrivez-vous ?">
+          {lots.length > 0 && (
+            <div className="mb-5">
+              <label htmlFor="lot" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Lot concerné
+              </label>
+              <select
+                id="lot"
+                value={lotId}
+                onChange={(e) => setLotId(e.target.value)}
+                className="rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+              >
+                <option value="">Contenu programme (aucun lot spécifique)</option>
+                {lots.map((lot) => (
+                  <option key={lot.id} value={lot.id}>
+                    {lot.reference}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <PositioningSelector value={positioning} onChange={setPositioning} />
+
+          <div className="mt-5">
+            <Field label="Cible" value={target} onChange={setTarget} placeholder="ex: jeunes actifs" />
           </div>
-        )}
+        </Section>
 
-        <PositioningSelector value={positioning} onChange={setPositioning} />
-
-        <div className="mt-5">
-          <Field label="Cible" value={target} onChange={setTarget} placeholder="ex: jeunes actifs" />
-        </div>
-      </Section>
-
-      <Section icon={MessageCircle} title="Quel message faire passer ?">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Ton" value={tone} onChange={setTone} placeholder="ex: chaleureux, premium" />
-          <Field
-            label="Argument principal"
-            value={mainArgument}
-            onChange={setMainArgument}
-            placeholder="ex: dernières unités disponibles"
-          />
-          <Field label="Appel à l'action" value={cta} onChange={setCta} placeholder="ex: Prenez rendez-vous" />
-        </div>
-      </Section>
+        <Section icon={MessageCircle} title="Quel message faire passer ?">
+          <div className="grid grid-cols-1 gap-4">
+            <Field label="Ton" value={tone} onChange={setTone} placeholder="ex: chaleureux, premium" />
+            <Field
+              label="Argument principal"
+              value={mainArgument}
+              onChange={setMainArgument}
+              placeholder="ex: dernières unités disponibles"
+            />
+            <Field label="Appel à l'action" value={cta} onChange={setCta} placeholder="ex: Prenez rendez-vous" />
+          </div>
+        </Section>
+      </div>
 
       <Section icon={LayoutGrid} title="Quels formats générer ?">
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
@@ -206,9 +208,9 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.12)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]">
       <div className="mb-5 flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-gray-700">
           <Icon className="h-4 w-4" />
         </span>
         <h2 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
