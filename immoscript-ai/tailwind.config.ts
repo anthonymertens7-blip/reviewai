@@ -1,12 +1,16 @@
 import type { Config } from "tailwindcss";
-import colors from "tailwindcss/colors";
 
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        brand: colors.indigo,
+        // Pantone PMS 2756 C
+        brand: {
+          50: "#ECEDF3",
+          600: "#151F6D",
+          700: "#111957",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
