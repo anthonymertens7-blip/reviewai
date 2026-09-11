@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider appearance={{ variables: { colorPrimary: "#151F6D" } }}>
+    <ClerkProvider appearance={{ variables: { colorPrimary: "#0284C7" } }}>
       <html lang="fr" className={plusJakartaSans.variable}>
-        <body className="min-h-screen bg-gradient-to-b from-[#F2FEFF] to-[#A6E4F0] bg-fixed font-sans text-gray-900 antialiased">
+        <body className="min-h-screen bg-gradient-to-b from-[#E3FBFF] to-[#7FD9EC] bg-fixed font-sans text-gray-900 antialiased">
           {children}
         </body>
       </html>
