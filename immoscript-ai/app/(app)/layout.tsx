@@ -4,6 +4,7 @@ import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nex
 import { Building2, Library, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
+import { WelcomeToast } from "@/components/layout/WelcomeToast";
 import { isOwner } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <UserButton />
         </div>
       </aside>
+      <WelcomeToast />
       <main className="flex-1 px-6 py-8">{children}</main>
     </div>
   );
