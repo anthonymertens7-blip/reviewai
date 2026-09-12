@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createProgramSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   city: z.string().min(1, "La ville est requise"),
-  address: z.string().optional(),
+  address: z.string().min(1, "L'adresse est requise"),
   district: z.string().optional(),
   description: z.string().optional(),
   deliveryDate: z.coerce.date().optional(),

@@ -116,7 +116,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Nom du programme" required {...field("name")} />
           <Field label="Ville" required {...field("city")} />
-          <Field label="Adresse" {...field("address")} />
+          <Field label="Adresse" required={mode === "create"} {...field("address")} />
           <Field label="Quartier" {...field("district")} />
           <Field label="Type" {...field("programType")} placeholder="neuf, rénové..." />
           <Field label="Nombre de lots" type="number" {...field("unitsCount")} />
