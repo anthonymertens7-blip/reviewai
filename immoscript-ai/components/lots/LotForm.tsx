@@ -7,7 +7,7 @@ import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
 
-interface LotFormValues {
+export interface LotFormValues {
   reference: string;
   propertyType: string;
   roomsCount: string;
@@ -28,7 +28,7 @@ interface LotFormValues {
   hasCellar: boolean;
 }
 
-const EMPTY_VALUES: LotFormValues = {
+export const EMPTY_LOT_VALUES: LotFormValues = {
   reference: "",
   propertyType: "",
   roomsCount: "",
@@ -49,10 +49,19 @@ const EMPTY_VALUES: LotFormValues = {
   hasCellar: false,
 };
 
-export function LotForm({ programId }: { programId: string }) {
+export function LotForm({
+  programId,
+  initialValues,
+  onCancel,
+  onCreated,
+}: {
+  programId: string;
+  initialValues: LotFormValues;
+  onCancel: () => void;
+  onCreated: () => void;
+}) {
   const router = useRouter();
-  const [values, setValues] = useState<LotFormValues>(EMPTY_VALUES);
-  const [isOpen, setIsOpen] = useState(false);
+  const [values, setValues] = useState<LotFormValues>(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,20 +127,8 @@ export function LotForm({ programId }: { programId: string }) {
       return;
     }
 
-    setValues(EMPTY_VALUES);
-    setIsOpen(false);
     router.refresh();
-  }
-
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
-      >
-        + Ajouter un lot
-      </button>
-    );
+    onCreated();
   }
 
   return (
@@ -196,7 +193,7 @@ export function LotForm({ programId }: { programId: string }) {
         </button>
         <button
           type="button"
-          onClick={() => setIsOpen(false)}
+          onClick={onCancel}
           className="rounded-full border dark:border-gray-700 px-6 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
         >
           Annuler
