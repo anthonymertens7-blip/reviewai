@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight, ShieldCheck, Sparkles, Video } from "lucide-react";
 import { PersonalizedGreeting } from "@/components/home/PersonalizedGreeting";
-import { CARD_ACCENT_CLASSES, type CardAccent } from "@/components/ui/cardAccents";
+import { CARD_ACCENT_STYLES, type CardAccent } from "@/components/ui/cardAccents";
 
 const FEATURES: { icon: typeof Sparkles; title: string; description: string; accent: CardAccent }[] = [
   {
@@ -48,8 +48,8 @@ export default function HomePage() {
 
         <div className="grid w-full gap-6 sm:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description, accent }) => (
-            <div key={title} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-5">
-              <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${CARD_ACCENT_CLASSES[accent]}`}>
+            <div key={title} className={`rounded-3xl border shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-5 ${CARD_ACCENT_STYLES[accent].card}`}>
+              <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${CARD_ACCENT_STYLES[accent].badge}`}>
                 <Icon className="h-5 w-5" />
               </span>
               <h2 className="mt-3 font-semibold">{title}</h2>
