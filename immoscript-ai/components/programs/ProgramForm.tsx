@@ -145,6 +145,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
               label="Environnement"
               suggestField="environment"
               address={values.address}
+              city={values.city}
               value={values.environment}
               onChange={(v) => setFieldValue("environment", v)}
               placeholder="quartier calme, proche centre..."
@@ -153,6 +154,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
               label="Transports"
               suggestField="transport"
               address={values.address}
+              city={values.city}
               value={values.transport}
               onChange={(v) => setFieldValue("transport", v)}
               placeholder="métro ligne 1 à 5 min..."
@@ -161,6 +163,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
               label="Écoles"
               suggestField="schools"
               address={values.address}
+              city={values.city}
               value={values.schools}
               onChange={(v) => setFieldValue("schools", v)}
             />
@@ -168,6 +171,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
               label="Commerces"
               suggestField="shops"
               address={values.address}
+              city={values.city}
               value={values.shops}
               onChange={(v) => setFieldValue("shops", v)}
             />
@@ -175,6 +179,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
               label="Points d'intérêt"
               suggestField="pointsOfInterest"
               address={values.address}
+              city={values.city}
               value={values.pointsOfInterest}
               onChange={(v) => setFieldValue("pointsOfInterest", v)}
             />
@@ -210,6 +215,7 @@ function FieldWithSuggest({
   label,
   suggestField,
   address,
+  city,
   value,
   onChange,
   placeholder,
@@ -217,23 +223,24 @@ function FieldWithSuggest({
   label: string;
   suggestField: SuggestibleField;
   address: string;
+  city: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasAddress = address.trim().length > 0;
+  const canSuggest = address.trim().length > 0 && city.trim().length > 0;
 
   async function handleSuggest() {
-    if (!hasAddress || isLoading) return;
+    if (!canSuggest || isLoading) return;
     setIsLoading(true);
     setError(null);
 
     const res = await fetch("/api/programs/suggest-field", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address, field: suggestField }),
+      body: JSON.stringify({ address, city, field: suggestField }),
     });
 
     setIsLoading(false);
@@ -255,8 +262,8 @@ function FieldWithSuggest({
         <button
           type="button"
           onClick={handleSuggest}
-          disabled={!hasAddress || isLoading}
-          title={hasAddress ? "Suggérer à partir de l'adresse" : "Renseignez d'abord l'adresse"}
+          disabled={!canSuggest || isLoading}
+          title={canSuggest ? "Suggérer à partir de l'adresse et de la ville" : "Renseignez d'abord la ville et l'adresse"}
           className="flex shrink-0 items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-brand-400"
         >
           <Wand2 className={`h-3.5 w-3.5 ${isLoading ? "animate-pulse" : ""}`} />
