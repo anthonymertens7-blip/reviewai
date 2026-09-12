@@ -94,11 +94,11 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <FormSection icon={Target} title="Pour qui écrivez-vous ?">
+        <FormSection icon={Target} title="Pour qui écrivez-vous ?" accent="violet">
           <TargetField value={target} onChange={setTarget} />
         </FormSection>
 
-        <FormSection icon={MessageCircle} title="Quel message faire passer ?">
+        <FormSection icon={MessageCircle} title="Quel message faire passer ?" accent="teal">
           <div className="grid grid-cols-1 gap-4">
             <FormField label="Ton" value={tone} onChange={(e) => setTone(e.target.value)} placeholder="ex: chaleureux, premium" />
             <FormField
@@ -112,7 +112,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
         </FormSection>
       </div>
 
-      <FormSection icon={LayoutGrid} title="Quels formats générer ?" required>
+      <FormSection icon={LayoutGrid} title="Quels formats générer ?" required accent="amber">
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
 
         {needsVideoParams && (

@@ -2,22 +2,26 @@ import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight, ShieldCheck, Sparkles, Video } from "lucide-react";
 import { PersonalizedGreeting } from "@/components/home/PersonalizedGreeting";
+import { CARD_ACCENT_CLASSES, type CardAccent } from "@/components/ui/cardAccents";
 
-const FEATURES = [
+const FEATURES: { icon: typeof Sparkles; title: string; description: string; accent: CardAccent }[] = [
   {
     icon: Sparkles,
     title: "Multi-format en un clic",
     description: "Annonces, réseaux sociaux, portails, scripts vidéo — générés en parallèle depuis les mêmes données.",
+    accent: "violet",
   },
   {
     icon: ShieldCheck,
     title: "Zéro invention",
     description: "L'IA n'utilise que les informations que vous avez renseignées, jamais de détail fabriqué.",
+    accent: "teal",
   },
   {
     icon: Video,
     title: "Scripts vidéo prêts à tourner",
     description: "5 angles narratifs, scène par scène, avec voix off et texte à l'écran.",
+    accent: "amber",
   },
 ];
 
@@ -43,9 +47,9 @@ export default function HomePage() {
         </div>
 
         <div className="grid w-full gap-6 sm:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
+          {FEATURES.map(({ icon: Icon, title, description, accent }) => (
             <div key={title} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+              <span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${CARD_ACCENT_CLASSES[accent]}`}>
                 <Icon className="h-5 w-5" />
               </span>
               <h2 className="mt-3 font-semibold">{title}</h2>
