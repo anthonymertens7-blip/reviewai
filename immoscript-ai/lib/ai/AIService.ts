@@ -99,9 +99,9 @@ export class AIService {
    * de corriger avant de sauvegarder, donc un prompt basé sur la connaissance générale du
    * modèle (avec consigne de rester prudent) est acceptable ici.
    */
-  static async suggestField(address: string, field: SuggestibleField): Promise<string[]> {
+  static async suggestField(address: string, city: string, field: SuggestibleField): Promise<string[]> {
     const jsonSchema = zodToJsonSchema(fieldSuggestionSchema) as JsonSchemaObject;
-    const prompt = buildFieldSuggestionPrompt(address, field);
+    const prompt = buildFieldSuggestionPrompt(address, city, field);
 
     const response = await getClient().messages.create({
       model: DEFAULT_MODEL,
