@@ -21,6 +21,9 @@ export interface LotSummary {
   hasGarden: boolean;
   hasParking: boolean;
   hasCellar: boolean;
+  hasEquippedKitchen: boolean;
+  isFurnished: boolean;
+  furnishedEquipment: string[];
   price: number | null;
   pricePerSqm: number | null;
   availability: string | null;
@@ -47,6 +50,9 @@ function duplicateValues(lot: LotSummary): LotFormValues {
     hasGarden: lot.hasGarden,
     hasParking: lot.hasParking,
     hasCellar: lot.hasCellar,
+    hasEquippedKitchen: lot.hasEquippedKitchen,
+    isFurnished: lot.isFurnished,
+    furnishedEquipment: lot.furnishedEquipment,
   };
 }
 
@@ -90,6 +96,7 @@ export function LotsManager({ programId, lots }: { programId: string; lots: LotS
                   {lot.reference} — {lot.propertyType}
                   {lot.roomsCount ? ` · ${lot.roomsCount} pièces` : ""}
                   {lot.livingArea ? ` · ${lot.livingArea} m²` : ""}
+                  {lot.isFurnished ? " · Meublé" : ""}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {lot.price ? `${lot.price.toLocaleString("fr-FR")} € · ` : ""}

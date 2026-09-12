@@ -38,6 +38,11 @@ export function schemaForType(type: ContentType) {
   throw new Error(`Type de contenu inconnu : ${type}`);
 }
 
+export const fieldSuggestionSchema = z.object({
+  suggestions: z.array(z.string()).min(1).max(6),
+});
+
 export type ListingOutput = z.infer<typeof listingOutputSchema>;
 export type SocialOutput = z.infer<typeof socialOutputSchema>;
 export type VideoScriptOutput = z.infer<typeof videoScriptOutputSchema>;
+export type FieldSuggestionOutput = z.infer<typeof fieldSuggestionSchema>;
