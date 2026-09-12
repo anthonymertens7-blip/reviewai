@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, FileText, MapPin, Megaphone } from "lucide-react";
+import { Building2, FileText, MapPin, Megaphone, Wand2 } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { FormTextArea } from "@/components/ui/FormTextArea";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
+import type { SuggestibleField } from "@/lib/ai/prompts/fieldSuggestion";
 
 export interface ProgramFormValues {
   name: string;
@@ -66,6 +67,10 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     };
   }
 
+  function setFieldValue<K extends keyof ProgramFormValues>(key: K, value: string) {
+    setValues((v) => ({ ...v, [key]: value }));
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -117,7 +122,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <FormSection icon={Building2} title="Identité" required>
+      <FormSection icon={Building2} title="Identité" required accent="indigo">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormField label="Nom du programme" required {...field("name")} />
           <FormField label="Ville" required {...field("city")} />
@@ -136,11 +141,43 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
 
         <FormSection icon={MapPin} title="Environnement" accent="violet">
           <div className="grid grid-cols-1 gap-3">
-            <FormField label="Environnement" {...field("environment")} placeholder="quartier calme, proche centre..." />
-            <FormField label="Transports" {...field("transport")} placeholder="métro ligne 1 à 5 min..." />
-            <FormField label="Écoles" {...field("schools")} />
-            <FormField label="Commerces" {...field("shops")} />
-            <FormField label="Points d'intérêt" {...field("pointsOfInterest")} />
+            <FieldWithSuggest
+              label="Environnement"
+              suggestField="environment"
+              address={values.address}
+              value={values.environment}
+              onChange={(v) => setFieldValue("environment", v)}
+              placeholder="quartier calme, proche centre..."
+            />
+            <FieldWithSuggest
+              label="Transports"
+              suggestField="transport"
+              address={values.address}
+              value={values.transport}
+              onChange={(v) => setFieldValue("transport", v)}
+              placeholder="métro ligne 1 à 5 min..."
+            />
+            <FieldWithSuggest
+              label="Écoles"
+              suggestField="schools"
+              address={values.address}
+              value={values.schools}
+              onChange={(v) => setFieldValue("schools", v)}
+            />
+            <FieldWithSuggest
+              label="Commerces"
+              suggestField="shops"
+              address={values.address}
+              value={values.shops}
+              onChange={(v) => setFieldValue("shops", v)}
+            />
+            <FieldWithSuggest
+              label="Points d'intérêt"
+              suggestField="pointsOfInterest"
+              address={values.address}
+              value={values.pointsOfInterest}
+              onChange={(v) => setFieldValue("pointsOfInterest", v)}
+            />
             <FormField label="Équipements" {...field("amenities")} placeholder="salle de sport, parking vélo..." />
           </div>
         </FormSection>
@@ -166,5 +203,73 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
         <RequiredLegend />
       </div>
     </form>
+  );
+}
+
+function FieldWithSuggest({
+  label,
+  suggestField,
+  address,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  suggestField: SuggestibleField;
+  address: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const hasAddress = address.trim().length > 0;
+
+  async function handleSuggest() {
+    if (!hasAddress || isLoading) return;
+    setIsLoading(true);
+    setError(null);
+
+    const res = await fetch("/api/programs/suggest-field", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, field: suggestField }),
+    });
+
+    setIsLoading(false);
+
+    if (!res.ok) {
+      setError("Suggestion indisponible.");
+      return;
+    }
+
+    const { suggestions } = (await res.json()) as { suggestions: string[] };
+    const joined = suggestions.join(", ");
+    onChange(value.trim() ? `${value.trim()}, ${joined}` : joined);
+  }
+
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+        <button
+          type="button"
+          onClick={handleSuggest}
+          disabled={!hasAddress || isLoading}
+          title={hasAddress ? "Suggérer à partir de l'adresse" : "Renseignez d'abord l'adresse"}
+          className="flex shrink-0 items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-brand-400"
+        >
+          <Wand2 className={`h-3.5 w-3.5 ${isLoading ? "animate-pulse" : ""}`} />
+          {isLoading ? "Génération..." : "Suggérer"}
+        </button>
+      </div>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+      />
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
   );
 }

@@ -53,6 +53,9 @@ export interface LotData {
   hasGarden?: boolean;
   hasParking?: boolean;
   hasCellar?: boolean;
+  hasEquippedKitchen?: boolean;
+  isFurnished?: boolean;
+  furnishedEquipment?: string[];
   price?: number | null;
   pricePerSqm?: number | null;
   availability?: string | null;

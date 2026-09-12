@@ -6,6 +6,7 @@ import { Building2, Compass, Euro } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
+import { FURNISHED_EQUIPMENT_ITEMS } from "@/lib/lots/furnishedEquipment";
 
 export interface LotFormValues {
   reference: string;
@@ -26,6 +27,9 @@ export interface LotFormValues {
   hasGarden: boolean;
   hasParking: boolean;
   hasCellar: boolean;
+  hasEquippedKitchen: boolean;
+  isFurnished: boolean;
+  furnishedEquipment: string[];
 }
 
 export const EMPTY_LOT_VALUES: LotFormValues = {
@@ -47,6 +51,9 @@ export const EMPTY_LOT_VALUES: LotFormValues = {
   hasGarden: false,
   hasParking: false,
   hasCellar: false,
+  hasEquippedKitchen: false,
+  isFurnished: false,
+  furnishedEquipment: [],
 };
 
 export function LotForm({
@@ -80,6 +87,15 @@ export function LotForm({
     };
   }
 
+  function toggleEquipment(item: string) {
+    setValues((v) => ({
+      ...v,
+      furnishedEquipment: v.furnishedEquipment.includes(item)
+        ? v.furnishedEquipment.filter((i) => i !== item)
+        : [...v.furnishedEquipment, item],
+    }));
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -104,6 +120,9 @@ export function LotForm({
       hasGarden: values.hasGarden,
       hasParking: values.hasParking,
       hasCellar: values.hasCellar,
+      hasEquippedKitchen: values.hasEquippedKitchen,
+      isFurnished: values.isFurnished,
+      furnishedEquipment: values.isFurnished && values.furnishedEquipment.length > 0 ? values.furnishedEquipment : undefined,
     };
 
     const res = await fetch(`/api/programs/${programId}/lots`, {
@@ -177,7 +196,28 @@ export function LotForm({
             <Checkbox label="Jardin" {...checkbox("hasGarden")} />
             <Checkbox label="Parking" {...checkbox("hasParking")} />
             <Checkbox label="Cave" {...checkbox("hasCellar")} />
+            <Checkbox label="Cuisine équipée" {...checkbox("hasEquippedKitchen")} />
+            <Checkbox label="Meublé" {...checkbox("isFurnished")} />
           </div>
+
+          {values.isFurnished && (
+            <div className="mt-4 rounded-2xl bg-gray-50 p-3 dark:bg-gray-900">
+              <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Équipements meublés présents</p>
+              <div className="flex flex-wrap gap-3 text-sm">
+                {FURNISHED_EQUIPMENT_ITEMS.map((item) => (
+                  <label key={item.value} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={values.furnishedEquipment.includes(item.value)}
+                      onChange={() => toggleEquipment(item.value)}
+                      className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                    />
+                    {item.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </FormSection>
       </div>
 

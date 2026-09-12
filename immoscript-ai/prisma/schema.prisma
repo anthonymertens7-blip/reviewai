@@ -97,6 +97,9 @@ model Lot {
   hasGarden       Boolean  @default(false)
   hasParking      Boolean  @default(false)
   hasCellar       Boolean  @default(false)
+  hasEquippedKitchen Boolean  @default(false)
+  isFurnished        Boolean  @default(false)
+  furnishedEquipment String[] // meubles/équipements présents si isFurnished (lit, canapé, ...)
   price           Float?
   pricePerSqm     Float?
   availability    String? // disponible, réservé, vendu
