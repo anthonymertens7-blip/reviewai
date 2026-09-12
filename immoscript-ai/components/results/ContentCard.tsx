@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Pencil, RotateCw } from "lucide-react";
+import { Check, Copy, FileDown, Pencil, RotateCw } from "lucide-react";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
 import type { ListingOutput, SocialOutput, VideoScriptOutput } from "@/lib/ai/schemas";
@@ -98,6 +98,26 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     setTimeout(() => setCopied(false), 1500);
   }
 
+  async function handleExport(format: "pdf" | "docx") {
+    setError(null);
+    const res = await fetch(`/api/contents/${id}/export?format=${format}`);
+    if (!res.ok) {
+      setError("L'export a échoué.");
+      return;
+    }
+
+    const blob = await res.blob();
+    const match = res.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = match?.[1] ?? `contenu.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -147,6 +167,20 @@ export function ContentCard({ data }: { data: ContentCardData }) {
             >
               <RotateCw className={`h-3.5 w-3.5 ${isRegenerating ? "animate-spin" : ""}`} />
               {isRegenerating ? "Régénération..." : "Régénérer"}
+            </button>
+            <button
+              onClick={() => handleExport("pdf")}
+              className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <FileDown className="h-3.5 w-3.5" />
+              PDF
+            </button>
+            <button
+              onClick={() => handleExport("docx")}
+              className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <FileDown className="h-3.5 w-3.5" />
+              Word
             </button>
           </>
         )}
