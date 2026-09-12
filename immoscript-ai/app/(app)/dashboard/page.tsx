@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Building2, FileText } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
+import { CARD_ACCENT_CLASSES } from "@/components/ui/cardAccents";
 
 export default async function DashboardPage() {
   const { db, organizationId } = await getAuthContext();
@@ -25,7 +26,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+          <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${CARD_ACCENT_CLASSES.brand}`}>
             <Building2 className="h-5 w-5" />
           </span>
           <div>
@@ -34,7 +35,7 @@ export default async function DashboardPage() {
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+          <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${CARD_ACCENT_CLASSES.teal}`}>
             <FileText className="h-5 w-5" />
           </span>
           <div>

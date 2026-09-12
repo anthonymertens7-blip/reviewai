@@ -130,11 +130,11 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
       </FormSection>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <FormSection icon={FileText} title="Description">
+        <FormSection icon={FileText} title="Description" accent="teal">
           <FormTextArea label="Description" {...field("description")} />
         </FormSection>
 
-        <FormSection icon={MapPin} title="Environnement">
+        <FormSection icon={MapPin} title="Environnement" accent="violet">
           <div className="grid grid-cols-1 gap-3">
             <FormField label="Environnement" {...field("environment")} placeholder="quartier calme, proche centre..." />
             <FormField label="Transports" {...field("transport")} placeholder="métro ligne 1 à 5 min..." />
@@ -146,7 +146,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
         </FormSection>
       </div>
 
-      <FormSection icon={Megaphone} title="Arguments commerciaux">
+      <FormSection icon={Megaphone} title="Arguments commerciaux" accent="amber">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormTextArea label="Caractéristiques" {...field("features")} />
           <FormTextArea label="Avantages" {...field("advantages")} />

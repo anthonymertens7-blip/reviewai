@@ -143,7 +143,7 @@ export function LotForm({
       </FormSection>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <FormSection icon={Compass} title="Orientation & vue">
+        <FormSection icon={Compass} title="Orientation & vue" accent="teal">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <FormField label="Surface extérieure (m²)" type="number" {...field("outdoorArea")} />
             <FormField label="Étage" type="number" {...field("floor")} />
@@ -156,7 +156,7 @@ export function LotForm({
           </div>
         </FormSection>
 
-        <FormSection icon={Euro} title="Prix & disponibilité">
+        <FormSection icon={Euro} title="Prix & disponibilité" accent="amber">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <FormField label="Prix (€)" type="number" {...field("price")} />
             <FormField label="Prix/m² (€)" type="number" {...field("pricePerSqm")} />
