@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Building2, Compass, Euro } from "lucide-react";
+import { FormSection } from "@/components/ui/FormSection";
+import { FormField } from "@/components/ui/FormField";
+import { RequiredLegend } from "@/components/ui/RequiredLegend";
 
 interface LotFormValues {
   reference: string;
@@ -131,92 +135,75 @@ export function LotForm({ programId }: { programId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <LabeledInput label="Référence" required {...field("reference")} placeholder="ex: A101" />
-        <LabeledInput label="Type" required {...field("propertyType")} placeholder="T1, T2, Maison..." />
-        <LabeledInput label="Pièces" type="number" {...field("roomsCount")} />
-        <LabeledInput label="Surface (m²)" type="number" {...field("livingArea")} />
-        <LabeledInput label="Surface extérieure (m²)" type="number" {...field("outdoorArea")} />
-        <LabeledInput label="Étage" type="number" {...field("floor")} />
-        <LabeledInput label="Orientation" {...field("orientation")} placeholder="Sud, Est..." />
-        <LabeledInput label="Exposition" {...field("exposure")} />
-        <LabeledInput label="Vue" {...field("view")} placeholder="mer, jardin..." />
-        <LabeledInput label="Prix (€)" type="number" {...field("price")} />
-        <LabeledInput label="Prix/m² (€)" type="number" {...field("pricePerSqm")} />
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Disponibilité</label>
-          <select {...field("availability")} className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
-            <option value="">—</option>
-            <option value="disponible">Disponible</option>
-            <option value="réservé">Réservé</option>
-            <option value="vendu">Vendu</option>
-          </select>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <FormSection icon={Building2} title="Identité" required>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <FormField label="Référence" required {...field("reference")} placeholder="ex: A101" />
+          <FormField label="Type" required {...field("propertyType")} placeholder="T1, T2, Maison..." />
+          <FormField label="Pièces" type="number" {...field("roomsCount")} />
+          <FormField label="Surface (m²)" type="number" {...field("livingArea")} />
         </div>
-      </div>
+      </FormSection>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Caractéristiques spéciales</label>
-        <input {...field("specialFeatures")} className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm" />
-      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <FormSection icon={Compass} title="Orientation & vue">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <FormField label="Surface extérieure (m²)" type="number" {...field("outdoorArea")} />
+            <FormField label="Étage" type="number" {...field("floor")} />
+            <FormField label="Orientation" {...field("orientation")} placeholder="Sud, Est..." />
+            <FormField label="Exposition" {...field("exposure")} />
+            <FormField label="Vue" {...field("view")} placeholder="mer, jardin..." />
+          </div>
+          <div className="mt-3">
+            <FormField label="Caractéristiques spéciales" {...field("specialFeatures")} />
+          </div>
+        </FormSection>
 
-      <div className="flex flex-wrap gap-4 text-sm">
-        <Checkbox label="Balcon" {...checkbox("hasBalcony")} />
-        <Checkbox label="Terrasse" {...checkbox("hasTerrace")} />
-        <Checkbox label="Jardin" {...checkbox("hasGarden")} />
-        <Checkbox label="Parking" {...checkbox("hasParking")} />
-        <Checkbox label="Cave" {...checkbox("hasCellar")} />
+        <FormSection icon={Euro} title="Prix & disponibilité">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <FormField label="Prix (€)" type="number" {...field("price")} />
+            <FormField label="Prix/m² (€)" type="number" {...field("pricePerSqm")} />
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Disponibilité</label>
+              <select {...field("availability")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+                <option value="">—</option>
+                <option value="disponible">Disponible</option>
+                <option value="réservé">Réservé</option>
+                <option value="vendu">Vendu</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-4 text-sm">
+            <Checkbox label="Balcon" {...checkbox("hasBalcony")} />
+            <Checkbox label="Terrasse" {...checkbox("hasTerrace")} />
+            <Checkbox label="Jardin" {...checkbox("hasGarden")} />
+            <Checkbox label="Parking" {...checkbox("hasParking")} />
+            <Checkbox label="Cave" {...checkbox("hasCellar")} />
+          </div>
+        </FormSection>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-3">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="rounded-full bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700 disabled:opacity-50"
         >
           {isSubmitting ? "Création..." : "Créer le lot"}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+          className="rounded-full border dark:border-gray-700 px-6 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
         >
           Annuler
         </button>
+        <RequiredLegend />
       </div>
     </form>
-  );
-}
-
-function LabeledInput({
-  label,
-  required,
-  type = "text",
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  required?: boolean;
-  type?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
-      <input
-        type={type}
-        required={required}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
-      />
-    </div>
   );
 }
 

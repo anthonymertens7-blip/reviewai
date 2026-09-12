@@ -5,6 +5,9 @@ import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2 } 
 import { TargetField } from "./TargetField";
 import { ContentTypeChecklist } from "./ContentTypeChecklist";
 import { ContentCard, type ContentCardData } from "@/components/results/ContentCard";
+import { FormSection } from "@/components/ui/FormSection";
+import { FormField } from "@/components/ui/FormField";
+import { RequiredLegend } from "@/components/ui/RequiredLegend";
 import { VIDEO_ANGLES } from "@/lib/ai/types";
 import { VIDEO_ANGLE_LABELS } from "@/lib/ai/labels";
 import type { ContentType, VideoAngle, VideoDuration } from "@/lib/ai/types";
@@ -73,7 +76,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
   return (
     <div className="space-y-6">
       {lots.length > 0 && (
-        <Section icon={Building2} title="Quel bien concerné ?">
+        <FormSection icon={Building2} title="Quel bien concerné ?">
           <select
             id="lot"
             value={lotId}
@@ -87,29 +90,29 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
               </option>
             ))}
           </select>
-        </Section>
+        </FormSection>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Section icon={Target} title="Pour qui écrivez-vous ?">
+        <FormSection icon={Target} title="Pour qui écrivez-vous ?">
           <TargetField value={target} onChange={setTarget} />
-        </Section>
+        </FormSection>
 
-        <Section icon={MessageCircle} title="Quel message faire passer ?">
+        <FormSection icon={MessageCircle} title="Quel message faire passer ?">
           <div className="grid grid-cols-1 gap-4">
-            <Field label="Ton" value={tone} onChange={setTone} placeholder="ex: chaleureux, premium" />
-            <Field
+            <FormField label="Ton" value={tone} onChange={(e) => setTone(e.target.value)} placeholder="ex: chaleureux, premium" />
+            <FormField
               label="Argument principal"
               value={mainArgument}
-              onChange={setMainArgument}
+              onChange={(e) => setMainArgument(e.target.value)}
               placeholder="ex: dernières unités disponibles"
             />
-            <Field label="Appel à l'action" value={cta} onChange={setCta} placeholder="ex: Prenez rendez-vous" />
+            <FormField label="Appel à l'action" value={cta} onChange={(e) => setCta(e.target.value)} placeholder="ex: Prenez rendez-vous" />
           </div>
-        </Section>
+        </FormSection>
       </div>
 
-      <Section icon={LayoutGrid} title="Quels formats générer ?">
+      <FormSection icon={LayoutGrid} title="Quels formats générer ?" required>
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
 
         {needsVideoParams && (
@@ -147,9 +150,9 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
             </div>
           </div>
         )}
-      </Section>
+      </FormSection>
 
-      <div className="flex flex-col items-center gap-3 py-2">
+      <div className="flex flex-col items-center gap-2 py-2">
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           onClick={handleGenerate}
@@ -163,6 +166,7 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
               ? `Générer (${requestedTypes.length})`
               : "Générer"}
         </button>
+        <RequiredLegend />
       </div>
 
       {isGenerating && (
@@ -185,52 +189,6 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function Section({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
-      <div className="mb-5 flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-gray-700">
-          <Icon className="h-4 w-4" />
-        </span>
-        <h2 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
-      />
     </div>
   );
 }
