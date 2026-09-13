@@ -30,7 +30,12 @@ export default async function GeneratePage({
         </Link>
         <h1 className="mt-1 text-2xl font-semibold">Générer du contenu</h1>
       </div>
-      <GeneratorForm programId={program.id} lots={program.lots} />
+      <GeneratorForm
+        programId={program.id}
+        lots={program.lots}
+        programIsCoOwnership={program.isCoOwnership}
+        programCondoLotsCount={program.condoLotsCount}
+      />
     </div>
   );
 }

@@ -26,8 +26,8 @@ function wrapText(text: string, font: PDFFont, fontSize: number, maxWidth: numbe
   return lines.length > 0 ? lines : [""];
 }
 
-export async function buildPdf(type: ContentType, content: unknown, contextLabel: string): Promise<Buffer> {
-  const { title, sections } = contentToSections(type, content);
+export async function buildPdf(type: ContentType, content: unknown, contextLabel: string, legalMentions?: string | null): Promise<Buffer> {
+  const { title, sections } = contentToSections(type, content, legalMentions);
 
   const pdfDoc = await PDFDocument.create();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);

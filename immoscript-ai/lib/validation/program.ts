@@ -17,6 +17,8 @@ export const createProgramSchema = z.object({
   amenities: z.string().optional(),
   features: z.string().optional(),
   advantages: z.string().optional(),
+  isCoOwnership: z.boolean().optional(),
+  condoLotsCount: z.coerce.number().int().positive().optional(),
 });
 
 export const updateProgramSchema = createProgramSchema.partial();

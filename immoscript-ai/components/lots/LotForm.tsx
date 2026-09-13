@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Compass, Euro } from "lucide-react";
+import { Building2, Compass, Euro, ShieldCheck } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { FormTextArea } from "@/components/ui/FormTextArea";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
 import { FURNISHED_EQUIPMENT_ITEMS } from "@/lib/lots/furnishedEquipment";
+import { DPE_CLASSES } from "@/lib/legal/mandatoryMentions";
 
 export interface LotFormValues {
   reference: string;
@@ -31,6 +32,9 @@ export interface LotFormValues {
   hasEquippedKitchen: boolean;
   isFurnished: boolean;
   furnishedEquipment: string[];
+  dpeEnergyClass: string;
+  dpeGesClass: string;
+  condoAnnualCharges: string;
 }
 
 export const EMPTY_LOT_VALUES: LotFormValues = {
@@ -55,16 +59,21 @@ export const EMPTY_LOT_VALUES: LotFormValues = {
   hasEquippedKitchen: false,
   isFurnished: false,
   furnishedEquipment: [],
+  dpeEnergyClass: "",
+  dpeGesClass: "",
+  condoAnnualCharges: "",
 };
 
 export function LotForm({
   programId,
   initialValues,
+  programIsCoOwnership,
   onCancel,
   onCreated,
 }: {
   programId: string;
   initialValues: LotFormValues;
+  programIsCoOwnership?: boolean;
   onCancel: () => void;
   onCreated: () => void;
 }) {
@@ -124,6 +133,9 @@ export function LotForm({
       hasEquippedKitchen: values.hasEquippedKitchen,
       isFurnished: values.isFurnished,
       furnishedEquipment: values.isFurnished && values.furnishedEquipment.length > 0 ? values.furnishedEquipment : undefined,
+      dpeEnergyClass: values.dpeEnergyClass || undefined,
+      dpeGesClass: values.dpeGesClass || undefined,
+      condoAnnualCharges: values.condoAnnualCharges || undefined,
     };
 
     const res = await fetch(`/api/programs/${programId}/lots`, {
@@ -221,6 +233,39 @@ export function LotForm({
           )}
         </FormSection>
       </div>
+
+      <FormSection icon={ShieldCheck} title="Mentions légales" accent="rose">
+        <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+          Ces informations sont obligatoires avant publication d&apos;une annonce (DPE, copropriété) et sont ajoutées automatiquement au contenu généré.
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe DPE</label>
+            <select {...field("dpeEnergyClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+              <option value="">—</option>
+              {DPE_CLASSES.map((c) => (
+                <option key={c} value={c}>
+                  {c === "vierge" ? "Vierge (bien neuf VEFA)" : c}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe GES</label>
+            <select {...field("dpeGesClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+              <option value="">—</option>
+              {DPE_CLASSES.filter((c) => c !== "vierge").map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          {programIsCoOwnership && (
+            <FormField label="Charges annuelles copropriété (€)" type="number" {...field("condoAnnualCharges")} />
+          )}
+        </div>
+      </FormSection>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

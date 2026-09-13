@@ -58,6 +58,8 @@ model Program {
   amenities         String?
   features          String?
   advantages        String?
+  isCoOwnership     Boolean  @default(false) // soumis au statut de la copropriété (loi de 1965)
+  condoLotsCount    Int? // nombre de lots de la copropriété — mention obligatoire si isCoOwnership
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -100,6 +102,9 @@ model Lot {
   hasEquippedKitchen Boolean  @default(false)
   isFurnished        Boolean  @default(false)
   furnishedEquipment String[] // meubles/équipements présents si isFurnished (lit, canapé, ...)
+  dpeEnergyClass  String? // classe énergie A-G, ou "vierge" (bien neuf VEFA non encore diagnostiqué)
+  dpeGesClass     String? // classe climat (GES) A-G
+  condoAnnualCharges Float? // quote-part de charges annuelles de copropriété pour ce lot — mention obligatoire si program.isCoOwnership
   price           Float?
   pricePerSqm     Float?
   availability    String? // disponible, réservé, vendu

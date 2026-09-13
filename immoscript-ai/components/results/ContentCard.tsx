@@ -12,9 +12,12 @@ export interface ContentCardData {
   type: string;
   status: string;
   content: unknown;
+  legalMentions?: string | null;
 }
 
-function toPlainText(type: string, content: unknown): string {
+const LISTING_TYPES = ["listing_full", "listing_short", "portal", "website"];
+
+function toPlainText(type: string, content: unknown, legalMentions?: string | null): string {
   if (type === "video_script") {
     const script = content as VideoScriptOutput;
     return [
@@ -30,13 +33,20 @@ function toPlainText(type: string, content: unknown): string {
   }
 
   const listing = content as ListingOutput;
-  return [listing.title, "", listing.description, "", listing.highlights.map((h) => `• ${h}`).join("\n"), "", listing.cta].join("\n");
+  const base = [listing.title, "", listing.description, "", listing.highlights.map((h) => `• ${h}`).join("\n"), "", listing.cta].join("\n");
+
+  if (LISTING_TYPES.includes(type) && legalMentions) {
+    return [base, "", "Mentions légales obligatoires :", legalMentions].join("\n");
+  }
+
+  return base;
 }
 
 export function ContentCard({ data }: { data: ContentCardData }) {
   const [content, setContent] = useState(data.content);
   const [id, setId] = useState(data.id);
   const [status, setStatus] = useState(data.status);
+  const [legalMentions, setLegalMentions] = useState(data.legalMentions);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
@@ -63,6 +73,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     setId(newContent.id);
     setContent(newContent.content);
     setStatus(newContent.status);
+    setLegalMentions(newContent.legalMentions);
   }
 
   function startEdit() {
@@ -98,7 +109,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
   }
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(toPlainText(data.type, content));
+    await navigator.clipboard.writeText(toPlainText(data.type, content, legalMentions));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -140,7 +151,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
       ) : data.type === "video_script" ? (
         <VideoScriptCard script={content as VideoScriptOutput} />
       ) : (
-        <p className="whitespace-pre-wrap text-sm text-gray-800">{toPlainText(data.type, content)}</p>
+        <p className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">{toPlainText(data.type, content, legalMentions)}</p>
       )}
 
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}

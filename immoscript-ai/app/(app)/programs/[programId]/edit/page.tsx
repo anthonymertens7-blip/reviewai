@@ -50,6 +50,8 @@ export default async function EditProgramPage({
     amenities: program.amenities ?? "",
     features: program.features ?? "",
     advantages: program.advantages ?? "",
+    isCoOwnership: program.isCoOwnership,
+    condoLotsCount: program.condoLotsCount?.toString() ?? "",
   };
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2 } from "lucide-react";
+import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2, AlertTriangle } from "lucide-react";
 import { TargetField } from "./TargetField";
 import { ContentTypeChecklist } from "./ContentTypeChecklist";
 import { ContentCard, type ContentCardData } from "@/components/results/ContentCard";
@@ -11,13 +11,27 @@ import { RequiredLegend } from "@/components/ui/RequiredLegend";
 import { VIDEO_ANGLES } from "@/lib/ai/types";
 import { VIDEO_ANGLE_LABELS } from "@/lib/ai/labels";
 import type { ContentType, VideoAngle, VideoDuration } from "@/lib/ai/types";
+import { getMissingMandatoryMentions } from "@/lib/legal/mandatoryMentions";
 
 interface Lot {
   id: string;
   reference: string;
+  dpeEnergyClass?: string | null;
+  dpeGesClass?: string | null;
+  condoAnnualCharges?: number | null;
 }
 
-export function GeneratorForm({ programId, lots }: { programId: string; lots: Lot[] }) {
+export function GeneratorForm({
+  programId,
+  lots,
+  programIsCoOwnership,
+  programCondoLotsCount,
+}: {
+  programId: string;
+  lots: Lot[];
+  programIsCoOwnership?: boolean;
+  programCondoLotsCount?: number | null;
+}) {
   const [lotId, setLotId] = useState<string>("");
   const [requestedTypes, setRequestedTypes] = useState<ContentType[]>([]);
   const [angle, setAngle] = useState<VideoAngle | "">("");
@@ -32,6 +46,11 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
   const [error, setError] = useState<string | null>(null);
 
   const needsVideoParams = requestedTypes.includes("video_script");
+  const selectedLot = lotId ? lots.find((l) => l.id === lotId) : undefined;
+  const missingMentions = getMissingMandatoryMentions(
+    { isCoOwnership: !!programIsCoOwnership, condoLotsCount: programCondoLotsCount },
+    selectedLot
+  );
 
   async function handleGenerate() {
     if (requestedTypes.length === 0) {
@@ -96,6 +115,12 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
               </option>
             ))}
           </select>
+          {missingMentions.length > 0 && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+              Mentions légales manquantes pour ce lot : {missingMentions.join(", ")}. Complétez-les dans la fiche du lot avant publication.
+            </p>
+          )}
         </FormSection>
       )}
 

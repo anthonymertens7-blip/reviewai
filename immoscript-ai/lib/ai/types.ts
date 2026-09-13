@@ -36,6 +36,8 @@ export interface ProgramData {
   amenities?: string | null;
   features?: string | null;
   advantages?: string | null;
+  isCoOwnership?: boolean;
+  condoLotsCount?: number | null;
 }
 
 export interface LotData {
@@ -56,6 +58,9 @@ export interface LotData {
   hasEquippedKitchen?: boolean;
   isFurnished?: boolean;
   furnishedEquipment?: string[];
+  dpeEnergyClass?: string | null;
+  dpeGesClass?: string | null;
+  condoAnnualCharges?: number | null;
   price?: number | null;
   pricePerSqm?: number | null;
   availability?: string | null;
