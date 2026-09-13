@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Role, type Prisma } from "@prisma/client";
 import type { AuthContext } from "@/lib/auth";
 import { ProgramService } from "./ProgramService";
 import { UsageService } from "./UsageService";
@@ -6,11 +6,13 @@ import { AIService } from "@/lib/ai/AIService";
 import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 import { PROMPT_VERSION } from "@/lib/ai/prompts/system";
 import { toneForVariant, VARIANT_TONE_PRESETS, type VariantsCount } from "@/lib/ai/variants";
+import type { ApprovalStatus } from "@/lib/validation/approval";
 import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, VideoDuration } from "@/lib/ai/types";
 
 export class LotNotFoundError extends Error {}
 export class ContentNotFoundError extends Error {}
 export class NoLotsError extends Error {}
+export class ApprovalForbiddenError extends Error {}
 
 export interface GenerateBatchInput {
   programId: string;
@@ -192,6 +194,27 @@ export class ContentService {
     ]);
 
     return { ...created, legalMentions: buildMandatoryMentionsText(existing.program, existing.lot ?? undefined) };
+  }
+
+  /**
+   * Fait avancer un contenu dans le workflow de validation (brouillon → à
+   * valider → approuvé). Passer à "approved" est réservé aux rôles
+   * Promoteur/Admin — un Collaborateur peut soumettre pour validation mais
+   * pas s'auto-approuver.
+   */
+  static async setApprovalStatus(authContext: AuthContext, contentId: string, approvalStatus: ApprovalStatus) {
+    const existing = await authContext.db.generatedContent.findUnique({ where: { id: contentId } });
+    if (!existing) {
+      throw new ContentNotFoundError(contentId);
+    }
+
+    await ProgramService.get(authContext, existing.programId);
+
+    if (approvalStatus === "approved" && authContext.role === Role.COLLABORATEUR) {
+      throw new ApprovalForbiddenError(contentId);
+    }
+
+    return authContext.db.generatedContent.update({ where: { id: contentId }, data: { approvalStatus } });
   }
 }
 
