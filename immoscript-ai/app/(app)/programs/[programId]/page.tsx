@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { History, Pencil, Sparkles } from "lucide-react";
+import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
+import { DeleteProgramButton } from "@/components/programs/DeleteProgramButton";
 
 export default async function ProgramDetailPage({
   params,
@@ -54,6 +56,7 @@ export default async function ProgramDetailPage({
             <Sparkles className="h-4 w-4" />
             Générer du contenu
           </Link>
+          {authContext.role === Role.ADMIN && <DeleteProgramButton programId={program.id} />}
         </div>
       </div>
 

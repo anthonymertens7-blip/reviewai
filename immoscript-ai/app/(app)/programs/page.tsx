@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramService } from "@/lib/services/ProgramService";
 import { CreateProgramForm } from "@/components/programs/CreateProgramForm";
+import { ProgramsList } from "@/components/programs/ProgramsList";
 
 export default async function ProgramsPage() {
   const authContext = await getAuthContext();
@@ -20,23 +20,7 @@ export default async function ProgramsPage() {
           Aucun programme accessible pour le moment.
         </p>
       ) : (
-        <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
-          {programs.map((program) => (
-            <li key={program.id} className="flex items-center justify-between px-4 py-3">
-              <div>
-                <Link href={`/programs/${program.id}`} className="font-medium hover:underline">
-                  {program.name}
-                </Link>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{program.city}</p>
-              </div>
-              {program.programType && (
-                <span className="rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-xs text-gray-600 dark:text-gray-400">
-                  {program.programType}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
+        <ProgramsList programs={programs} />
       )}
     </div>
   );
