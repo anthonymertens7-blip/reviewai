@@ -6,6 +6,7 @@ import { ContentCard } from "@/components/results/ContentCard";
 import { CONTENT_TYPES } from "@/lib/ai/types";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
+import { ExportCsvButton } from "@/components/programs/ExportCsvButton";
 
 export default async function ProgramLibraryPage({
   params,
@@ -40,12 +41,15 @@ export default async function ProgramLibraryPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div>
-        <Link href="/library" className="text-sm text-brand-600 hover:underline">
-          ← Tous les programmes
-        </Link>
-        <h1 className="mt-1 text-2xl font-semibold">{program.name}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{contents.length} contenu(s)</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <Link href="/library" className="text-sm text-brand-600 hover:underline">
+            ← Tous les programmes
+          </Link>
+          <h1 className="mt-1 text-2xl font-semibold">{program.name}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{contents.length} contenu(s)</p>
+        </div>
+        {program.lots.length > 0 && <ExportCsvButton programId={programId} />}
       </div>
 
       <form className="flex flex-wrap items-end gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4" method="get">
