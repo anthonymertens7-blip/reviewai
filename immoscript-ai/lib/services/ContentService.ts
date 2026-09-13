@@ -3,6 +3,7 @@ import type { AuthContext } from "@/lib/auth";
 import { ProgramService } from "./ProgramService";
 import { UsageService } from "./UsageService";
 import { AIService } from "@/lib/ai/AIService";
+import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 import { PROMPT_VERSION } from "@/lib/ai/prompts/system";
 import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, VideoDuration } from "@/lib/ai/types";
 
@@ -137,7 +138,7 @@ export class ContentService {
       }),
     ]);
 
-    return created;
+    return { ...created, legalMentions: buildMandatoryMentionsText(existing.program, existing.lot ?? undefined) };
   }
 }
 
@@ -166,7 +167,7 @@ async function generateOne(
 
   const result = await AIService.generateContent(generateInput);
 
-  return authContext.db.generatedContent.create({
+  const created = await authContext.db.generatedContent.create({
     data: {
       generationRequestId: args.generationRequestId,
       programId: args.programId,
@@ -178,4 +179,6 @@ async function generateOne(
       createdByUserId: authContext.userId,
     },
   });
+
+  return { ...created, legalMentions: buildMandatoryMentionsText(args.program, args.lot) };
 }

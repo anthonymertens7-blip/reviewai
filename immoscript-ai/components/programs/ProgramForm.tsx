@@ -27,6 +27,8 @@ export interface ProgramFormValues {
   amenities: string;
   features: string;
   advantages: string;
+  isCoOwnership: boolean;
+  condoLotsCount: string;
 }
 
 export const EMPTY_PROGRAM_VALUES: ProgramFormValues = {
@@ -46,6 +48,8 @@ export const EMPTY_PROGRAM_VALUES: ProgramFormValues = {
   amenities: "",
   features: "",
   advantages: "",
+  isCoOwnership: false,
+  condoLotsCount: "",
 };
 
 interface ProgramFormProps {
@@ -89,6 +93,13 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     setValues((v) => ({ ...v, [key]: value }));
   }
 
+  function checkbox(key: keyof ProgramFormValues) {
+    return {
+      checked: values[key] as boolean,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [key]: e.target.checked })),
+    };
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -111,6 +122,8 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
       amenities: values.amenities || undefined,
       features: values.features || undefined,
       advantages: values.advantages || undefined,
+      isCoOwnership: values.isCoOwnership,
+      condoLotsCount: values.isCoOwnership ? values.condoLotsCount || undefined : undefined,
     };
 
     const url = mode === "create" ? "/api/programs" : `/api/programs/${programId}`;
@@ -151,6 +164,19 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
           <FormField label="Type" {...field("programType")} placeholder="neuf, rénové..." />
           <FormField label="Nombre de lots" type="number" {...field("unitsCount")} />
           <FormField label="Date de livraison" type="date" {...field("deliveryDate")} />
+        </div>
+        <div className="mt-3 flex flex-wrap items-end gap-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              {...checkbox("isCoOwnership")}
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+            />
+            Soumis au statut de la copropriété
+          </label>
+          {values.isCoOwnership && (
+            <FormField label="Nombre de lots de la copropriété" type="number" {...field("condoLotsCount")} />
+          )}
         </div>
       </FormSection>
 

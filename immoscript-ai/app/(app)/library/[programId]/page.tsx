@@ -5,6 +5,7 @@ import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/l
 import { ContentCard } from "@/components/results/ContentCard";
 import { CONTENT_TYPES } from "@/lib/ai/types";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
+import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 
 export default async function ProgramLibraryPage({
   params,
@@ -94,9 +95,11 @@ export default async function ProgramLibraryPage({
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {contents.map((content) => (
-            <ContentCard key={content.id} data={content} />
-          ))}
+          {contents.map((content) => {
+            const lot = content.lotId ? program.lots.find((l) => l.id === content.lotId) : undefined;
+            const legalMentions = buildMandatoryMentionsText(program, lot);
+            return <ContentCard key={content.id} data={{ ...content, legalMentions }} />;
+          })}
         </div>
       )}
     </div>

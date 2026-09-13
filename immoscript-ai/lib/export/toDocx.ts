@@ -3,8 +3,8 @@ import { contentToSections } from "./contentToSections";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
 
-export async function buildDocx(type: ContentType, content: unknown, contextLabel: string): Promise<Buffer> {
-  const { title, sections } = contentToSections(type, content);
+export async function buildDocx(type: ContentType, content: unknown, contextLabel: string, legalMentions?: string | null): Promise<Buffer> {
+  const { title, sections } = contentToSections(type, content, legalMentions);
 
   const children: Paragraph[] = [
     new Paragraph({ text: title, heading: HeadingLevel.HEADING_1 }),

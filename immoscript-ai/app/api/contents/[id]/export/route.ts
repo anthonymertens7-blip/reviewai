@@ -3,6 +3,7 @@ import { withOrgAuth } from "@/lib/with-org-auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 import { buildDocx } from "@/lib/export/toDocx";
 import { buildPdf } from "@/lib/export/toPdf";
+import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 import type { ContentType } from "@/lib/ai/types";
 
 type Params = { id: string };
@@ -36,9 +37,12 @@ export const GET = withOrgAuth<Params>(async (req, authContext, { id }) => {
 
   const type = existing.type as ContentType;
   const contextLabel = existing.lot ? `${program.name} · ${existing.lot.reference}` : program.name;
+  const legalMentions = buildMandatoryMentionsText(program, existing.lot ?? undefined);
 
   const buffer =
-    format === "pdf" ? await buildPdf(type, existing.content, contextLabel) : await buildDocx(type, existing.content, contextLabel);
+    format === "pdf"
+      ? await buildPdf(type, existing.content, contextLabel, legalMentions)
+      : await buildDocx(type, existing.content, contextLabel, legalMentions);
 
   const contentType = format === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   const filename = `${program.name}-${type}.${format}`.replace(/[^a-zA-Z0-9._-]+/g, "_");

@@ -31,7 +31,7 @@ export default async function ProgramLotsPage({
         <h1 className="mt-1 text-2xl font-semibold">Lots</h1>
       </div>
 
-      <LotsManager programId={programId} lots={program.lots} />
+      <LotsManager programId={programId} lots={program.lots} programIsCoOwnership={program.isCoOwnership} programCondoLotsCount={program.condoLotsCount} />
     </div>
   );
 }

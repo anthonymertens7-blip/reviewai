@@ -14,7 +14,9 @@ export interface ExportDocument {
 
 const SOCIAL_TYPES: ContentType[] = ["instagram", "facebook", "linkedin", "tiktok"];
 
-export function contentToSections(type: ContentType, content: unknown): ExportDocument {
+const LISTING_TYPES: ContentType[] = ["listing_full", "listing_short", "portal", "website"];
+
+export function contentToSections(type: ContentType, content: unknown, legalMentions?: string | null): ExportDocument {
   if (type === "video_script") {
     const script = content as VideoScriptOutput;
     return {
@@ -52,6 +54,9 @@ export function contentToSections(type: ContentType, content: unknown): ExportDo
       { paragraphs: [listing.description] },
       { heading: "Points forts", bullets: listing.highlights },
       { heading: "Appel à l'action", paragraphs: [listing.cta] },
+      ...(LISTING_TYPES.includes(type) && legalMentions
+        ? [{ heading: "Mentions légales obligatoires", paragraphs: legalMentions.split("\n") }]
+        : []),
     ],
   };
 }
