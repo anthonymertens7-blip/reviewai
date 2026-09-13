@@ -28,22 +28,33 @@ export async function GET(req: Request) {
 
   let sent = 0;
   let failed = 0;
+  const errors: string[] = [];
 
   for (const digest of digests) {
     for (const recipient of digest.recipients) {
       try {
-        await resend.emails.send({
+        // Le SDK Resend ne lève pas d'exception sur un rejet de l'API (domaine
+        // non vérifié, adresse invalide...) : l'erreur revient dans le champ
+        // `error` de la réponse résolue, jamais via une exception JS.
+        const result = await resend.emails.send({
           from: DIGEST_FROM_EMAIL,
           to: recipient.email,
           subject: buildWeeklyDigestSubject(digest),
           html: buildWeeklyDigestHtml(digest, recipient.name),
         });
-        sent++;
-      } catch {
+
+        if (result.error) {
+          failed++;
+          errors.push(`${recipient.email}: ${result.error.message}`);
+        } else {
+          sent++;
+        }
+      } catch (error) {
         failed++;
+        errors.push(`${recipient.email}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
 
-  return NextResponse.json({ organizations: digests.length, sent, failed });
+  return NextResponse.json({ organizations: digests.length, sent, failed, errors });
 }
