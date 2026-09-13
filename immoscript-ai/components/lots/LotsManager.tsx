@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Copy } from "lucide-react";
+import { AlertTriangle, Copy, Images } from "lucide-react";
 import { LotForm, EMPTY_LOT_VALUES, type LotFormValues } from "./LotForm";
 import { DeleteLotButton } from "./DeleteLotButton";
+import { LotPhotosPanel } from "./LotPhotosPanel";
 import { getMissingMandatoryMentions } from "@/lib/legal/mandatoryMentions";
 
 export interface LotSummary {
@@ -77,6 +78,7 @@ export function LotsManager({
 }) {
   const [formValues, setFormValues] = useState<LotFormValues | null>(null);
   const [formKey, setFormKey] = useState(0);
+  const [expandedLotId, setExpandedLotId] = useState<string | null>(null);
 
   function openCreate() {
     setFormValues(EMPTY_LOT_VALUES);
@@ -119,36 +121,47 @@ export function LotsManager({
               { isCoOwnership: !!programIsCoOwnership, condoLotsCount: programCondoLotsCount },
               lot
             );
+            const isExpanded = expandedLotId === lot.id;
             return (
-              <li key={lot.id} className="flex items-center justify-between gap-4 px-4 py-3">
-                <div>
-                  <p className="font-medium">
-                    {lot.reference} — {lot.propertyType}
-                    {lot.roomsCount ? ` · ${lot.roomsCount} pièces` : ""}
-                    {lot.livingArea ? ` · ${lot.livingArea} m²` : ""}
-                    {lot.isFurnished ? " · Meublé" : ""}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {lot.price ? `${lot.price.toLocaleString("fr-FR")} € · ` : ""}
-                    {lot.availability ?? "disponibilité non renseignée"}
-                  </p>
-                  {missingMentions.length > 0 && (
-                    <p className="mt-1 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
-                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                      Mentions manquantes : {missingMentions.join(", ")}
+              <li key={lot.id} className="px-4 py-3">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-medium">
+                      {lot.reference} — {lot.propertyType}
+                      {lot.roomsCount ? ` · ${lot.roomsCount} pièces` : ""}
+                      {lot.livingArea ? ` · ${lot.livingArea} m²` : ""}
+                      {lot.isFurnished ? " · Meublé" : ""}
                     </p>
-                  )}
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {lot.price ? `${lot.price.toLocaleString("fr-FR")} € · ` : ""}
+                      {lot.availability ?? "disponibilité non renseignée"}
+                    </p>
+                    {missingMentions.length > 0 && (
+                      <p className="mt-1 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+                        <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                        Mentions manquantes : {missingMentions.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setExpandedLotId(isExpanded ? null : lot.id)}
+                      className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                    >
+                      <Images className="h-3.5 w-3.5" />
+                      Photos
+                    </button>
+                    <button
+                      onClick={() => openDuplicate(lot)}
+                      className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      Dupliquer
+                    </button>
+                    <DeleteLotButton lotId={lot.id} />
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => openDuplicate(lot)}
-                    className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                    Dupliquer
-                  </button>
-                  <DeleteLotButton lotId={lot.id} />
-                </div>
+                {isExpanded && <LotPhotosPanel lotId={lot.id} />}
               </li>
             );
           })}

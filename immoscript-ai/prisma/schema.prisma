@@ -115,8 +115,23 @@ model Lot {
   updatedAt       DateTime @updatedAt
 
   contents GeneratedContent[]
+  photos   LotPhoto[]
 
   @@index([programId])
+}
+
+// Photos d'un lot, stockées en base pour être envoyées telles quelles au modèle de
+// vision (pas de dépendance à un stockage de fichiers externe) : la génération de
+// description ancrée sur photo ne décrit que ce qui y est réellement visible.
+model LotPhoto {
+  id        String   @id @default(cuid())
+  lotId     String
+  lot       Lot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  data      Bytes
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  @@index([lotId])
 }
 
 // Une "requête de génération" = un clic sur Générer, avec ses paramètres marketing
