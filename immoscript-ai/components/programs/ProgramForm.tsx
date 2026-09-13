@@ -7,7 +7,8 @@ import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { FormTextArea } from "@/components/ui/FormTextArea";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
-import type { SuggestibleField } from "@/lib/ai/prompts/fieldSuggestion";
+import { useAutoGrowTextarea } from "@/lib/useAutoGrowTextarea";
+import type { SuggestibleField, SuggestionContext } from "@/lib/ai/prompts/fieldSuggestion";
 
 export interface ProgramFormValues {
   name: string;
@@ -51,6 +52,23 @@ interface ProgramFormProps {
   mode: "create" | "edit";
   programId?: string;
   initialValues?: ProgramFormValues;
+}
+
+function buildSuggestionContext(v: ProgramFormValues): SuggestionContext {
+  return {
+    address: v.address,
+    city: v.city,
+    district: v.district || undefined,
+    programType: v.programType || undefined,
+    unitsCount: v.unitsCount || undefined,
+    deliveryDate: v.deliveryDate || undefined,
+    environment: v.environment || undefined,
+    transport: v.transport || undefined,
+    schools: v.schools || undefined,
+    shops: v.shops || undefined,
+    pointsOfInterest: v.pointsOfInterest || undefined,
+    amenities: v.amenities || undefined,
+  };
 }
 
 export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps) {
@@ -120,6 +138,8 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     router.refresh();
   }
 
+  const suggestionContext = buildSuggestionContext(values);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <FormSection icon={Building2} title="Identité" required accent="indigo">
@@ -144,8 +164,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
             <FieldWithSuggest
               label="Environnement"
               suggestField="environment"
-              address={values.address}
-              city={values.city}
+              context={suggestionContext}
               value={values.environment}
               onChange={(v) => setFieldValue("environment", v)}
               placeholder="quartier calme, proche centre..."
@@ -153,8 +172,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
             <FieldWithSuggest
               label="Transports"
               suggestField="transport"
-              address={values.address}
-              city={values.city}
+              context={suggestionContext}
               value={values.transport}
               onChange={(v) => setFieldValue("transport", v)}
               placeholder="métro ligne 1 à 5 min..."
@@ -162,36 +180,45 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
             <FieldWithSuggest
               label="Écoles"
               suggestField="schools"
-              address={values.address}
-              city={values.city}
+              context={suggestionContext}
               value={values.schools}
               onChange={(v) => setFieldValue("schools", v)}
             />
             <FieldWithSuggest
               label="Commerces"
               suggestField="shops"
-              address={values.address}
-              city={values.city}
+              context={suggestionContext}
               value={values.shops}
               onChange={(v) => setFieldValue("shops", v)}
             />
             <FieldWithSuggest
               label="Points d'intérêt"
               suggestField="pointsOfInterest"
-              address={values.address}
-              city={values.city}
+              context={suggestionContext}
               value={values.pointsOfInterest}
               onChange={(v) => setFieldValue("pointsOfInterest", v)}
             />
-            <FormField label="Équipements" {...field("amenities")} placeholder="salle de sport, parking vélo..." />
+            <FormTextArea label="Équipements" rows={1} {...field("amenities")} />
           </div>
         </FormSection>
       </div>
 
       <FormSection icon={Megaphone} title="Arguments commerciaux" accent="amber">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <FormTextArea label="Caractéristiques" {...field("features")} />
-          <FormTextArea label="Avantages" {...field("advantages")} />
+          <FieldWithSuggest
+            label="Caractéristiques"
+            suggestField="features"
+            context={suggestionContext}
+            value={values.features}
+            onChange={(v) => setFieldValue("features", v)}
+          />
+          <FieldWithSuggest
+            label="Avantages"
+            suggestField="advantages"
+            context={suggestionContext}
+            value={values.advantages}
+            onChange={(v) => setFieldValue("advantages", v)}
+          />
         </div>
       </FormSection>
 
@@ -214,23 +241,22 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
 function FieldWithSuggest({
   label,
   suggestField,
-  address,
-  city,
+  context,
   value,
   onChange,
   placeholder,
 }: {
   label: string;
   suggestField: SuggestibleField;
-  address: string;
-  city: string;
+  context: SuggestionContext;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const canSuggest = address.trim().length > 0 && city.trim().length > 0;
+  const canSuggest = context.address.trim().length > 0 && context.city.trim().length > 0;
+  const textareaRef = useAutoGrowTextarea(value);
 
   async function handleSuggest() {
     if (!canSuggest || isLoading) return;
@@ -240,7 +266,7 @@ function FieldWithSuggest({
     const res = await fetch("/api/programs/suggest-field", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address, city, field: suggestField }),
+      body: JSON.stringify({ context, field: suggestField }),
     });
 
     setIsLoading(false);
@@ -263,18 +289,20 @@ function FieldWithSuggest({
           type="button"
           onClick={handleSuggest}
           disabled={!canSuggest || isLoading}
-          title={canSuggest ? "Suggérer à partir de l'adresse et de la ville" : "Renseignez d'abord la ville et l'adresse"}
+          title={canSuggest ? "Suggérer à partir des informations déjà renseignées" : "Renseignez d'abord la ville et l'adresse"}
           className="flex shrink-0 items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-brand-400"
         >
           <Wand2 className={`h-3.5 w-3.5 ${isLoading ? "animate-pulse" : ""}`} />
           {isLoading ? "Génération..." : "Suggérer"}
         </button>
       </div>
-      <input
+      <textarea
+        ref={textareaRef}
+        rows={1}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+        className="w-full resize-none overflow-hidden rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
       />
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>

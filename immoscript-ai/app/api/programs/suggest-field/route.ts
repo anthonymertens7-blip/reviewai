@@ -4,9 +4,23 @@ import { withOrgAuth } from "@/lib/with-org-auth";
 import { AIService, AIGenerationError } from "@/lib/ai/AIService";
 import { SUGGESTIBLE_FIELDS } from "@/lib/ai/prompts/fieldSuggestion";
 
-const bodySchema = z.object({
+const contextSchema = z.object({
   address: z.string().min(1),
   city: z.string().min(1),
+  district: z.string().optional(),
+  programType: z.string().optional(),
+  unitsCount: z.string().optional(),
+  deliveryDate: z.string().optional(),
+  environment: z.string().optional(),
+  transport: z.string().optional(),
+  schools: z.string().optional(),
+  shops: z.string().optional(),
+  pointsOfInterest: z.string().optional(),
+  amenities: z.string().optional(),
+});
+
+const bodySchema = z.object({
+  context: contextSchema,
   field: z.enum(SUGGESTIBLE_FIELDS),
 });
 
@@ -19,7 +33,7 @@ export const POST = withOrgAuth(async (req) => {
   }
 
   try {
-    const suggestions = await AIService.suggestField(parsed.data.address, parsed.data.city, parsed.data.field);
+    const suggestions = await AIService.suggestField(parsed.data.context, parsed.data.field);
     return NextResponse.json({ suggestions });
   } catch (error) {
     if (error instanceof AIGenerationError) {
