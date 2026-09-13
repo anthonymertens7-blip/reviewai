@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { isOwner } from "@/lib/auth";
 
 // Filet de sécurité minimal contre l'emballement des coûts IA (risque n°1 identifié
 // dès le document d'architecture) : un plafond mensuel par organisation, sans
 // dépendance à un fournisseur de facturation. `generationsQuota` reste stocké par
 // ligne pour permettre plus tard des quotas différenciés par plan.
+// Le propriétaire de l'app (OWNER_EMAIL) n'est jamais limité, quelle que soit
+// l'organisation active — c'est son propre usage de test/démo, pas celui d'un client.
 const DEFAULT_MONTHLY_QUOTA = Number(process.env.MONTHLY_GENERATION_QUOTA ?? 300);
 
 export class QuotaExceededError extends Error {}
@@ -23,7 +26,11 @@ export class UsageService {
    * QuotaExceededError sinon — à appeler avant l'appel IA, pas après, pour ne
    * jamais dépasser le plafond même en cas d'usage concurrent.
    */
-  static async assertQuotaAndReserve(organizationId: string, amount: number): Promise<{ used: number; quota: number }> {
+  static async assertQuotaAndReserve(organizationId: string, amount: number): Promise<{ used: number; quota: number } | null> {
+    if (await isOwner()) {
+      return null;
+    }
+
     const { periodStart, periodEnd } = currentPeriod();
 
     await prisma.usageCounter.upsert({
@@ -50,8 +57,13 @@ export class UsageService {
     return { used: updated.generationsUsed, quota: updated.generationsQuota };
   }
 
-  static async getUsage(organizationId: string): Promise<{ used: number; quota: number; periodEnd: Date }> {
+  static async getUsage(organizationId: string): Promise<{ used: number; quota: number | null; periodEnd: Date }> {
     const { periodStart, periodEnd } = currentPeriod();
+
+    if (await isOwner()) {
+      return { used: 0, quota: null, periodEnd };
+    }
+
     const counter = await prisma.usageCounter.findUnique({
       where: { organizationId_periodStart: { organizationId, periodStart } },
     });
