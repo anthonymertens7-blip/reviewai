@@ -15,6 +15,7 @@ model Organization {
   users         User[]
   programs      Program[]
   usageCounters UsageCounter[]
+  brandVoicePresets BrandVoicePreset[]
 }
 
 model User {
@@ -199,6 +200,22 @@ model Feedback {
   message        String
   page           String? // chemin de la page depuis laquelle le feedback a été envoyé
   createdAt      DateTime @default(now())
+
+  @@index([organizationId])
+}
+
+// Préréglage de ton/marque réutilisable à chaque génération (ex: "Luxe", "Familial",
+// "Investissement"), pour garder une voix de marque cohérente entre collaborateurs.
+model BrandVoicePreset {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name           String
+  target         String?
+  tone           String?
+  mainArgument   String?
+  cta            String?
+  createdAt      DateTime     @default(now())
 
   @@index([organizationId])
 }

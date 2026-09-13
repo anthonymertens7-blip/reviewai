@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2, AlertTriangle } from "lucide-react";
+import { Sparkles, Target, MessageCircle, LayoutGrid, Clapperboard, Building2, AlertTriangle, Palette } from "lucide-react";
 import { TargetField } from "./TargetField";
 import { ContentTypeChecklist } from "./ContentTypeChecklist";
 import { ContentCard, type ContentCardData } from "@/components/results/ContentCard";
@@ -23,16 +23,27 @@ interface Lot {
   condoAnnualCharges?: number | null;
 }
 
+interface BrandVoicePreset {
+  id: string;
+  name: string;
+  target: string | null;
+  tone: string | null;
+  mainArgument: string | null;
+  cta: string | null;
+}
+
 export function GeneratorForm({
   programId,
   lots,
   programIsCoOwnership,
   programCondoLotsCount,
+  brandVoicePresets,
 }: {
   programId: string;
   lots: Lot[];
   programIsCoOwnership?: boolean;
   programCondoLotsCount?: number | null;
+  brandVoicePresets?: BrandVoicePreset[];
 }) {
   const [lotId, setLotId] = useState<string>("");
   const [requestedTypes, setRequestedTypes] = useState<ContentType[]>([]);
@@ -154,6 +165,33 @@ export function GeneratorForm({
               Mentions légales manquantes pour ce lot : {missingMentions.join(", ")}. Complétez-les dans la fiche du lot avant publication.
             </p>
           )}
+        </FormSection>
+      )}
+
+      {brandVoicePresets && brandVoicePresets.length > 0 && (
+        <FormSection icon={Palette} title="Voix de marque">
+          <select
+            onChange={(e) => {
+              const preset = brandVoicePresets.find((p) => p.id === e.target.value);
+              if (!preset) return;
+              if (preset.target) setTarget(preset.target);
+              if (preset.tone) setTone(preset.tone);
+              if (preset.mainArgument) setMainArgument(preset.mainArgument);
+              if (preset.cta) setCta(preset.cta);
+              e.target.value = "";
+            }}
+            defaultValue=""
+            className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+          >
+            <option value="" disabled>
+              Charger un préréglage...
+            </option>
+            {brandVoicePresets.map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
         </FormSection>
       )}
 
