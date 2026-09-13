@@ -1,0 +1,75 @@
+import type { AuthContext } from "@/lib/auth";
+import { ProgramService } from "./ProgramService";
+import { LotNotFoundError } from "./LotService";
+
+export class LotPhotoNotFoundError extends Error {}
+export class TooManyPhotosError extends Error {}
+export class PhotoTooLargeError extends Error {}
+export class InvalidPhotoTypeError extends Error {}
+
+const MAX_PHOTOS_PER_LOT = 12;
+export const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5 Mo
+export const ALLOWED_PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+async function getOwnedLot(authContext: AuthContext, lotId: string) {
+  const lot = await authContext.db.lot.findUnique({ where: { id: lotId } });
+  if (!lot) {
+    throw new LotNotFoundError(lotId);
+  }
+  await ProgramService.get(authContext, lot.programId);
+  return lot;
+}
+
+export class LotPhotoService {
+  static async list(authContext: AuthContext, lotId: string) {
+    await getOwnedLot(authContext, lotId);
+    return authContext.db.lotPhoto.findMany({
+      where: { lotId },
+      select: { id: true, mimeType: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+  }
+
+  static async create(authContext: AuthContext, lotId: string, data: ArrayBuffer, mimeType: string) {
+    await getOwnedLot(authContext, lotId);
+
+    if (!ALLOWED_PHOTO_MIME_TYPES.includes(mimeType)) {
+      throw new InvalidPhotoTypeError(mimeType);
+    }
+    if (data.byteLength > MAX_PHOTO_SIZE_BYTES) {
+      throw new PhotoTooLargeError(lotId);
+    }
+
+    const count = await authContext.db.lotPhoto.count({ where: { lotId } });
+    if (count >= MAX_PHOTOS_PER_LOT) {
+      throw new TooManyPhotosError(lotId);
+    }
+
+    return authContext.db.lotPhoto.create({
+      data: { lotId, data: new Uint8Array(data), mimeType },
+      select: { id: true, mimeType: true, createdAt: true },
+    });
+  }
+
+  static async getBytes(authContext: AuthContext, photoId: string) {
+    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId } });
+    if (!photo) {
+      throw new LotPhotoNotFoundError(photoId);
+    }
+    return photo;
+  }
+
+  static async remove(authContext: AuthContext, photoId: string) {
+    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId } });
+    if (!photo) {
+      throw new LotPhotoNotFoundError(photoId);
+    }
+    return authContext.db.lotPhoto.delete({ where: { id: photoId } });
+  }
+
+  /** Toutes les photos d'un lot, avec leurs octets — pour l'analyse vision. */
+  static async listWithBytes(authContext: AuthContext, lotId: string) {
+    await getOwnedLot(authContext, lotId);
+    return authContext.db.lotPhoto.findMany({ where: { lotId } });
+  }
+}

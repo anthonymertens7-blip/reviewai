@@ -132,6 +132,64 @@ export class AIService {
 
     return parsed.data.suggestions;
   }
+
+  /**
+   * Décrit un lot à partir de ses photos réelles : contrairement à
+   * generateContent (données déclarées) ou suggestField (connaissance
+   * générale), l'ancrage ici est visuel — le modèle ne doit lister que ce
+   * qui apparaît effectivement sur au moins une photo fournie.
+   */
+  static async suggestFromPhotos(photos: { data: Uint8Array; mimeType: string }[]): Promise<string[]> {
+    const jsonSchema = zodToJsonSchema(fieldSuggestionSchema) as JsonSchemaObject;
+
+    const imageBlocks: Anthropic.ImageBlockParam[] = photos.map((photo) => ({
+      type: "image",
+      source: {
+        type: "base64",
+        media_type: photo.mimeType as "image/jpeg" | "image/png" | "image/webp",
+        data: Buffer.from(photo.data).toString("base64"),
+      },
+    }));
+
+    const response = await getClient().messages.create({
+      model: DEFAULT_MODEL,
+      max_tokens: 512,
+      system:
+        "Tu décris un bien immobilier à partir de photos fournies par un promoteur. " +
+        "RÈGLE ABSOLUE : tu ne listes que ce qui est clairement visible sur au moins une photo " +
+        "(matériaux, agencement, luminosité, équipements visibles...). Tu n'inventes jamais une pièce, " +
+        "un équipement ou une caractéristique que tu ne peux pas voir. Dans le doute, tu n'en parles pas.",
+      messages: [
+        {
+          role: "user",
+          content: [
+            ...imageBlocks,
+            { type: "text", text: "Liste les caractéristiques concrètes visibles sur ces photos (3 à 6 éléments courts)." },
+          ],
+        },
+      ],
+      tools: [
+        {
+          name: SUGGESTION_TOOL_NAME,
+          description: "Retourne les caractéristiques observées.",
+          input_schema: jsonSchema,
+        },
+      ],
+      tool_choice: { type: "tool", name: SUGGESTION_TOOL_NAME },
+    });
+
+    const toolUse = response.content.find((block) => block.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") {
+      throw new AIGenerationError("Le modèle n'a pas retourné d'appel d'outil");
+    }
+
+    const parsed = fieldSuggestionSchema.safeParse(toolUse.input);
+    if (!parsed.success) {
+      throw new AIGenerationError(`Sortie IA invalide pour la description depuis photos : ${parsed.error.message}`);
+    }
+
+    return parsed.data.suggestions;
+  }
 }
 
 async function callWithForcedTool(messages: Anthropic.MessageParam[], jsonSchema: JsonSchemaObject): Promise<unknown> {

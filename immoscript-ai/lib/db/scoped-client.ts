@@ -14,6 +14,9 @@ const DIRECT_ORG_FIELD_MODELS = new Set(["Program", "GenerationRequest", "UsageC
 // Modèles scopés via leur programme parent (pas de organizationId direct).
 const PROGRAM_RELATION_MODELS = new Set(["Lot", "GeneratedContent", "ProgramAccess"]);
 
+// Modèles scopés via le lot (lui-même scopé via son programme) — deux niveaux de relation.
+const LOT_RELATION_MODELS = new Set(["LotPhoto"]);
+
 const READ_AND_BULK_WRITE_OPS = new Set([
   "findUnique",
   "findUniqueOrThrow",
@@ -71,8 +74,19 @@ export function getScopedPrismaClient(organizationId: string) {
               },
             };
           }
+
+          if (model && LOT_RELATION_MODELS.has(model) && READ_AND_BULK_WRITE_OPS.has(operation)) {
+            const where = (args as { where?: Record<string, unknown> }).where ?? {};
+            (args as { where?: Record<string, unknown> }).where = {
+              ...where,
+              lot: {
+                ...((where.lot as Record<string, unknown>) ?? {}),
+                program: { organizationId },
+              },
+            };
+          }
           // NB: pour les create/createMany de ces modèles, la vérification que le
-          // programId cible appartient bien à l'organisation reste à la charge du
+          // programId/lotId cible appartient bien à l'organisation reste à la charge du
           // service appelant (ex: ProgramService.assertOwnedByOrg) avant l'écriture,
           // car l'injection générique ne peut pas fiabiliser une écriture imbriquée.
 
