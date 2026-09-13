@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import type { AuthContext } from "@/lib/auth";
 import { ProgramService } from "./ProgramService";
+import { UsageService } from "./UsageService";
 import { AIService } from "@/lib/ai/AIService";
 import { PROMPT_VERSION } from "@/lib/ai/prompts/system";
 import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, VideoDuration } from "@/lib/ai/types";
@@ -31,6 +32,9 @@ export class ContentService {
     if (input.lotId && !lot) {
       throw new LotNotFoundError(input.lotId);
     }
+
+    // Un appel IA par type demandé : réserve le quota du mois avant de dépenser des tokens.
+    await UsageService.assertQuotaAndReserve(organizationId, input.requestedTypes.length);
 
     const generationRequest = await db.generationRequest.create({
       data: {
@@ -83,7 +87,7 @@ export class ContentService {
 
   /** Régénère un seul contenu : archive l'ancienne version et en crée une nouvelle. */
   static async regenerate(authContext: AuthContext, contentId: string) {
-    const { db, userId } = authContext;
+    const { db, userId, organizationId } = authContext;
     const existing = await db.generatedContent.findUnique({
       where: { id: contentId },
       include: { generationRequest: true, program: { include: { lots: true } }, lot: true },
@@ -95,6 +99,7 @@ export class ContentService {
 
     // Vérifie l'accès au programme (scoping Collaborateur inclus).
     await ProgramService.get(authContext, existing.programId);
+    await UsageService.assertQuotaAndReserve(organizationId, 1);
 
     const marketing: MarketingParams = {
       positioning: existing.generationRequest.positioning,

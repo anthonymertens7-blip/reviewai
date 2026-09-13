@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { Building2, FileText } from "lucide-react";
+import { Building2, FileText, Zap } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { CARD_ACCENT_STYLES } from "@/components/ui/cardAccents";
+import { UsageService } from "@/lib/services/UsageService";
 
 export default async function DashboardPage() {
   const { db, organizationId } = await getAuthContext();
 
-  const [organization, programCount, contentCount, recentPrograms] = await Promise.all([
+  const [organization, programCount, contentCount, recentPrograms, usage] = await Promise.all([
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.program.count(),
     db.generatedContent.count({ where: { status: { not: "archived" } } }),
@@ -15,6 +16,7 @@ export default async function DashboardPage() {
       take: 5,
       select: { id: true, name: true, city: true, updatedAt: true },
     }),
+    UsageService.getUsage(organizationId),
   ]);
 
   return (
@@ -41,6 +43,18 @@ export default async function DashboardPage() {
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Contenus générés</p>
             <p className="text-2xl font-semibold">{contentCount}</p>
+          </div>
+        </div>
+        <div className={`flex items-center gap-3 rounded-3xl border shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4 ${CARD_ACCENT_STYLES.amber.card}`}>
+          <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${CARD_ACCENT_STYLES.amber.badge}`}>
+            <Zap className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Générations IA ce mois-ci</p>
+            <p className="text-2xl font-semibold">
+              {usage.used}
+              <span className="text-base font-normal text-gray-400"> / {usage.quota}</span>
+            </p>
           </div>
         </div>
       </div>

@@ -50,7 +50,12 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     setIsRegenerating(false);
 
     if (!res.ok) {
-      setError("La régénération a échoué.");
+      if (res.status === 429) {
+        const body = await res.json().catch(() => null);
+        setError(body?.message ?? "Quota IA mensuel atteint.");
+      } else {
+        setError("La régénération a échoué.");
+      }
       return;
     }
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrgAuth } from "@/lib/with-org-auth";
 import { ContentService, LotNotFoundError } from "@/lib/services/ContentService";
 import { ProgramForbiddenError, ProgramNotFoundError } from "@/lib/services/ProgramService";
+import { QuotaExceededError } from "@/lib/services/UsageService";
 import { generateBatchSchema } from "@/lib/validation/generate";
 import { AIGenerationError } from "@/lib/ai/AIService";
 
@@ -38,6 +39,9 @@ export const POST = withOrgAuth(async (req, authContext) => {
     }
     if (error instanceof LotNotFoundError) {
       return NextResponse.json({ error: "lot_not_found" }, { status: 404 });
+    }
+    if (error instanceof QuotaExceededError) {
+      return NextResponse.json({ error: "quota_exceeded", message: error.message }, { status: 429 });
     }
     if (error instanceof AIGenerationError) {
       return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
