@@ -9,10 +9,19 @@ import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, Vi
 
 export class LotNotFoundError extends Error {}
 export class ContentNotFoundError extends Error {}
+export class NoLotsError extends Error {}
 
 export interface GenerateBatchInput {
   programId: string;
   lotId?: string;
+  requestedTypes: ContentType[];
+  angle?: VideoAngle;
+  duration?: VideoDuration;
+  marketing: MarketingParams;
+}
+
+export interface GenerateBulkInput {
+  programId: string;
   requestedTypes: ContentType[];
   angle?: VideoAngle;
   duration?: VideoDuration;
@@ -84,6 +93,38 @@ export class ContentService {
     });
 
     return { generationRequest, contents, errors };
+  }
+
+  /**
+   * Génère le contenu pour tous les lots d'un programme en une seule action :
+   * un GenerationRequest et un appel IA par lot et par type, pour garder la
+   * régénération unitaire de chaque contenu. Le quota est vérifié lot par lot,
+   * donc une génération en masse peut s'arrêter en cours de route si le
+   * plafond mensuel est atteint — les lots déjà traités restent acquis.
+   */
+  static async generateForAllLots(authContext: AuthContext, input: GenerateBulkInput) {
+    const program = await ProgramService.get(authContext, input.programId);
+
+    if (program.lots.length === 0) {
+      throw new NoLotsError(input.programId);
+    }
+
+    const perLot = await Promise.allSettled(
+      program.lots.map((lot) =>
+        ContentService.generateBatch(authContext, {
+          programId: input.programId,
+          lotId: lot.id,
+          requestedTypes: input.requestedTypes,
+          angle: input.angle,
+          duration: input.duration,
+          marketing: input.marketing,
+        }).then((result) => ({ lot, ...result }))
+      )
+    );
+
+    return perLot.map((r, index) =>
+      r.status === "fulfilled" ? r.value : { lot: program.lots[index], contents: [], errors: [String(r.reason)] }
+    );
   }
 
   /** Régénère un seul contenu : archive l'ancienne version et en crée une nouvelle. */
