@@ -46,6 +46,8 @@ monitoring Sentry.
      (activer **Organizations**, et créer un rôle custom `org:promoteur` en plus des
      rôles par défaut `org:admin` / `org:member` — voir `lib/auth.ts`)
    - `ANTHROPIC_API_KEY` : clé API Anthropic
+   - `RESEND_API_KEY` / `DIGEST_FROM_EMAIL` / `CRON_SECRET` (optionnels) : digest hebdomadaire
+     par email — voir "Digest hebdomadaire" ci-dessous
 
 3. Appliquer le schéma à la base :
 
@@ -61,6 +63,21 @@ monitoring Sentry.
 
 5. Ouvrir [http://localhost:3000](http://localhost:3000), se connecter, créer une
    organisation, puis un programme.
+
+## Digest hebdomadaire
+
+Un job cron (`GET /api/cron/weekly-digest`) envoie un résumé hebdomadaire (générations
+IA du mois, nouveaux contenus de la semaine) à chaque utilisateur de chaque
+organisation. Fonctionnement :
+
+- Route publique côté Clerk (exclue du middleware d'auth, voir `middleware.ts`) mais
+  protégée par un secret partagé : la requête doit porter `Authorization: Bearer
+  <CRON_SECRET>`, sinon 401. Sans `CRON_SECRET` défini, la route répond 501 (désactivée).
+- Sans `RESEND_API_KEY`, la route répond 200 sans rien envoyer — le digest est un bonus,
+  jamais un point de blocage du reste de l'app.
+- `vercel.json` déclenche cette route chaque lundi 8h UTC si l'app est déployée sur
+  Vercel (Vercel Cron). Sur un autre hébergeur, planifier un appel HTTP équivalent
+  (ex: cron système + `curl`) avec le même header d'autorisation.
 
 ## Points d'architecture à connaître
 
