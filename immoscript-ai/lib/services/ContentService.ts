@@ -5,6 +5,7 @@ import { UsageService } from "./UsageService";
 import { AIService } from "@/lib/ai/AIService";
 import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 import { PROMPT_VERSION } from "@/lib/ai/prompts/system";
+import { toneForVariant, VARIANT_TONE_PRESETS, type VariantsCount } from "@/lib/ai/variants";
 import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, VideoDuration } from "@/lib/ai/types";
 
 export class LotNotFoundError extends Error {}
@@ -18,6 +19,7 @@ export interface GenerateBatchInput {
   angle?: VideoAngle;
   duration?: VideoDuration;
   marketing: MarketingParams;
+  variantsCount?: VariantsCount;
 }
 
 export interface GenerateBulkInput {
@@ -26,6 +28,7 @@ export interface GenerateBulkInput {
   angle?: VideoAngle;
   duration?: VideoDuration;
   marketing: MarketingParams;
+  variantsCount?: VariantsCount;
 }
 
 export class ContentService {
@@ -43,8 +46,10 @@ export class ContentService {
       throw new LotNotFoundError(input.lotId);
     }
 
-    // Un appel IA par type demandé : réserve le quota du mois avant de dépenser des tokens.
-    await UsageService.assertQuotaAndReserve(organizationId, input.requestedTypes.length);
+    const variantsCount = input.variantsCount ?? 1;
+
+    // Un appel IA par type demandé (× le nombre de variantes) : réserve le quota du mois avant de dépenser des tokens.
+    await UsageService.assertQuotaAndReserve(organizationId, input.requestedTypes.length * variantsCount);
 
     const generationRequest = await db.generationRequest.create({
       data: {
@@ -66,8 +71,12 @@ export class ContentService {
       },
     });
 
+    const jobs = input.requestedTypes.flatMap((type) =>
+      Array.from({ length: variantsCount }, (_, i) => ({ type, variantIndex: i as 0 | 1 | 2 }))
+    );
+
     const results = await Promise.allSettled(
-      input.requestedTypes.map((type) =>
+      jobs.map(({ type, variantIndex }) =>
         generateOne(authContext, {
           generationRequestId: generationRequest.id,
           programId: input.programId,
@@ -75,7 +84,9 @@ export class ContentService {
           type,
           angle: input.angle,
           duration: input.duration,
-          marketing: input.marketing,
+          marketing:
+            variantsCount > 1 ? { ...input.marketing, tone: toneForVariant(input.marketing.tone ?? undefined, variantIndex) } : input.marketing,
+          variantLabel: variantsCount > 1 ? VARIANT_TONE_PRESETS[variantIndex] : undefined,
           program,
           lot,
         })
@@ -118,6 +129,7 @@ export class ContentService {
           angle: input.angle,
           duration: input.duration,
           marketing: input.marketing,
+          variantsCount: input.variantsCount,
         }).then((result) => ({ lot, ...result }))
       )
     );
@@ -193,6 +205,7 @@ async function generateOne(
     angle?: VideoAngle;
     duration?: VideoDuration;
     marketing: MarketingParams;
+    variantLabel?: string;
     program: Awaited<ReturnType<typeof ProgramService.get>>;
     lot?: Awaited<ReturnType<typeof ProgramService.get>>["lots"][number];
   }
@@ -221,5 +234,5 @@ async function generateOne(
     },
   });
 
-  return { ...created, legalMentions: buildMandatoryMentionsText(args.program, args.lot) };
+  return { ...created, legalMentions: buildMandatoryMentionsText(args.program, args.lot), variantLabel: args.variantLabel };
 }

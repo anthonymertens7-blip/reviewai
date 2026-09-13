@@ -42,6 +42,7 @@ export function GeneratorForm({
   const [tone, setTone] = useState("");
   const [mainArgument, setMainArgument] = useState("");
   const [cta, setCta] = useState("");
+  const [variantsCount, setVariantsCount] = useState<1 | 2 | 3>(1);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [results, setResults] = useState<ContentCardData[]>([]);
@@ -83,6 +84,7 @@ export function GeneratorForm({
         requestedTypes,
         angle: needsVideoParams && angle ? angle : undefined,
         duration: needsVideoParams ? duration : undefined,
+        variantsCount,
         ...marketing,
       }),
     });
@@ -177,6 +179,19 @@ export function GeneratorForm({
       <FormSection icon={LayoutGrid} title="Quels formats générer ?" required accent="amber">
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
 
+        <div className="mt-4">
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Variantes (A/B testing)</label>
+          <select
+            value={variantsCount}
+            onChange={(e) => setVariantsCount(Number(e.target.value) as 1 | 2 | 3)}
+            className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+          >
+            <option value={1}>Une seule version</option>
+            <option value={2}>2 variantes (tons différents à comparer)</option>
+            <option value={3}>3 variantes (tons différents à comparer)</option>
+          </select>
+        </div>
+
         {needsVideoParams && (
           <div className="mt-5 grid grid-cols-1 gap-4 rounded-2xl bg-gray-50 dark:bg-gray-900 p-4 sm:grid-cols-2">
             <div className="col-span-full flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -226,8 +241,8 @@ export function GeneratorForm({
             ? "Génération en cours..."
             : requestedTypes.length > 0
               ? isBulk
-                ? `Générer pour les ${lots.length} lots (${requestedTypes.length} format(s))`
-                : `Générer (${requestedTypes.length})`
+                ? `Générer pour les ${lots.length} lots (${requestedTypes.length} format(s)${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
+                : `Générer (${requestedTypes.length}${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
               : "Générer"}
         </button>
         <RequiredLegend />

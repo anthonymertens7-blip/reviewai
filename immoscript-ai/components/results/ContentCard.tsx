@@ -13,6 +13,7 @@ export interface ContentCardData {
   status: string;
   content: unknown;
   legalMentions?: string | null;
+  variantLabel?: string | null;
 }
 
 const LISTING_TYPES = ["listing_full", "listing_short", "portal", "website"];
@@ -137,7 +138,14 @@ export function ContentCard({ data }: { data: ContentCardData }) {
   return (
     <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium">{CONTENT_TYPE_LABELS[data.type as ContentType] ?? data.type}</h3>
+        <div>
+          <h3 className="font-medium">{CONTENT_TYPE_LABELS[data.type as ContentType] ?? data.type}</h3>
+          {data.variantLabel && (
+            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-medium text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
+              Variante · {data.variantLabel}
+            </span>
+          )}
+        </div>
         <span className="text-xs text-gray-400">{status}</span>
       </div>
 
