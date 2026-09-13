@@ -1,3 +1,7 @@
+"use client";
+
+import { useAutoGrowTextarea } from "@/lib/useAutoGrowTextarea";
+
 export function FormTextArea({
   label,
   required,
@@ -11,6 +15,8 @@ export function FormTextArea({
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   rows?: number;
 }) {
+  const ref = useAutoGrowTextarea(value);
+
   return (
     <div>
       <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -18,11 +24,12 @@ export function FormTextArea({
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <textarea
+        ref={ref}
         required={required}
         value={value}
         onChange={onChange}
         rows={rows}
-        className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+        className="w-full resize-none overflow-hidden rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
       />
     </div>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Building2, Compass, Euro } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
+import { FormTextArea } from "@/components/ui/FormTextArea";
 import { RequiredLegend } from "@/components/ui/RequiredLegend";
 import { FURNISHED_EQUIPMENT_ITEMS } from "@/lib/lots/furnishedEquipment";
 
@@ -75,7 +76,7 @@ export function LotForm({
   function field<K extends keyof LotFormValues>(key: K) {
     return {
       value: values[key] as string,
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
         setValues((v) => ({ ...v, [key]: e.target.value })),
     };
   }
@@ -171,7 +172,7 @@ export function LotForm({
             <FormField label="Vue" {...field("view")} placeholder="mer, jardin..." />
           </div>
           <div className="mt-3">
-            <FormField label="Caractéristiques spéciales" {...field("specialFeatures")} />
+            <FormTextArea label="Caractéristiques spéciales" rows={1} {...field("specialFeatures")} />
           </div>
         </FormSection>
 

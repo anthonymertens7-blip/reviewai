@@ -6,7 +6,7 @@ import { buildAvailableDataBlock, buildMarketingBlock, buildSystemPrompt, PROMPT
 import { buildListingInstructions } from "./prompts/listing";
 import { buildSocialInstructions } from "./prompts/social";
 import { buildVideoScriptInstructions } from "./prompts/videoScript";
-import { buildFieldSuggestionPrompt, type SuggestibleField } from "./prompts/fieldSuggestion";
+import { buildFieldSuggestionPrompt, type SuggestibleField, type SuggestionContext } from "./prompts/fieldSuggestion";
 
 const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5";
 const TOOL_NAME = "return_generated_content";
@@ -99,9 +99,9 @@ export class AIService {
    * de corriger avant de sauvegarder, donc un prompt basé sur la connaissance générale du
    * modèle (avec consigne de rester prudent) est acceptable ici.
    */
-  static async suggestField(address: string, city: string, field: SuggestibleField): Promise<string[]> {
+  static async suggestField(context: SuggestionContext, field: SuggestibleField): Promise<string[]> {
     const jsonSchema = zodToJsonSchema(fieldSuggestionSchema) as JsonSchemaObject;
-    const prompt = buildFieldSuggestionPrompt(address, city, field);
+    const prompt = buildFieldSuggestionPrompt(context, field);
 
     const response = await getClient().messages.create({
       model: DEFAULT_MODEL,
