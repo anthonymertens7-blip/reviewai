@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
+import { BrandVoicePresetService } from "@/lib/services/BrandVoicePresetService";
 import { GeneratorForm } from "@/components/generator/GeneratorForm";
 
 export default async function GeneratePage({
@@ -22,6 +23,8 @@ export default async function GeneratePage({
     throw error;
   }
 
+  const brandVoicePresets = await BrandVoicePresetService.list(authContext);
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
@@ -35,6 +38,7 @@ export default async function GeneratePage({
         lots={program.lots}
         programIsCoOwnership={program.isCoOwnership}
         programCondoLotsCount={program.condoLotsCount}
+        brandVoicePresets={brandVoicePresets}
       />
     </div>
   );
