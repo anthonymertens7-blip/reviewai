@@ -160,6 +160,7 @@ model GeneratedContent {
   duration             Int? // pour les scripts vidéo (30, 45, 60)
   content              Json
   status               String   @default("current") // current, edited, archived
+  approvalStatus       String   @default("draft") // draft, pending_review, approved — workflow de validation avant diffusion
   editedByUserId       String?
   createdByUserId      String
   createdBy            User     @relation(fields: [createdByUserId], references: [id])
