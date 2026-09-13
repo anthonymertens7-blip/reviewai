@@ -18,3 +18,7 @@ export const generateBatchSchema = z.object({
 });
 
 export type GenerateBatchPayload = z.infer<typeof generateBatchSchema>;
+
+export const generateBulkSchema = generateBatchSchema.omit({ lotId: true });
+
+export type GenerateBulkPayload = z.infer<typeof generateBulkSchema>;
