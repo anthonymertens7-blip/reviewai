@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withOrgAuth } from "@/lib/with-org-auth";
 import { AIService, AIGenerationError } from "@/lib/ai/AIService";
+import { UsageService, QuotaExceededError } from "@/lib/services/UsageService";
 import { SUGGESTIBLE_FIELDS } from "@/lib/ai/prompts/fieldSuggestion";
 
 const contextSchema = z.object({
@@ -24,7 +25,7 @@ const bodySchema = z.object({
   field: z.enum(SUGGESTIBLE_FIELDS),
 });
 
-export const POST = withOrgAuth(async (req) => {
+export const POST = withOrgAuth(async (req, authContext) => {
   const body = await req.json();
   const parsed = bodySchema.safeParse(body);
 
@@ -33,9 +34,13 @@ export const POST = withOrgAuth(async (req) => {
   }
 
   try {
+    await UsageService.assertQuotaAndReserve(authContext.organizationId, 1);
     const suggestions = await AIService.suggestField(parsed.data.context, parsed.data.field);
     return NextResponse.json({ suggestions });
   } catch (error) {
+    if (error instanceof QuotaExceededError) {
+      return NextResponse.json({ error: "quota_exceeded", message: error.message }, { status: 429 });
+    }
     if (error instanceof AIGenerationError) {
       return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
     }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrgAuth } from "@/lib/with-org-auth";
 import { ContentNotFoundError, ContentService } from "@/lib/services/ContentService";
 import { ProgramForbiddenError, ProgramNotFoundError } from "@/lib/services/ProgramService";
+import { QuotaExceededError } from "@/lib/services/UsageService";
 import { AIGenerationError } from "@/lib/ai/AIService";
 
 type Params = { id: string };
@@ -16,6 +17,9 @@ export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {
     }
     if (error instanceof ProgramForbiddenError) {
       return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+    if (error instanceof QuotaExceededError) {
+      return NextResponse.json({ error: "quota_exceeded", message: error.message }, { status: 429 });
     }
     if (error instanceof AIGenerationError) {
       return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });

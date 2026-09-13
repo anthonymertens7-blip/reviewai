@@ -61,6 +61,12 @@ export function GeneratorForm({ programId, lots }: { programId: string; lots: Lo
 
     setIsGenerating(false);
 
+    if (res.status === 429) {
+      const body = await res.json().catch(() => null);
+      setError(body?.message ?? "Quota IA mensuel atteint.");
+      return;
+    }
+
     if (!res.ok && res.status !== 502) {
       setError("La génération a échoué. Vérifiez les paramètres et réessayez.");
       return;

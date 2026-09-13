@@ -272,7 +272,12 @@ function FieldWithSuggest({
     setIsLoading(false);
 
     if (!res.ok) {
-      setError("Suggestion indisponible.");
+      if (res.status === 429) {
+        const body = await res.json().catch(() => null);
+        setError(body?.message ?? "Quota IA mensuel atteint.");
+      } else {
+        setError("Suggestion indisponible.");
+      }
       return;
     }
 
