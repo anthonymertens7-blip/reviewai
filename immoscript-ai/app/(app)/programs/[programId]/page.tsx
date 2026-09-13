@@ -5,6 +5,9 @@ import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 import { DeleteProgramButton } from "@/components/programs/DeleteProgramButton";
+import { DuplicateProgramButton } from "@/components/programs/DuplicateProgramButton";
+import { CompletenessDetails } from "@/components/ui/CompletenessBadge";
+import { computeProgramCompleteness } from "@/lib/programs/completeness";
 
 export default async function ProgramDetailPage({
   params,
@@ -56,11 +59,14 @@ export default async function ProgramDetailPage({
             <Sparkles className="h-4 w-4" />
             Générer du contenu
           </Link>
+          {authContext.role !== Role.COLLABORATEUR && <DuplicateProgramButton programId={program.id} />}
           {authContext.role === Role.ADMIN && <DeleteProgramButton programId={program.id} />}
         </div>
       </div>
 
       {program.description && <p className="text-sm text-gray-700 dark:text-gray-300">{program.description}</p>}
+
+      <CompletenessDetails {...computeProgramCompleteness(program, program.lots)} />
 
       <div>
         <div className="mb-3 flex items-center justify-between">

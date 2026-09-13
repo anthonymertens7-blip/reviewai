@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { CompletenessBadge } from "@/components/ui/CompletenessBadge";
 
 export interface ProgramSummary {
   id: string;
   name: string;
   city: string;
   programType: string | null;
+  completenessScore: number;
 }
 
 export function ProgramsList({ programs }: { programs: ProgramSummary[] }) {
@@ -46,11 +48,14 @@ export function ProgramsList({ programs }: { programs: ProgramSummary[] }) {
                 </Link>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{program.city}</p>
               </div>
-              {program.programType && (
-                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                  {program.programType}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {program.programType && (
+                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                    {program.programType}
+                  </span>
+                )}
+                <CompletenessBadge score={program.completenessScore} />
+              </div>
             </li>
           ))}
         </ul>

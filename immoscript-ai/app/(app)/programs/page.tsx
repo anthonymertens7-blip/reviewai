@@ -3,10 +3,15 @@ import { getAuthContext } from "@/lib/auth";
 import { ProgramService } from "@/lib/services/ProgramService";
 import { CreateProgramForm } from "@/components/programs/CreateProgramForm";
 import { ProgramsList } from "@/components/programs/ProgramsList";
+import { computeProgramCompleteness } from "@/lib/programs/completeness";
 
 export default async function ProgramsPage() {
   const authContext = await getAuthContext();
-  const programs = await ProgramService.list(authContext);
+  const rawPrograms = await ProgramService.list(authContext);
+  const programs = rawPrograms.map((program) => ({
+    ...program,
+    completenessScore: computeProgramCompleteness(program, program.lots).score,
+  }));
   const canCreate = authContext.role !== Role.COLLABORATEUR;
 
   return (
