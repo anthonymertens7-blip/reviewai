@@ -18,6 +18,9 @@ export class ProgramService {
     return db.program.findMany({
       where: role === Role.COLLABORATEUR ? { access: { some: { userId } } } : {},
       orderBy: { updatedAt: "desc" },
+      include: {
+        lots: { select: { price: true, dpeEnergyClass: true, dpeGesClass: true, condoAnnualCharges: true } },
+      },
     });
   }
 
@@ -59,5 +62,73 @@ export class ProgramService {
   static async remove(authContext: AuthContext, programId: string) {
     await ProgramService.get(authContext, programId);
     return authContext.db.program.delete({ where: { id: programId } });
+  }
+
+  /**
+   * Duplique un programme et ses lots pour démarrer plus vite un programme
+   * similaire. L'adresse, la date de livraison et les mentions légales par
+   * lot (DPE, charges de copropriété) ne sont jamais copiées : propres à un
+   * site et à un diagnostic précis, elles doivent être ressaisies pour éviter
+   * toute erreur de mention obligatoire sur le nouveau programme.
+   */
+  static async duplicate(authContext: AuthContext, programId: string) {
+    const program = await ProgramService.get(authContext, programId);
+
+    return authContext.db.$transaction(async (tx) => {
+      const newProgram = await tx.program.create({
+        data: {
+          organizationId: authContext.organizationId,
+          name: `${program.name} (copie)`,
+          address: null,
+          city: program.city,
+          district: program.district,
+          description: program.description,
+          deliveryDate: null,
+          programType: program.programType,
+          unitsCount: program.unitsCount,
+          environment: program.environment,
+          transport: program.transport,
+          schools: program.schools,
+          shops: program.shops,
+          pointsOfInterest: program.pointsOfInterest,
+          amenities: program.amenities,
+          features: program.features,
+          advantages: program.advantages,
+          isCoOwnership: program.isCoOwnership,
+          condoLotsCount: program.condoLotsCount,
+        },
+      });
+
+      if (program.lots.length > 0) {
+        await tx.lot.createMany({
+          data: program.lots.map((lot) => ({
+            programId: newProgram.id,
+            reference: lot.reference,
+            propertyType: lot.propertyType,
+            roomsCount: lot.roomsCount,
+            livingArea: lot.livingArea,
+            outdoorArea: lot.outdoorArea,
+            floor: lot.floor,
+            orientation: lot.orientation,
+            exposure: lot.exposure,
+            view: lot.view,
+            hasBalcony: lot.hasBalcony,
+            hasTerrace: lot.hasTerrace,
+            hasGarden: lot.hasGarden,
+            hasParking: lot.hasParking,
+            hasCellar: lot.hasCellar,
+            hasEquippedKitchen: lot.hasEquippedKitchen,
+            isFurnished: lot.isFurnished,
+            furnishedEquipment: lot.furnishedEquipment,
+            price: lot.price,
+            pricePerSqm: lot.pricePerSqm,
+            availability: lot.availability,
+            specialFeatures: lot.specialFeatures,
+          })),
+        });
+      }
+
+      return newProgram;
+    });
   }
 }
