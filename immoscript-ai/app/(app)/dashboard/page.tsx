@@ -52,8 +52,14 @@ export default async function DashboardPage() {
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Générations IA ce mois-ci</p>
             <p className="text-2xl font-semibold">
-              {usage.used}
-              <span className="text-base font-normal text-gray-400"> / {usage.quota}</span>
+              {usage.quota === null ? (
+                "Illimité"
+              ) : (
+                <>
+                  {usage.used}
+                  <span className="text-base font-normal text-gray-400"> / {usage.quota}</span>
+                </>
+              )}
             </p>
           </div>
         </div>
