@@ -15,6 +15,7 @@ export const generateBatchSchema = z.object({
   commercialGoal: z.string().optional(),
   mainArgument: z.string().optional(),
   cta: z.string().optional(),
+  variantsCount: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional(),
 });
 
 export type GenerateBatchPayload = z.infer<typeof generateBatchSchema>;

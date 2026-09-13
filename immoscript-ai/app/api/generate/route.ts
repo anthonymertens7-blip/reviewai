@@ -14,7 +14,7 @@ export const POST = withOrgAuth(async (req, authContext) => {
     return NextResponse.json({ error: "invalid_payload", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { programId, lotId, requestedTypes, angle, duration, ...marketing } = parsed.data;
+  const { programId, lotId, requestedTypes, angle, duration, variantsCount, ...marketing } = parsed.data;
 
   try {
     const { generationRequest, contents, errors } = await ContentService.generateBatch(authContext, {
@@ -23,6 +23,7 @@ export const POST = withOrgAuth(async (req, authContext) => {
       requestedTypes,
       angle,
       duration,
+      variantsCount,
       marketing,
     });
 
