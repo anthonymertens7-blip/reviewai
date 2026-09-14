@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { ProgramForm } from "./ProgramForm";
 
-export function CreateProgramForm() {
-  const [isOpen, setIsOpen] = useState(false);
+export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   if (!isOpen) {
     return (
