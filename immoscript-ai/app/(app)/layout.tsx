@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { Building2, Library, Settings, ShieldCheck } from "lucide-react";
+import { Building2, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { QuotaIndicator } from "@/components/layout/QuotaIndicator";
 import { isOwner } from "@/lib/auth";
+import { UsageService } from "@/lib/services/UsageService";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { orgId } = await auth();
   const showOwnerLink = orgId ? await isOwner() : false;
+  const usage = orgId ? await UsageService.getUsage(orgId) : null;
 
   if (!orgId) {
     return (
@@ -39,7 +42,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </span>
         </Link>
 
+        <Link
+          href="/programs?create=1"
+          className="group relative mb-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-lg shadow-brand-600/40 transition-transform active:scale-90 hover:bg-brand-700"
+        >
+          <Plus className="h-5 w-5" />
+          <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
+            Nouveau programme
+          </span>
+        </Link>
+
         <nav className="flex flex-col items-center gap-2">
+          <NavIcon href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" />
           <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Programmes" />
           <NavIcon href="/library" icon={<Library className="h-5 w-5" />} label="Bibliothèque" />
           {showOwnerLink && (
@@ -48,6 +62,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="mt-auto flex flex-col items-center gap-3">
+          {usage && <QuotaIndicator used={usage.used} quota={usage.quota} />}
           <NavIcon href="/settings" icon={<Settings className="h-5 w-5" />} label="Paramètres" />
           <ThemeToggle />
           <FeedbackButton />
