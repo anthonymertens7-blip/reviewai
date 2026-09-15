@@ -5,6 +5,10 @@ import { ProgramForbiddenError, ProgramNotFoundError } from "@/lib/services/Prog
 import { QuotaExceededError } from "@/lib/services/UsageService";
 import { AIGenerationError } from "@/lib/ai/AIService";
 
+// 60s est le maximum configurable sur Vercel Hobby (défaut 10s sans cette ligne),
+// nécessaire si le premier essai de l'IA échoue la validation et déclenche une relance.
+export const maxDuration = 60;
+
 type Params = { id: string };
 
 export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {

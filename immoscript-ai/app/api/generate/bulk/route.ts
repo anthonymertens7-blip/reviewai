@@ -6,6 +6,10 @@ import { QuotaExceededError } from "@/lib/services/UsageService";
 import { generateBulkSchema } from "@/lib/validation/generate";
 import { AIGenerationError } from "@/lib/ai/AIService";
 
+// Tous les lots sont générés en parallèle, mais la requête entière attend le plus lent —
+// 60s est le maximum configurable sur Vercel Hobby (défaut 10s sans cette ligne).
+export const maxDuration = 60;
+
 export const POST = withOrgAuth(async (req, authContext) => {
   const body = await req.json();
   const parsed = generateBulkSchema.safeParse(body);
