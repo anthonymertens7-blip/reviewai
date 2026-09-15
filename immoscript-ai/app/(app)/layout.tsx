@@ -7,6 +7,8 @@ import { NavIcon } from "@/components/layout/NavIcon";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { QuotaIndicator } from "@/components/layout/QuotaIndicator";
+import { SearchTrigger } from "@/components/layout/SearchTrigger";
+import { CommandPalette } from "@/components/layout/CommandPalette";
 import { isOwner } from "@/lib/auth";
 import { UsageService } from "@/lib/services/UsageService";
 
@@ -53,6 +55,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </Link>
 
         <nav className="flex flex-col items-center gap-2">
+          <SearchTrigger />
           <NavIcon href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" />
           <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Programmes" />
           <NavIcon href="/library" icon={<Library className="h-5 w-5" />} label="Bibliothèque" />
@@ -77,6 +80,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 px-6 py-8">
         <PageTransition>{children}</PageTransition>
       </main>
+      <CommandPalette />
     </div>
   );
 }

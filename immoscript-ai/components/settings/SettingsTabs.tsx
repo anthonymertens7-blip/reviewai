@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Palette, User, Building2, Megaphone } from "lucide-react";
+import { Palette, User, Building2, Megaphone, Sparkles } from "lucide-react";
 import { AppearanceSection } from "./AppearanceSection";
 import { AccountSection } from "./AccountSection";
 import { OrganizationSection } from "./OrganizationSection";
 import { BrandVoiceSection } from "./BrandVoiceSection";
+import { ChangelogSection } from "./ChangelogSection";
 
 const TABS = [
   { id: "appearance", label: "Apparence", icon: Palette },
   { id: "account", label: "Compte", icon: User },
   { id: "organization", label: "Organisation", icon: Building2 },
   { id: "brand-voice", label: "Voix de marque", icon: Megaphone },
+  { id: "changelog", label: "Nouveautés", icon: Sparkles },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -43,6 +45,7 @@ export function SettingsTabs() {
       {active === "account" && <AccountSection />}
       {active === "organization" && <OrganizationSection />}
       {active === "brand-voice" && <BrandVoiceSection />}
+      {active === "changelog" && <ChangelogSection />}
     </div>
   );
 }
