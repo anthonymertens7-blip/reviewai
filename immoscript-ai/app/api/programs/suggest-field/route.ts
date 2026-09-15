@@ -25,6 +25,9 @@ const bodySchema = z.object({
   field: z.enum(SUGGESTIBLE_FIELDS),
 });
 
+// 60s est le maximum configurable sur Vercel Hobby (défaut 10s sans cette ligne).
+export const maxDuration = 60;
+
 export const POST = withOrgAuth(async (req, authContext) => {
   const body = await req.json();
   const parsed = bodySchema.safeParse(body);

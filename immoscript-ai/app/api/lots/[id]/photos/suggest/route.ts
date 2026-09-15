@@ -8,6 +8,10 @@ import { AIGenerationError, AIService } from "@/lib/ai/AIService";
 
 type Params = { id: string };
 
+// L'analyse vision de plusieurs photos peut être plus lente qu'une génération texte —
+// 60s est le maximum configurable sur Vercel Hobby (défaut 10s sans cette ligne).
+export const maxDuration = 60;
+
 export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {
   try {
     const photos = await LotPhotoService.listWithBytes(authContext, id);

@@ -6,6 +6,10 @@ import { QuotaExceededError } from "@/lib/services/UsageService";
 import { generateBatchSchema } from "@/lib/validation/generate";
 import { AIGenerationError } from "@/lib/ai/AIService";
 
+// La génération IA (avec relance automatique si la sortie est invalide) peut dépasser
+// la limite par défaut de 10s sur Vercel Hobby — 60s est le maximum configurable sur ce plan.
+export const maxDuration = 60;
+
 export const POST = withOrgAuth(async (req, authContext) => {
   const body = await req.json();
   const parsed = generateBatchSchema.safeParse(body);
