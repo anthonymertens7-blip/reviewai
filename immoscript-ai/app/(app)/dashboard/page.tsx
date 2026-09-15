@@ -132,11 +132,14 @@ export default async function DashboardPage() {
         ) : (
           <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
             {recentPrograms.map((program) => (
-              <li key={program.id} className="flex items-center justify-between px-4 py-3">
-                <Link href={`/programs/${program.id}`} className="font-medium hover:underline">
-                  {program.name}
+              <li key={program.id}>
+                <Link
+                  href={`/programs/${program.id}`}
+                  className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  <span className="font-medium">{program.name}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{program.city}</span>
                 </Link>
-                <span className="text-sm text-gray-500 dark:text-gray-400">{program.city}</span>
               </li>
             ))}
           </ul>
