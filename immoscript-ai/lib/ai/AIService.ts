@@ -78,6 +78,7 @@ export class AIService {
     if (firstAttempt.success) {
       return { data: firstAttempt.data, promptVersion: input.promptVersion ?? PROMPT_VERSION, model: DEFAULT_MODEL };
     }
+    console.error(`[AIService] Sortie IA invalide (1er essai) pour "${input.type}":`, firstAttempt.error.message);
 
     // Sortie invalide : un seul retry automatique avant de remonter l'erreur à l'appelant
     // plutôt que d'afficher un contenu potentiellement mal formé au promoteur.
@@ -86,6 +87,7 @@ export class AIService {
     if (retryAttempt.success) {
       return { data: retryAttempt.data, promptVersion: input.promptVersion ?? PROMPT_VERSION, model: DEFAULT_MODEL };
     }
+    console.error(`[AIService] Sortie IA invalide (retry) pour "${input.type}":`, retryAttempt.error.message);
 
     throw new AIGenerationError(
       `Sortie IA invalide après retry pour le type "${input.type}": ${retryAttempt.error.message}`
@@ -195,7 +197,9 @@ export class AIService {
 async function callWithForcedTool(messages: Anthropic.MessageParam[], jsonSchema: JsonSchemaObject): Promise<unknown> {
   const response = await getClient().messages.create({
     model: DEFAULT_MODEL,
-    max_tokens: 2048,
+    // 2048 s'est révélé insuffisant pour une annonce longue (250-400 mots) ou un script vidéo à
+    // plusieurs scènes : le JSON de l'appel d'outil est alors tronqué avant la fin, donc invalide.
+    max_tokens: 4096,
     system: buildSystemPrompt(),
     messages,
     tools: [
