@@ -2,9 +2,11 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/useTheme";
+import { BACKGROUND_PRESETS, useBackgroundPreset } from "@/lib/useBackgroundPreset";
 
 export function AppearanceSection() {
   const { theme, setTheme } = useTheme();
+  const { preset, setPreset } = useBackgroundPreset();
 
   return (
     <div className="rounded-3xl border bg-white p-6 dark:border-gray-700 dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
@@ -51,6 +53,26 @@ export function AppearanceSection() {
           </span>
           Sombre
         </button>
+      </div>
+
+      <div className="mt-6">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Couleur de fond</p>
+        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Purement esthétique — n&apos;affecte pas la lisibilité.</p>
+        <div className="mt-3 flex flex-wrap gap-3">
+          {BACKGROUND_PRESETS.map((bg) => (
+            <button
+              key={bg.id}
+              type="button"
+              onClick={() => setPreset(bg.id)}
+              title={bg.label}
+              aria-label={bg.label}
+              className={`h-10 w-10 shrink-0 rounded-full border-2 transition-transform hover:scale-105 ${
+                preset === bg.id ? "border-brand-600 ring-2 ring-brand-200 dark:ring-brand-900/60" : "border-white dark:border-gray-800"
+              }`}
+              style={{ background: bg.swatch }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

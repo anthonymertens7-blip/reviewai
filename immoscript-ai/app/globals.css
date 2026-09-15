@@ -12,6 +12,89 @@
   }
 }
 
+/* Fond de page (purement esthétique) — voir Paramètres > Apparence */
+:root {
+  --bg-from: #e3fbff;
+  --bg-to: #7fd9ec;
+}
+.dark {
+  --bg-from: #0b1220;
+  --bg-to: #111827;
+}
+
+[data-bg="violet"] {
+  --bg-from: #f3e8ff;
+  --bg-to: #c4b5fd;
+}
+.dark[data-bg="violet"] {
+  --bg-from: #1e1b2e;
+  --bg-to: #3b0764;
+}
+
+[data-bg="rose"] {
+  --bg-from: #ffe4e9;
+  --bg-to: #fda4c0;
+}
+.dark[data-bg="rose"] {
+  --bg-from: #2a1219;
+  --bg-to: #4c0519;
+}
+
+[data-bg="vert"] {
+  --bg-from: #ecfdf5;
+  --bg-to: #6ee7b7;
+}
+.dark[data-bg="vert"] {
+  --bg-from: #0b1f17;
+  --bg-to: #064e3b;
+}
+
+[data-bg="neutre"] {
+  --bg-from: #f8fafc;
+  --bg-to: #cbd5e1;
+}
+.dark[data-bg="neutre"] {
+  --bg-from: #0f1115;
+  --bg-to: #1e293b;
+}
+
+/* Accessibilité — voir Paramètres > Accessibilité */
+[data-font-size="large"] {
+  font-size: 112.5%;
+}
+[data-font-size="xlarge"] {
+  font-size: 125%;
+}
+
+[data-contrast="high"] .text-gray-400,
+[data-contrast="high"] .text-gray-500 {
+  color: #374151 !important;
+}
+.dark[data-contrast="high"] .text-gray-400,
+.dark[data-contrast="high"] .text-gray-500 {
+  color: #e5e7eb !important;
+}
+[data-contrast="high"] .border-gray-200,
+[data-contrast="high"] .border-gray-300 {
+  border-color: #6b7280 !important;
+}
+.dark[data-contrast="high"] .border-gray-700 {
+  border-color: #9ca3af !important;
+}
+[data-contrast="high"] a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+[data-reduce-motion="true"] *,
+[data-reduce-motion="true"] *::before,
+[data-reduce-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
 @keyframes page-in {
   from {
     opacity: 0;
