@@ -33,20 +33,18 @@ function ToggleRow({
           <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
         </div>
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={title}
-        onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${checked ? "bg-brand-600" : "bg-gray-200 dark:bg-gray-600"}`}
-      >
-        <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-            checked ? "translate-x-5" : "translate-x-0.5"
-          }`}
+      <label className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center">
+        <input
+          type="checkbox"
+          role="switch"
+          className="peer sr-only"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          aria-label={title}
         />
-      </button>
+        <span className="absolute inset-0 rounded-full bg-gray-300 transition-colors peer-checked:bg-brand-600 dark:bg-gray-600" />
+        <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
+      </label>
     </div>
   );
 }
