@@ -3,28 +3,78 @@ import { Building2, FileText, Zap } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { CARD_ACCENT_STYLES } from "@/components/ui/cardAccents";
 import { UsageService } from "@/lib/services/UsageService";
+import { OnboardingChecklist, type ChecklistStep } from "@/components/dashboard/OnboardingChecklist";
+import { ActivityFeed, type ActivityItem } from "@/components/dashboard/ActivityFeed";
+import { planLabel } from "@/lib/organizations/planLabels";
 
 export default async function DashboardPage() {
   const { db, organizationId } = await getAuthContext();
 
-  const [organization, programCount, contentCount, recentPrograms, usage] = await Promise.all([
-    db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
+  const [organization, programCount, lotCount, contentCount, memberCount, recentPrograms, recentActivity, usage] = await Promise.all([
+    db.organization.findUnique({ where: { id: organizationId }, select: { name: true, plan: true } }),
     db.program.count(),
+    db.lot.count(),
     db.generatedContent.count({ where: { status: { not: "archived" } } }),
+    db.user.count(),
     db.program.findMany({
       orderBy: { updatedAt: "desc" },
       take: 5,
       select: { id: true, name: true, city: true, updatedAt: true },
     }),
+    db.generatedContent.findMany({
+      where: { status: { not: "archived" } },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      select: {
+        id: true,
+        type: true,
+        approvalStatus: true,
+        createdAt: true,
+        program: { select: { id: true, name: true } },
+        createdBy: { select: { name: true, email: true } },
+      },
+    }),
     UsageService.getUsage(organizationId),
   ]);
+
+  const firstProgramId = recentPrograms[0]?.id;
+
+  const checklistSteps: ChecklistStep[] = [
+    { label: "Créer votre premier programme", done: programCount > 0, href: "/programs?create=1" },
+    { label: "Ajouter un lot", done: lotCount > 0, href: firstProgramId ? `/programs/${firstProgramId}/lots` : "/programs" },
+    {
+      label: "Générer votre premier contenu",
+      done: contentCount > 0,
+      href: firstProgramId ? `/programs/${firstProgramId}/generate` : "/programs",
+    },
+    { label: "Inviter un collègue", done: memberCount > 1, href: "/settings" },
+  ];
+
+  const activityItems: ActivityItem[] = recentActivity.map((item) => ({
+    id: item.id,
+    type: item.type,
+    approvalStatus: item.approvalStatus,
+    createdAt: item.createdAt,
+    programId: item.program.id,
+    programName: item.program.name,
+    authorName: item.createdBy.name ?? item.createdBy.email,
+  }));
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          {organization?.plan && (
+            <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300">
+              {planLabel(organization.plan)}
+            </span>
+          )}
+        </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">Organisation active : {organization?.name ?? organizationId}</p>
       </div>
+
+      <OnboardingChecklist steps={checklistSteps} />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className={`flex items-center gap-3 rounded-3xl border shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4 ${CARD_ACCENT_STYLES.brand.card}`}>
@@ -92,6 +142,8 @@ export default async function DashboardPage() {
           </ul>
         )}
       </div>
+
+      <ActivityFeed items={activityItems} />
     </div>
   );
 }
