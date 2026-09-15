@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Palette, User, Building2, Megaphone, Sparkles } from "lucide-react";
+import { Palette, User, Building2, Megaphone, Sparkles, Eye } from "lucide-react";
 import { AppearanceSection } from "./AppearanceSection";
+import { AccessibilitySection } from "./AccessibilitySection";
 import { AccountSection } from "./AccountSection";
 import { OrganizationSection } from "./OrganizationSection";
 import { BrandVoiceSection } from "./BrandVoiceSection";
@@ -10,6 +11,7 @@ import { ChangelogSection } from "./ChangelogSection";
 
 const TABS = [
   { id: "appearance", label: "Apparence", icon: Palette },
+  { id: "accessibility", label: "Accessibilité", icon: Eye },
   { id: "account", label: "Compte", icon: User },
   { id: "organization", label: "Organisation", icon: Building2 },
   { id: "brand-voice", label: "Voix de marque", icon: Megaphone },
@@ -42,6 +44,7 @@ export function SettingsTabs() {
       </div>
 
       {active === "appearance" && <AppearanceSection />}
+      {active === "accessibility" && <AccessibilitySection />}
       {active === "account" && <AccountSection />}
       {active === "organization" && <OrganizationSection />}
       {active === "brand-voice" && <BrandVoiceSection />}
