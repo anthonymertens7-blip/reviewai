@@ -73,17 +73,34 @@ export class AIService {
 
     const messages: Anthropic.MessageParam[] = [{ role: "user", content: userPrompt }];
 
-    const firstRaw = await callWithForcedTool(messages, jsonSchema);
-    const firstAttempt = schema.safeParse(firstRaw);
+    const firstToolUse = await callWithForcedTool(messages, jsonSchema);
+    const firstAttempt = schema.safeParse(firstToolUse.input);
     if (firstAttempt.success) {
       return { data: firstAttempt.data, promptVersion: input.promptVersion ?? PROMPT_VERSION, model: DEFAULT_MODEL };
     }
     console.error(`[AIService] Sortie IA invalide (1er essai) pour "${input.type}":`, firstAttempt.error.message);
 
-    // Sortie invalide : un seul retry automatique avant de remonter l'erreur à l'appelant
-    // plutôt que d'afficher un contenu potentiellement mal formé au promoteur.
-    const retryRaw = await callWithForcedTool(messages, jsonSchema);
-    const retryAttempt = schema.safeParse(retryRaw);
+    // Retry corrective : on renvoie au modèle son propre appel invalide accompagné de l'erreur
+    // de validation exacte (ex: champ "highlights" manquant), plutôt que de retenter à l'aveugle
+    // avec le même prompt — ce qui a le même risque de reproduire la même omission.
+    const retryMessages: Anthropic.MessageParam[] = [
+      ...messages,
+      { role: "assistant", content: [firstToolUse] },
+      {
+        role: "user",
+        content: [
+          {
+            type: "tool_result",
+            tool_use_id: firstToolUse.id,
+            content: `Réponse invalide : ${firstAttempt.error.message}. Renvoie un appel d'outil complet et valide, avec tous les champs requis.`,
+            is_error: true,
+          },
+        ],
+      },
+    ];
+
+    const retryToolUse = await callWithForcedTool(retryMessages, jsonSchema);
+    const retryAttempt = schema.safeParse(retryToolUse.input);
     if (retryAttempt.success) {
       return { data: retryAttempt.data, promptVersion: input.promptVersion ?? PROMPT_VERSION, model: DEFAULT_MODEL };
     }
@@ -194,7 +211,10 @@ export class AIService {
   }
 }
 
-async function callWithForcedTool(messages: Anthropic.MessageParam[], jsonSchema: JsonSchemaObject): Promise<unknown> {
+async function callWithForcedTool(
+  messages: Anthropic.MessageParam[],
+  jsonSchema: JsonSchemaObject
+): Promise<Anthropic.ToolUseBlock> {
   const response = await getClient().messages.create({
     model: DEFAULT_MODEL,
     // 2048 s'est révélé insuffisant pour une annonce longue (250-400 mots) ou un script vidéo à
@@ -217,5 +237,5 @@ async function callWithForcedTool(messages: Anthropic.MessageParam[], jsonSchema
     throw new AIGenerationError("Le modèle n'a pas retourné d'appel d'outil");
   }
 
-  return toolUse.input;
+  return toolUse;
 }
