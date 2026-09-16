@@ -225,7 +225,10 @@ async function callWithForcedTool(
     tools: [
       {
         name: TOOL_NAME,
-        description: "Retourne le contenu généré au format structuré attendu.",
+        description:
+          "Retourne le contenu généré au format structuré attendu. Tous les champs du schéma sont " +
+          "obligatoires et doivent être renseignés, y compris les champs de type tableau (listes) : " +
+          "ne jamais omettre ou laisser vide un champ liste (ex: highlights, hashtags, scenes).",
         input_schema: jsonSchema,
       },
     ],
