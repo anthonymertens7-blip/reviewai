@@ -98,7 +98,15 @@ export class ContentService {
     const contents = results
       .filter((r): r is PromiseFulfilledResult<Awaited<ReturnType<typeof generateOne>>> => r.status === "fulfilled")
       .map((r) => r.value);
-    const errors = results.filter((r): r is PromiseRejectedResult => r.status === "rejected").map((r) => String(r.reason));
+    const errors = results
+      .map((r, i) => ({ r, job: jobs[i] }))
+      .filter((x): x is { r: PromiseRejectedResult; job: (typeof jobs)[number] } => x.r.status === "rejected")
+      .map(({ r, job }) => {
+        // Log la cause brute (erreur SDK Anthropic, timeout...), pas seulement le message stringifié
+        // renvoyé au client, pour pouvoir diagnostiquer les échecs depuis les logs Vercel.
+        console.error(`[ContentService] Échec génération "${job.type}" (variante ${job.variantIndex}):`, r.reason);
+        return String(r.reason);
+      });
 
     await db.generationRequest.update({
       where: { id: generationRequest.id },
@@ -136,9 +144,14 @@ export class ContentService {
       )
     );
 
-    return perLot.map((r, index) =>
-      r.status === "fulfilled" ? r.value : { lot: program.lots[index], contents: [], errors: [String(r.reason)] }
-    );
+    return perLot.map((r, index) => {
+      const lot = program.lots[index]!;
+      if (r.status === "fulfilled") {
+        return r.value;
+      }
+      console.error(`[ContentService] Échec génération en masse pour le lot "${lot.id}":`, r.reason);
+      return { lot, contents: [], errors: [String(r.reason)] };
+    });
   }
 
   /** Régénère un seul contenu : archive l'ancienne version et en crée une nouvelle. */
