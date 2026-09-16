@@ -30,10 +30,16 @@ const LOCATION_FIELDS: SuggestibleField[] = ["environment", "transport", "school
 
 const FIELD_INSTRUCTIONS: Record<SuggestibleField, string> = {
   environment: "Décris en 2 à 4 courtes suggestions le type d'environnement/quartier probable à cette adresse (ambiance, type de quartier).",
-  transport: "Suggère 2 à 4 transports en commun probablement accessibles à pied depuis cette adresse (lignes de bus/métro/tram réelles si tu les connais, gare).",
+  transport:
+    "Décris en 2 à 4 courtes suggestions le type de desserte en transports en commun probable à cette adresse " +
+    "(bus, métro, tram, gare) SANS nommer de ligne ou d'arrêt précis, sauf certitude raisonnable qu'il dessert " +
+    "réellement cette adresse.",
   schools: "Suggère 2 à 4 écoles ou établissements scolaires probablement à proximité de cette adresse.",
   shops: "Suggère 2 à 4 commerces ou commodités probablement à proximité de cette adresse.",
-  pointsOfInterest: "Suggère 2 à 4 points d'intérêt (parcs, monuments, lieux notables) probablement à proximité de cette adresse.",
+  pointsOfInterest:
+    "Décris en 2 à 4 courtes suggestions le type de points d'intérêt probablement à proximité de cette adresse " +
+    "(espaces verts, équipements...) SANS nommer de parc, monument ou lieu précis, sauf certitude raisonnable " +
+    "qu'il est réellement proche de cette adresse.",
   features: "Suggère 2 à 4 caractéristiques commerciales à mettre en avant pour ce programme (ce qui le distingue concrètement).",
   advantages: "Suggère 2 à 4 avantages commerciaux à mettre en avant pour ce programme (bénéfices concrets pour un acheteur/locataire).",
 };
@@ -59,11 +65,12 @@ export function buildFieldSuggestionPrompt(context: SuggestionContext, field: Su
 
   if (isLocationField) {
     lines.push(
-      "Utilise ta connaissance réelle de cette ville et de ce quartier pour être aussi concret que",
-      "possible (vrais noms de lignes de transport, de quartiers, de lieux connus) plutôt que de",
-      "rester vague par défaut. N'invente en revanche jamais un nom précis d'établissement (école,",
-      "commerce...) dont tu n'es pas raisonnablement sûr : dans ce cas seulement, reste générique",
-      '(ex : "commerces de proximité").',
+      "Reste généraliste et prudent par défaut : ne nomme un élément précis (ligne de transport, arrêt,",
+      "établissement, parc, monument, quartier voisin...) que si tu es raisonnablement certain qu'il",
+      "concerne réellement cette adresse précise. Dans le doute, privilégie une description générique",
+      '(ex : "bien desservi par les transports en commun", "commerces de proximité", "espaces verts à',
+      'proximité") plutôt qu\'un nom précis potentiellement erroné : une suggestion générique mais',
+      "juste vaut mieux qu'une suggestion précise mais fausse.",
       "Reste strictement dans le quartier/secteur indiqué ci-dessus : ne mentionne pas un autre",
       "quartier de la même ville, même connu ou emblématique, s'il n'est pas réellement à proximité",
       "immédiate de cette adresse précise."

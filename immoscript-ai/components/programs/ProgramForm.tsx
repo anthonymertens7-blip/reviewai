@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, FileText, MapPin, Megaphone, Wand2 } from "lucide-react";
+import { AlertTriangle, Building2, FileText, MapPin, Megaphone, Wand2 } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { FormTextArea } from "@/components/ui/FormTextArea";
@@ -186,6 +186,14 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
         </FormSection>
 
         <FormSection icon={MapPin} title="Environnement" accent="violet">
+          <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>
+              La suggestion automatique de localisation (transports, points d&apos;intérêt...) n&apos;est pas
+              garantie fiable pour le moment : vérifiez et corrigez-la manuellement avant de vous en servir. Une
+              future mise à jour la rendra plus précise.
+            </p>
+          </div>
           <div className="grid grid-cols-1 gap-3">
             <FieldWithSuggest
               label="Environnement"
