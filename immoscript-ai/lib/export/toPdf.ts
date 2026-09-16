@@ -8,8 +8,25 @@ const PAGE_HEIGHT = 841.89;
 const MARGIN = 50;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
+// La police standard Helvetica de pdf-lib utilise l'encodage WinAnsi, qui ne supporte pas les
+// emojis — fréquents dans le contenu généré (réseaux sociaux notamment). Sans ce filtrage,
+// PDFFont.widthOfTextAtSize/page.drawText lève une exception non rattrapable ("WinAnsi cannot
+// encode...") qui fait échouer tout l'export.
+function sanitizeForPdf(text: string, font: PDFFont): string {
+  return Array.from(text)
+    .filter((char) => {
+      try {
+        font.widthOfTextAtSize(char, 10);
+        return true;
+      } catch {
+        return false;
+      }
+    })
+    .join("");
+}
+
 function wrapText(text: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
-  const words = text.split(/\s+/).filter(Boolean);
+  const words = sanitizeForPdf(text, font).split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let current = "";
 
