@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import type { z } from "zod";
 import type { GenerateContentInput } from "./types";
 import { schemaForType, fieldSuggestionSchema } from "./schemas";
 import { buildAvailableDataBlock, buildMarketingBlock, buildSystemPrompt, PROMPT_VERSION } from "./prompts/system";
@@ -106,6 +107,15 @@ export class AIService {
     }
     console.error(`[AIService] Sortie IA invalide (retry) pour "${input.type}":`, retryAttempt.error.message);
 
+    // Dernier filet de sécurité : en pratique, le modèle répète parfois la même omission (même champ
+    // manquant) malgré le retry correctif ci-dessus. Plutôt que de jeter un contenu par ailleurs
+    // valide (titre/description/cta déjà bien ancrés dans les données du bien) après deux appels IA
+    // facturés, on demande une génération ciblée des seuls champs manquants.
+    const repaired = await repairMissingFields(retryToolUse.input, retryAttempt.error, schema);
+    if (repaired) {
+      return { data: repaired, promptVersion: input.promptVersion ?? PROMPT_VERSION, model: DEFAULT_MODEL };
+    }
+
     throw new AIGenerationError(
       `Sortie IA invalide après retry pour le type "${input.type}": ${retryAttempt.error.message}`
     );
@@ -208,6 +218,65 @@ export class AIService {
     }
 
     return parsed.data.suggestions;
+  }
+}
+
+/**
+ * Répare une sortie IA invalide en ne redemandant que les champs requis manquants, à partir du
+ * contenu déjà généré (par ailleurs valide). Ne s'applique que si TOUTES les erreurs de validation
+ * sont des champs top-level manquants — un autre type d'erreur (mauvais format sur un champ déjà
+ * présent) indique un problème plus profond qu'une simple omission, donc pas de réparation.
+ */
+async function repairMissingFields(
+  partial: unknown,
+  error: z.ZodError,
+  schema: z.ZodTypeAny
+): Promise<unknown | null> {
+  if (typeof partial !== "object" || partial === null) {
+    return null;
+  }
+
+  const missingFields = [
+    ...new Set(
+      error.issues
+        .filter((issue) => issue.code === "invalid_type" && issue.received === "undefined" && issue.path.length === 1)
+        .map((issue) => String(issue.path[0]))
+    ),
+  ];
+
+  if (missingFields.length === 0 || missingFields.length !== error.issues.length) {
+    return null;
+  }
+
+  const fullJsonSchema = zodToJsonSchema(schema) as JsonSchemaObject;
+  const properties = (fullJsonSchema.properties ?? {}) as Record<string, unknown>;
+  const repairJsonSchema: JsonSchemaObject = {
+    type: "object",
+    properties: Object.fromEntries(missingFields.map((field) => [field, properties[field]])),
+    required: missingFields,
+  };
+
+  const repairPrompt = [
+    "Voici un contenu déjà rédigé et validé :",
+    JSON.stringify(partial, null, 2),
+    "",
+    `Il manque le(s) champ(s) suivant(s) : ${missingFields.join(", ")}.`,
+    "Génère uniquement ce(s) champ(s) manquant(s), strictement basé(s) sur les informations déjà " +
+      "présentes ci-dessus (n'invente aucune information nouvelle).",
+  ].join("\n");
+
+  try {
+    const repairToolUse = await callWithForcedTool([{ role: "user", content: repairPrompt }], repairJsonSchema);
+    const merged = { ...(partial as Record<string, unknown>), ...(repairToolUse.input as Record<string, unknown>) };
+    const finalAttempt = schema.safeParse(merged);
+    if (finalAttempt.success) {
+      return finalAttempt.data;
+    }
+    console.error("[AIService] Réparation des champs manquants toujours invalide :", finalAttempt.error.message);
+    return null;
+  } catch (repairError) {
+    console.error("[AIService] Échec de la réparation des champs manquants :", repairError);
+    return null;
   }
 }
 
