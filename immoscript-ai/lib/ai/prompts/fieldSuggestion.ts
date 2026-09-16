@@ -42,6 +42,14 @@ export function buildFieldSuggestionPrompt(context: SuggestionContext, field: Su
   const isLocationField = LOCATION_FIELDS.includes(field);
   const lines = [`Adresse : ${context.address}`, `Ville : ${context.city}`];
 
+  // Le quartier était silencieusement omis du prompt (seules adresse+ville y figuraient) : sans
+  // lui, le modèle décrivait parfois les quartiers les plus "connus" de la ville plutôt que celui
+  // réellement indiqué (ex: Villejean/CHU Pontchaillou suggérés pour une adresse à Bréquigny, deux
+  // quartiers de Rennes opposés géographiquement).
+  if (context.district) {
+    lines.push(`Quartier : ${context.district}`);
+  }
+
   if (!isLocationField) {
     const known = omitEmpty(context as unknown as Record<string, unknown>);
     lines.push("", "Autres informations déjà renseignées sur ce programme :", JSON.stringify(known, null, 2));
@@ -55,7 +63,10 @@ export function buildFieldSuggestionPrompt(context: SuggestionContext, field: Su
       "possible (vrais noms de lignes de transport, de quartiers, de lieux connus) plutôt que de",
       "rester vague par défaut. N'invente en revanche jamais un nom précis d'établissement (école,",
       "commerce...) dont tu n'es pas raisonnablement sûr : dans ce cas seulement, reste générique",
-      '(ex : "commerces de proximité").'
+      '(ex : "commerces de proximité").',
+      "Reste strictement dans le quartier/secteur indiqué ci-dessus : ne mentionne pas un autre",
+      "quartier de la même ville, même connu ou emblématique, s'il n'est pas réellement à proximité",
+      "immédiate de cette adresse précise."
     );
   } else {
     lines.push(
