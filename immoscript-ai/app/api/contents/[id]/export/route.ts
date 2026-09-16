@@ -39,10 +39,16 @@ export const GET = withOrgAuth<Params>(async (req, authContext, { id }) => {
   const contextLabel = existing.lot ? `${program.name} · ${existing.lot.reference}` : program.name;
   const legalMentions = buildMandatoryMentionsText(program, existing.lot ?? undefined);
 
-  const buffer =
-    format === "pdf"
-      ? await buildPdf(type, existing.content, contextLabel, legalMentions)
-      : await buildDocx(type, existing.content, contextLabel, legalMentions);
+  let buffer: Buffer;
+  try {
+    buffer =
+      format === "pdf"
+        ? await buildPdf(type, existing.content, contextLabel, legalMentions)
+        : await buildDocx(type, existing.content, contextLabel, legalMentions);
+  } catch (error) {
+    console.error(`[export] Échec de la génération ${format} pour le contenu "${id}":`, error);
+    return NextResponse.json({ error: "export_failed" }, { status: 500 });
+  }
 
   const contentType = format === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   const filename = `${program.name}-${type}.${format}`.replace(/[^a-zA-Z0-9._-]+/g, "_");
