@@ -4,7 +4,10 @@ import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
 
 const MONTHS_HISTORY = 6;
-const MAX_CONTENT_TYPE_SLOTS = 8; // au-delà, les types les moins fréquents sont regroupés en "Autres"
+// Rendu en camembert : le skill dataviz plafonne le "part-to-whole en un coup d'œil" à 6 segments
+// (au-delà, les valeurs se distinguent mal par l'angle seul) — les types les moins fréquents
+// au-delà sont regroupés en "Autres".
+const MAX_CONTENT_TYPE_SLOTS = 6;
 const MAX_TOP_PROGRAMS = 5;
 const MAX_TOP_POSTS = 5;
 
