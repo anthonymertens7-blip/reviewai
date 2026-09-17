@@ -67,7 +67,7 @@ export function DonutChart({
       >
         <g transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}>
           <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth={STROKE} className="stroke-gray-100 dark:stroke-gray-700" />
-          {segments.map((s) => (
+          {segments.map((s, i) => (
             <circle
               key={s.key}
               cx={SIZE / 2}
@@ -80,7 +80,7 @@ export function DonutChart({
               className={`${s.colorText} transition-all ease-out`}
               strokeDasharray={`${grown ? s.dash : 0} ${CIRCUMFERENCE}`}
               strokeDashoffset={s.offset}
-              style={{ transitionDuration: "700ms", transitionDelay: `${data.indexOf(s) * 90}ms` }}
+              style={{ transitionDuration: "700ms", transitionDelay: `${i * 90}ms` }}
               opacity={hovered === null || hovered === s.key ? 1 : 0.35}
               onMouseEnter={() => setHovered(s.key)}
               onMouseLeave={() => setHovered(null)}

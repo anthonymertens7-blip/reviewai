@@ -15,6 +15,10 @@ const ROWS: { key: keyof ApprovalBreakdown; label: string; icon: typeof FileEdit
 export function ApprovalStatusChart({ data }: { data: ApprovalBreakdown }) {
   const total = data.draft + data.pending_review + data.approved;
 
+  if (total === 0) {
+    return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucun contenu généré pour le moment.</p>;
+  }
+
   return (
     <div className="space-y-4">
       <DonutChart
