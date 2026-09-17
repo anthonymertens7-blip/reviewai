@@ -52,18 +52,24 @@ export class LotPhotoService {
   }
 
   static async getBytes(authContext: AuthContext, photoId: string) {
-    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId } });
+    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId }, include: { lot: true } });
     if (!photo) {
       throw new LotPhotoNotFoundError(photoId);
     }
+    // Contrairement à list/create/listWithBytes, cette méthode ne passait pas par getOwnedLot :
+    // LotPhoto est bien scopé par organisation (scoped-client.ts), mais rien ne vérifiait qu'un
+    // Collaborateur a un accès explicite à CE programme — n'importe quel membre de l'organisation
+    // pouvait voir la photo d'un lot d'un programme auquel il n'a pourtant pas accès.
+    await ProgramService.get(authContext, photo.lot.programId);
     return photo;
   }
 
   static async remove(authContext: AuthContext, photoId: string) {
-    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId } });
+    const photo = await authContext.db.lotPhoto.findUnique({ where: { id: photoId }, include: { lot: true } });
     if (!photo) {
       throw new LotPhotoNotFoundError(photoId);
     }
+    await ProgramService.get(authContext, photo.lot.programId);
     return authContext.db.lotPhoto.delete({ where: { id: photoId } });
   }
 

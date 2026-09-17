@@ -19,6 +19,9 @@ export const GET = withOrgAuth<Params>(async (_req, authContext, { id, photoId }
     if (error instanceof LotPhotoNotFoundError) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
+    if (error instanceof ProgramForbiddenError) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
     throw error;
   }
 });

@@ -50,7 +50,7 @@ export const videoScriptOutputSchema = z.object({
         time: z.string(),
         visual: cleanText(z.string()),
         voiceover: cleanText(z.string()),
-        textOverlay: z.string(),
+        textOverlay: cleanText(z.string()),
       })
     )
     .min(1)
