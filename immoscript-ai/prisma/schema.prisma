@@ -174,6 +174,10 @@ model GeneratedContent {
   angle                String? // emotion, investissement, visite, storytelling, urgence
   duration             Int? // pour les scripts vidéo (30, 45, 60)
   content              Json
+  // Index de variante A/B (0/1/2, voir VARIANT_TONE_PRESETS) : null si généré hors A/B. Nécessaire
+  // pour que la régénération d'une variante donnée puisse reconstruire la même nuance de ton —
+  // sans ça, GenerationRequest.tone ne stocke que le ton de base, jamais l'ajustement par variante.
+  variantIndex         Int?
   status               String   @default("current") // current, edited, archived
   approvalStatus       String   @default("draft") // draft, pending_review, approved — workflow de validation avant diffusion
   // Stats de performance après publication manuelle (Instagram/TikTok...). Saisie manuelle pour

@@ -90,6 +90,7 @@ export class ContentService {
           marketing:
             variantsCount > 1 ? { ...input.marketing, tone: toneForVariant(input.marketing.tone ?? undefined, variantIndex) } : input.marketing,
           variantLabel: variantsCount > 1 ? VARIANT_TONE_PRESETS[variantIndex] : undefined,
+          variantIndex: variantsCount > 1 ? variantIndex : undefined,
           program,
           lot,
         })
@@ -171,10 +172,18 @@ export class ContentService {
     await ProgramService.get(authContext, existing.programId);
     await UsageService.assertQuotaAndReserve(organizationId, 1);
 
+    // GenerationRequest.tone ne stocke que le ton de base choisi par l'utilisateur, jamais la
+    // nuance par variante (calculée à la volée dans generateBatch et jusqu'ici jamais persistée) :
+    // sans reconstruire le ton via variantIndex, régénérer une variante "Chaleureux et accessible"
+    // faisait silencieusement revenir le contenu au ton de base, cassant le jeu de variantes A/B.
+    const baseTone = existing.generationRequest.tone ?? undefined;
+    const tone =
+      existing.variantIndex !== null ? toneForVariant(baseTone, existing.variantIndex as 0 | 1 | 2) : baseTone;
+
     const marketing: MarketingParams = {
       positioning: existing.generationRequest.positioning,
       target: existing.generationRequest.target,
-      tone: existing.generationRequest.tone,
+      tone: tone ?? null,
       languageLevel: existing.generationRequest.languageLevel,
       length: existing.generationRequest.length,
       commercialGoal: existing.generationRequest.commercialGoal,
@@ -202,6 +211,7 @@ export class ContentService {
           angle: existing.angle,
           duration: existing.duration,
           content: result.data as Prisma.InputJsonValue,
+          variantIndex: existing.variantIndex,
           createdByUserId: userId,
         },
       }),
@@ -268,6 +278,7 @@ async function generateOne(
     duration?: VideoDuration;
     marketing: MarketingParams;
     variantLabel?: string;
+    variantIndex?: 0 | 1 | 2;
     program: Awaited<ReturnType<typeof ProgramService.get>>;
     lot?: Awaited<ReturnType<typeof ProgramService.get>>["lots"][number];
   }
@@ -292,6 +303,7 @@ async function generateOne(
       angle: args.angle ?? null,
       duration: args.duration ?? null,
       content: result.data as Prisma.InputJsonValue,
+      variantIndex: args.variantIndex ?? null,
       createdByUserId: authContext.userId,
     },
   });
