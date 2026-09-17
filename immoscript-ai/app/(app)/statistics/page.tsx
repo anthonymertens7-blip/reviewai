@@ -2,6 +2,7 @@ import { Building2, FileText, Home, Zap } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { StatsService } from "@/lib/services/StatsService";
 import { StatTile } from "@/components/stats/StatTile";
+import { AnimatedNumber } from "@/components/stats/AnimatedNumber";
 import { StatsSectionCard } from "@/components/stats/StatsSectionCard";
 import { MonthlyBarChart } from "@/components/stats/MonthlyBarChart";
 import { ContentTypeBreakdown } from "@/components/stats/ContentTypeBreakdown";
@@ -32,7 +33,7 @@ export default async function StatisticsPage() {
               "Illimité"
             ) : (
               <>
-                {stats.usage.used}
+                <AnimatedNumber value={stats.usage.used} />
                 <span className="text-base font-normal text-gray-400"> / {stats.usage.quota}</span>
               </>
             )

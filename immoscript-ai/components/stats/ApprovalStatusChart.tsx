@@ -1,6 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { FileEdit, Send, ShieldCheck } from "lucide-react";
 import type { ApprovalBreakdown } from "@/lib/services/StatsService";
 import { APPROVAL_COLOR_CLASSES } from "./chartPalette";
+import { AnimatedNumber } from "./AnimatedNumber";
 
 const ROWS: { key: keyof ApprovalBreakdown; label: string; icon: typeof FileEdit }[] = [
   { key: "draft", label: "Brouillon", icon: FileEdit },
@@ -13,6 +17,13 @@ const ROWS: { key: keyof ApprovalBreakdown; label: string; icon: typeof FileEdit
 export function ApprovalStatusChart({ data }: { data: ApprovalBreakdown }) {
   const total = data.draft + data.pending_review + data.approved;
 
+  // Segments qui poussent à l'apparition — neutralisé par [data-reduce-motion="true"] (globals.css).
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setGrown(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   if (total === 0) {
     return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucun contenu généré pour le moment.</p>;
   }
@@ -20,14 +31,14 @@ export function ApprovalStatusChart({ data }: { data: ApprovalBreakdown }) {
   return (
     <div className="space-y-4">
       <div className="flex h-3 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-        {ROWS.map(({ key }) => {
+        {ROWS.map(({ key }, i) => {
           const pct = (data[key] / total) * 100;
           if (pct === 0) return null;
           return (
             <div
               key={key}
-              className={`h-full ${APPROVAL_COLOR_CLASSES[key].bg} first:rounded-l-full last:rounded-r-full`}
-              style={{ width: `${pct}%` }}
+              className={`h-full transition-all ease-out ${APPROVAL_COLOR_CLASSES[key].bg} first:rounded-l-full last:rounded-r-full`}
+              style={{ width: grown ? `${pct}%` : "0%", transitionDuration: "650ms", transitionDelay: `${i * 80}ms` }}
             />
           );
         })}
@@ -37,7 +48,9 @@ export function ApprovalStatusChart({ data }: { data: ApprovalBreakdown }) {
           <li key={key} className="flex items-center gap-2">
             <Icon className={`h-4 w-4 shrink-0 ${APPROVAL_COLOR_CLASSES[key].text}`} />
             <div>
-              <p className="text-sm font-medium leading-tight">{data[key]}</p>
+              <p className="text-sm font-medium leading-tight">
+                <AnimatedNumber value={data[key]} />
+              </p>
               <p className="text-xs leading-tight text-gray-500 dark:text-gray-400">{label}</p>
             </div>
           </li>

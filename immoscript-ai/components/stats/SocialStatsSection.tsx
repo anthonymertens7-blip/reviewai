@@ -4,6 +4,7 @@ import type { SocialStatsSummary } from "@/lib/services/StatsService";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
 import { CARD_ACCENT_STYLES } from "@/components/ui/cardAccents";
+import { AnimatedNumber } from "./AnimatedNumber";
 
 const TILES = [
   { key: "totalLikes" as const, label: "Mentions J'aime", icon: Heart, accent: "rose" as const },
@@ -35,7 +36,9 @@ export function SocialStatsSection({ data }: { data: SocialStatsSummary }) {
               <Icon className="h-4 w-4" />
             </span>
             <div>
-              <p className="text-lg font-semibold leading-tight">{formatCount(data[key])}</p>
+              <p className="text-lg font-semibold leading-tight">
+                <AnimatedNumber value={data[key]} format={formatCount} />
+              </p>
               <p className="text-xs leading-tight text-gray-500 dark:text-gray-400">{label}</p>
             </div>
           </div>
