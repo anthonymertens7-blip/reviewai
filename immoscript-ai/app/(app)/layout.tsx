@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { Building2, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
+import { BarChart3, Building2, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -59,6 +59,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NavIcon href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" />
           <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Programmes" />
           <NavIcon href="/library" icon={<Library className="h-5 w-5" />} label="Bibliothèque" />
+          <NavIcon href="/statistics" icon={<BarChart3 className="h-5 w-5" />} label="Statistiques" />
           {showOwnerLink && (
             <NavIcon href="/admin/feedback" icon={<ShieldCheck className="h-5 w-5" />} label="Feedback (admin)" />
           )}

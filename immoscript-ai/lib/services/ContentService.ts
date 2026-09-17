@@ -7,6 +7,7 @@ import { buildMandatoryMentionsText } from "@/lib/legal/mandatoryMentions";
 import { PROMPT_VERSION } from "@/lib/ai/prompts/system";
 import { toneForVariant, VARIANT_TONE_PRESETS, type VariantsCount } from "@/lib/ai/variants";
 import type { ApprovalStatus } from "@/lib/validation/approval";
+import type { SocialStatsInput } from "@/lib/validation/socialStats";
 import type { ContentType, GenerateContentInput, MarketingParams, VideoAngle, VideoDuration } from "@/lib/ai/types";
 
 export class LotNotFoundError extends Error {}
@@ -228,6 +229,31 @@ export class ContentService {
     }
 
     return authContext.db.generatedContent.update({ where: { id: contentId }, data: { approvalStatus } });
+  }
+
+  /**
+   * Enregistre les stats de performance d'une publication (likes, vues, commentaires) saisies
+   * manuellement par le promoteur après publication sur Instagram/TikTok — pas de récupération
+   * automatique via API tant que l'app Meta/TikTok n'est pas validée.
+   */
+  static async setSocialStats(authContext: AuthContext, contentId: string, stats: SocialStatsInput) {
+    const existing = await authContext.db.generatedContent.findUnique({ where: { id: contentId } });
+    if (!existing) {
+      throw new ContentNotFoundError(contentId);
+    }
+
+    await ProgramService.get(authContext, existing.programId);
+
+    return authContext.db.generatedContent.update({
+      where: { id: contentId },
+      data: {
+        externalPostUrl: stats.url || null,
+        externalLikes: stats.likes ?? null,
+        externalViews: stats.views ?? null,
+        externalComments: stats.comments ?? null,
+        externalStatsUpdatedAt: new Date(),
+      },
+    });
   }
 }
 
