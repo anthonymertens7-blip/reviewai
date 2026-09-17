@@ -290,7 +290,7 @@ export function GeneratorForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {requestedTypes.map((type) => (
             <div key={type} className="animate-pulse rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
-              <div className="mb-3 h-4 w-1/3 rounded bg-gray-200" />
+              <div className="mb-3 h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
               <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-700" />
               <div className="mt-2 h-3 w-5/6 rounded bg-gray-100 dark:bg-gray-700" />
               <div className="mt-2 h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-700" />

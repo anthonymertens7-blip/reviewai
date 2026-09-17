@@ -70,6 +70,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
   const [isUpdatingApproval, setIsUpdatingApproval] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -128,6 +129,16 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     setContent(newContent.content);
     setStatus(newContent.status);
     setLegalMentions(newContent.legalMentions);
+    // La régénération archive l'ancien contenu et en crée un tout nouveau, qui repart forcément en
+    // brouillon sans stats de publication — sans ça, la carte continuait d'afficher "Approuvé" (ou
+    // les stats de l'ancien post) sur un contenu IA fraîchement généré et non relu.
+    setApprovalStatus((newContent.approvalStatus as ApprovalStatus) ?? "draft");
+    setSocialStats({
+      url: newContent.externalPostUrl ?? "",
+      likes: newContent.externalLikes,
+      views: newContent.externalViews,
+      comments: newContent.externalComments,
+    });
   }
 
   function startEdit() {
@@ -145,11 +156,13 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     }
 
     setError(null);
+    setIsSaving(true);
     const res = await fetch(`/api/contents/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: parsed }),
     });
+    setIsSaving(false);
 
     if (!res.ok) {
       setError("La sauvegarde a échoué.");
@@ -160,6 +173,19 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     setContent(updated.content);
     setStatus(updated.status);
     setIsEditing(false);
+  }
+
+  function openSocialStatsEditor() {
+    // Resynchronise le brouillon sur les stats actuellement enregistrées : sans ça, un brouillon
+    // modifié puis abandonné via "Annuler" restait affiché à la réouverture au lieu des vraies
+    // valeurs sauvegardées.
+    setSocialStatsDraft({
+      url: socialStats.url,
+      likes: socialStats.likes?.toString() ?? "",
+      views: socialStats.views?.toString() ?? "",
+      comments: socialStats.comments?.toString() ?? "",
+    });
+    setIsEditingSocialStats(true);
   }
 
   async function handleSaveSocialStats() {
@@ -322,16 +348,13 @@ export function ContentCard({ data }: { data: ContentCardData }) {
                   <MessageCircle className="h-3.5 w-3.5" /> {socialStats.comments ?? 0}
                 </span>
               </div>
-              <button
-                onClick={() => setIsEditingSocialStats(true)}
-                className="text-xs text-brand-600 hover:underline dark:text-brand-300"
-              >
+              <button onClick={openSocialStatsEditor} className="text-xs text-brand-600 hover:underline dark:text-brand-300">
                 Modifier les stats
               </button>
             </div>
           ) : (
             <button
-              onClick={() => setIsEditingSocialStats(true)}
+              onClick={openSocialStatsEditor}
               className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-300"
             >
               <BarChart3 className="h-3.5 w-3.5" />
@@ -346,10 +369,18 @@ export function ContentCard({ data }: { data: ContentCardData }) {
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
         {isEditing ? (
           <>
-            <button onClick={handleSave} className="rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700">
-              Sauvegarder
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700 disabled:opacity-50"
+            >
+              {isSaving ? "Enregistrement..." : "Sauvegarder"}
             </button>
-            <button onClick={() => setIsEditing(false)} className="rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button
+              onClick={() => setIsEditing(false)}
+              disabled={isSaving}
+              className="rounded-md border dark:border-gray-700 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+            >
               Annuler
             </button>
           </>
