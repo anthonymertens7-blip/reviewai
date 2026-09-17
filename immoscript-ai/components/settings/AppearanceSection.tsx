@@ -40,7 +40,7 @@ export function AppearanceSection() {
           onClick={() => setTheme("dark")}
           className={`flex items-center gap-2.5 rounded-2xl border p-4 text-left text-sm font-medium transition-colors ${
             theme === "dark"
-              ? "border-brand-600 bg-brand-50 text-brand-700 dark:bg-gray-900"
+              ? "border-brand-600 bg-brand-50 text-brand-700 dark:bg-gray-900 dark:text-brand-300"
               : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700"
           }`}
         >

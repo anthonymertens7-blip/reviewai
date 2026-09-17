@@ -11,7 +11,7 @@ export function QuotaIndicator({ used, quota }: { used: number; quota: number | 
       href="/dashboard"
       aria-label={label}
       className="group relative flex h-11 w-11 items-center justify-center rounded-full transition-transform active:scale-90"
-      style={quota === null ? undefined : { background: `conic-gradient(${ringColor} ${percent}%, #e5e7eb ${percent}%)` }}
+      style={quota === null ? undefined : { background: `conic-gradient(${ringColor} ${percent}%, var(--quota-track) ${percent}%)` }}
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-amber-500 dark:bg-rose-950/40">
         <Zap className="h-4 w-4" />

@@ -16,10 +16,12 @@
 :root {
   --bg-from: #e3fbff;
   --bg-to: #7fd9ec;
+  --quota-track: #e5e7eb;
 }
 .dark {
   --bg-from: #0b1220;
   --bg-to: #111827;
+  --quota-track: #374151;
 }
 
 [data-bg="violet"] {

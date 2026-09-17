@@ -66,8 +66,17 @@ export function BrandVoiceSection() {
   }
 
   async function handleDelete(id: string) {
+    const removed = presets.find((preset) => preset.id === id);
     setPresets((p) => p.filter((preset) => preset.id !== id));
-    await fetch(`/api/brand-voice-presets/${id}`, { method: "DELETE" });
+    setError(null);
+
+    const res = await fetch(`/api/brand-voice-presets/${id}`, { method: "DELETE" });
+    if (!res.ok && removed) {
+      // La suppression a échoué côté serveur : on annule la mise à jour optimiste plutôt que de
+      // laisser le préréglage disparaître silencieusement de l'écran alors qu'il existe toujours.
+      setPresets((p) => [...p, removed].sort((a, b) => a.name.localeCompare(b.name)));
+      setError("La suppression a échoué.");
+    }
   }
 
   if (isLoading) return null;
@@ -89,6 +98,8 @@ export function BrandVoiceSection() {
       {presets.length === 0 && !showForm && (
         <p className="text-sm text-gray-500 dark:text-gray-400">Aucun préréglage pour le moment.</p>
       )}
+
+      {error && !showForm && <p className="mb-2 text-sm text-red-600">{error}</p>}
 
       {presets.length > 0 && (
         <ul className="divide-y divide-gray-100 dark:divide-gray-700">
