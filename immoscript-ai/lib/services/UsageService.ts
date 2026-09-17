@@ -33,28 +33,35 @@ export class UsageService {
 
     const { periodStart, periodEnd } = currentPeriod();
 
-    await prisma.usageCounter.upsert({
+    const counter = await prisma.usageCounter.upsert({
       where: { organizationId_periodStart: { organizationId, periodStart } },
       create: { organizationId, periodStart, periodEnd, generationsUsed: 0, generationsQuota: DEFAULT_MONTHLY_QUOTA },
       update: {},
     });
 
-    const counter = await prisma.usageCounter.findUniqueOrThrow({
-      where: { organizationId_periodStart: { organizationId, periodStart } },
-    });
-
-    if (counter.generationsUsed + amount > counter.generationsQuota) {
-      throw new QuotaExceededError(
-        `Quota IA mensuel atteint (${counter.generationsUsed}/${counter.generationsQuota}). Il sera réinitialisé le mois prochain.`
-      );
-    }
-
-    const updated = await prisma.usageCounter.update({
-      where: { organizationId_periodStart: { organizationId, periodStart } },
+    // Réservation atomique : la vérification et l'incrément doivent être UNE opération
+    // conditionnelle en base plutôt qu'un read-check-write en JS. Ce dernier est une vraie course
+    // sous usage concurrent (ex: "générer pour tous les lots" lance un appel IA par lot en
+    // parallèle) — deux requêtes lisant toutes les deux "299/300 utilisées" passeraient alors
+    // toutes les deux la vérification et dépasseraient le plafond. `updateMany` avec une clause
+    // WHERE sur generationsUsed est ré-évaluée par Postgres au moment où le verrou de ligne est
+    // acquis (READ COMMITTED), donc une seule des requêtes concurrentes peut réussir.
+    const reserved = await prisma.usageCounter.updateMany({
+      where: { organizationId, periodStart, generationsUsed: { lte: counter.generationsQuota - amount } },
       data: { generationsUsed: { increment: amount } },
     });
 
-    return { used: updated.generationsUsed, quota: updated.generationsQuota };
+    const latest = await prisma.usageCounter.findUniqueOrThrow({
+      where: { organizationId_periodStart: { organizationId, periodStart } },
+    });
+
+    if (reserved.count === 0) {
+      throw new QuotaExceededError(
+        `Quota IA mensuel atteint (${latest.generationsUsed}/${latest.generationsQuota}). Il sera réinitialisé le mois prochain.`
+      );
+    }
+
+    return { used: latest.generationsUsed, quota: latest.generationsQuota };
   }
 
   static async getUsage(organizationId: string): Promise<{ used: number; quota: number | null; periodEnd: Date }> {
