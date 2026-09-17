@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MonthlyGenerationPoint } from "@/lib/services/StatsService";
 
 const WIDTH = 560;
@@ -9,6 +9,13 @@ const MARGIN = { top: 16, right: 8, bottom: 24, left: 8 };
 
 export function MonthlyBarChart({ data }: { data: MonthlyGenerationPoint[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
+  // Barres qui poussent depuis la ligne de base à l'apparition, plutôt qu'un graphique statique —
+  // [data-reduce-motion="true"] (voir globals.css) neutralise ces transitions CSS automatiquement.
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setGrown(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const innerWidth = WIDTH - MARGIN.left - MARGIN.right;
   const innerHeight = HEIGHT - MARGIN.top - MARGIN.bottom;
@@ -52,12 +59,13 @@ export function MonthlyBarChart({ data }: { data: MonthlyGenerationPoint[] }) {
               <rect x={MARGIN.left + i * barWidth} y={MARGIN.top} width={barWidth} height={innerHeight} fill="transparent" />
               <rect
                 x={x}
-                y={d.count > 0 ? y : HEIGHT - MARGIN.bottom - 2}
+                y={grown ? (d.count > 0 ? y : HEIGHT - MARGIN.bottom - 2) : HEIGHT - MARGIN.bottom}
                 width={w}
-                height={d.count > 0 ? barHeight : 2}
+                height={grown ? (d.count > 0 ? barHeight : 2) : 0}
                 rx={4}
                 fill="currentColor"
-                className="text-[#2a78d6] dark:text-[#3987e5]"
+                className="text-[#2a78d6] transition-all ease-out dark:text-[#3987e5]"
+                style={{ transitionDuration: "650ms", transitionDelay: `${i * 45}ms` }}
                 opacity={isHovered || hovered === null ? 1 : 0.45}
               />
               <text
