@@ -4,6 +4,7 @@ import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 import { ProgramForm, type ProgramFormValues } from "@/components/programs/ProgramForm";
+import { ProgramAccessSection } from "@/components/programs/ProgramAccessSection";
 
 export default async function EditProgramPage({
   params,
@@ -63,6 +64,7 @@ export default async function EditProgramPage({
         <h1 className="mt-1 text-2xl font-semibold">Modifier le programme</h1>
       </div>
       <ProgramForm mode="edit" programId={programId} initialValues={initialValues} />
+      <ProgramAccessSection programId={programId} />
     </div>
   );
 }

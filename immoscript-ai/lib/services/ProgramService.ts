@@ -4,6 +4,7 @@ import type { CreateProgramInput, UpdateProgramInput } from "@/lib/validation/pr
 
 export class ProgramNotFoundError extends Error {}
 export class ProgramForbiddenError extends Error {}
+export class UserNotInOrganizationError extends Error {}
 
 /**
  * Un Collaborateur ne voit que les programmes auxquels il a un accès explicite
@@ -62,6 +63,43 @@ export class ProgramService {
   static async remove(authContext: AuthContext, programId: string) {
     await ProgramService.get(authContext, programId);
     return authContext.db.program.delete({ where: { id: programId } });
+  }
+
+  /** Liste les ids des utilisateurs ayant un accès explicite à ce programme (rôle Collaborateur). */
+  static async listAccess(authContext: AuthContext, programId: string) {
+    await ProgramService.get(authContext, programId);
+    const access = await authContext.db.programAccess.findMany({ where: { programId }, select: { userId: true } });
+    return access.map((a) => a.userId);
+  }
+
+  /**
+   * Donne à un Collaborateur de l'organisation l'accès à ce programme précis. Réservé aux
+   * Promoteur/Admin (vérifié au niveau de la route via withOrgAuth minRole) — sans ce mécanisme,
+   * ProgramAccess n'était jamais rempli nulle part et le rôle Collaborateur restait inutilisable
+   * (aucun programme visible, 403 systématique).
+   */
+  static async grantAccess(authContext: AuthContext, programId: string, userId: string) {
+    await ProgramService.get(authContext, programId);
+    // db.user est scopé par organisation (lib/db/scoped-client.ts) : cette recherche échoue déjà
+    // si userId appartient à une autre organisation, sans vérification supplémentaire à écrire.
+    // Elle échoue aussi si l'utilisateur a été invité mais ne s'est encore jamais connecté (son
+    // User n'est synchronisé qu'au premier accès via getAuthContext) — cas normal, pas une erreur
+    // serveur.
+    const user = await authContext.db.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UserNotInOrganizationError(userId);
+    }
+
+    await authContext.db.programAccess.upsert({
+      where: { programId_userId: { programId, userId } },
+      create: { programId, userId },
+      update: {},
+    });
+  }
+
+  static async revokeAccess(authContext: AuthContext, programId: string, userId: string) {
+    await ProgramService.get(authContext, programId);
+    await authContext.db.programAccess.deleteMany({ where: { programId, userId } });
   }
 
   /**
