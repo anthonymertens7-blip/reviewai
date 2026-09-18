@@ -1,3 +1,4 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { withOrgAuth } from "@/lib/with-org-auth";
 import { ContentNotFoundError, ContentService } from "@/lib/services/ContentService";
@@ -26,6 +27,12 @@ export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {
       return NextResponse.json({ error: "quota_exceeded", message: error.message }, { status: 429 });
     }
     if (error instanceof AIGenerationError) {
+      return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
+    }
+    // Erreur SDK Anthropic brute (service indisponible, quota fournisseur...), pas une
+    // AIGenerationError (qui enveloppe une sortie mal formée, pas un échec de l'appel lui-même) —
+    // même principe que /api/lots/[id]/photos/suggest et /api/programs/suggest-field.
+    if (error instanceof Anthropic.APIError) {
       return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
     }
     throw error;
