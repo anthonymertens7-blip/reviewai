@@ -49,8 +49,15 @@ export function OrganizationSection() {
 
   async function handleRevoke(invitationId: string) {
     const invitation = invitations?.data?.find((i) => i.id === invitationId);
-    await invitation?.revoke();
-    invitations?.revalidate?.();
+    setError(null);
+    try {
+      await invitation?.revoke();
+      invitations?.revalidate?.();
+    } catch (err) {
+      // Sans ce catch, un échec (invitation déjà acceptée, erreur réseau...) laissait l'invitation
+      // affichée comme "en attente" sans aucun indice que le clic sur Annuler n'a rien fait.
+      setError(err instanceof Error ? err.message : "L'annulation de l'invitation a échoué.");
+    }
   }
 
   if (!organization) return null;
