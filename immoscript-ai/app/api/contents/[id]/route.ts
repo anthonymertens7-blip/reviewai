@@ -47,11 +47,17 @@ export const PATCH = withOrgAuth<Params>(async (req, authContext, { id }) => {
     return NextResponse.json({ error: "invalid_content", details: parsedContent.error.flatten() }, { status: 400 });
   }
 
+  // Un contenu déjà approuvé (donc considéré sûr à diffuser tel quel) dont le texte change doit
+  // repasser par une revue : sans ça, une édition ultérieure (correction, erreur, modification
+  // malveillante) reste affichée "Approuvé" alors que ce texte précis n'a jamais été validé.
+  const approvalStatus = existing.approvalStatus === "approved" ? "pending_review" : existing.approvalStatus;
+
   const content = await authContext.db.generatedContent.update({
     where: { id },
     data: {
       content: parsedContent.data as Prisma.InputJsonValue,
       status: "edited",
+      approvalStatus,
       editedByUserId: authContext.userId,
     },
   });
