@@ -158,9 +158,11 @@ export class ProgramService {
             hasEquippedKitchen: lot.hasEquippedKitchen,
             isFurnished: lot.isFurnished,
             furnishedEquipment: lot.furnishedEquipment,
-            dpeEnergyClass: lot.dpeEnergyClass,
-            dpeGesClass: lot.dpeGesClass,
-            condoAnnualCharges: lot.condoAnnualCharges,
+            // DPE, GES et charges de copropriété sont propres à chaque lot physique (comme
+            // address/deliveryDate le sont déjà pour le programme, effacés plus haut) : jamais
+            // copiés lors d'une duplication, sous peine d'afficher une fausse mention légale sur un
+            // lot qui n'a jamais été diagnostiqué — voir le même principe dans
+            // LotsManager.tsx (duplicateValues) pour la duplication d'un lot individuel.
             price: lot.price,
             pricePerSqm: lot.pricePerSqm,
             availability: lot.availability,
