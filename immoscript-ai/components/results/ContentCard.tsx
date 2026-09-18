@@ -428,16 +428,23 @@ export function ContentCard({ data }: { data: ContentCardData }) {
                 Envoyer pour validation
               </button>
             )}
-            {approvalStatus === "pending_review" && canApprove && (
+            {approvalStatus === "pending_review" && (
               <>
-                <button
-                  onClick={() => handleApprovalChange("approved")}
-                  disabled={isUpdatingApproval}
-                  className="flex items-center gap-1.5 rounded-md border border-teal-200 px-3 py-1.5 text-teal-700 hover:bg-teal-50 disabled:opacity-50 dark:border-teal-900/60 dark:text-teal-400 dark:hover:bg-teal-950/40"
-                >
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  Approuver
-                </button>
+                {canApprove && (
+                  <button
+                    onClick={() => handleApprovalChange("approved")}
+                    disabled={isUpdatingApproval}
+                    className="flex items-center gap-1.5 rounded-md border border-teal-200 px-3 py-1.5 text-teal-700 hover:bg-teal-50 disabled:opacity-50 dark:border-teal-900/60 dark:text-teal-400 dark:hover:bg-teal-950/40"
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Approuver
+                  </button>
+                )}
+                {/* Contrairement à "Approuver", renvoyer en brouillon depuis "à valider" n'est pas
+                    réservé au Promoteur/Admin côté backend (ContentService.setApprovalStatus ne
+                    bloque que le passage VERS "approved" pour un Collaborateur) — le masquer
+                    derrière canApprove privait à tort un Collaborateur de reprendre son propre
+                    contenu soumis pour le corriger avant de le resoumettre. */}
                 <button
                   onClick={() => handleApprovalChange("draft")}
                   disabled={isUpdatingApproval}
