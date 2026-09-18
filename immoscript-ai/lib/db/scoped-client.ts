@@ -30,6 +30,12 @@ const READ_AND_BULK_WRITE_OPS = new Set([
   "updateMany",
   "delete",
   "deleteMany",
+  // upsert a un `where` de même forme que update/delete : sans lui ici, l'injection
+  // automatique d'organizationId (le garde-fou dont ce fichier documente l'existence même
+  // en cas d'oubli côté appelant) ne s'appliquait pas à upsert — seul appel concerné
+  // aujourd'hui (ProgramService.grantAccess) reste sûr par la validation manuelle
+  // qui le précède, mais l'omission cassait la garantie générique de ce client.
+  "upsert",
 ]);
 
 export function getScopedPrismaClient(organizationId: string) {
