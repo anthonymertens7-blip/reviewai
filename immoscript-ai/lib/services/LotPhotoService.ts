@@ -40,14 +40,26 @@ export class LotPhotoService {
       throw new PhotoTooLargeError(lotId);
     }
 
-    const count = await authContext.db.lotPhoto.count({ where: { lotId } });
-    if (count >= MAX_PHOTOS_PER_LOT) {
-      throw new TooManyPhotosError(lotId);
-    }
+    // Verrou pessimiste sur la ligne du lot : un simple count() puis create() séparés (comme avant
+    // ce fix) laisse une fenêtre où plusieurs uploads concurrents sur le même lot lisent tous
+    // count() < 12 avant qu'aucun n'ait inséré — reproduit en conditions réelles (13 photos créées
+    // pour 15 envois simultanés sur un lot vide). SELECT ... FOR UPDATE sérialise les transactions
+    // concurrentes pour CE lot précis (les uploads sur d'autres lots ne sont pas affectés, verrou
+    // par ligne et non par table) — même principe que le updateMany conditionnel de
+    // UsageService.assertQuotaAndReserve pour le quota IA, adapté ici à une limite sur un count()
+    // de lignes filles plutôt que sur un compteur dédié.
+    return authContext.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Lot" WHERE id = ${lotId} FOR UPDATE`;
 
-    return authContext.db.lotPhoto.create({
-      data: { lotId, data: new Uint8Array(data), mimeType },
-      select: { id: true, mimeType: true, createdAt: true },
+      const count = await tx.lotPhoto.count({ where: { lotId } });
+      if (count >= MAX_PHOTOS_PER_LOT) {
+        throw new TooManyPhotosError(lotId);
+      }
+
+      return tx.lotPhoto.create({
+        data: { lotId, data: new Uint8Array(data), mimeType },
+        select: { id: true, mimeType: true, createdAt: true },
+      });
     });
   }
 
