@@ -105,25 +105,29 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     setIsSubmitting(true);
     setError(null);
 
+    // null (pas undefined) pour un champ optionnel vidé : sur une édition, seule une valeur
+    // explicite efface la colonne existante — undefined serait simplement absent du JSON envoyé
+    // (JSON.stringify omet les clés undefined) et laisserait l'ancienne valeur inchangée en base
+    // (voir le même principe et sa vérification live sur LotForm).
     const payload = {
       name: values.name,
       city: values.city,
-      address: values.address || undefined,
-      district: values.district || undefined,
-      programType: values.programType || undefined,
-      unitsCount: values.unitsCount || undefined,
-      deliveryDate: values.deliveryDate || undefined,
-      description: values.description || undefined,
-      environment: values.environment || undefined,
-      transport: values.transport || undefined,
-      schools: values.schools || undefined,
-      shops: values.shops || undefined,
-      pointsOfInterest: values.pointsOfInterest || undefined,
-      amenities: values.amenities || undefined,
-      features: values.features || undefined,
-      advantages: values.advantages || undefined,
+      address: values.address || null,
+      district: values.district || null,
+      programType: values.programType || null,
+      unitsCount: values.unitsCount || null,
+      deliveryDate: values.deliveryDate || null,
+      description: values.description || null,
+      environment: values.environment || null,
+      transport: values.transport || null,
+      schools: values.schools || null,
+      shops: values.shops || null,
+      pointsOfInterest: values.pointsOfInterest || null,
+      amenities: values.amenities || null,
+      features: values.features || null,
+      advantages: values.advantages || null,
       isCoOwnership: values.isCoOwnership,
-      condoLotsCount: values.isCoOwnership ? values.condoLotsCount || undefined : undefined,
+      condoLotsCount: values.isCoOwnership ? values.condoLotsCount || null : null,
     };
 
     const url = mode === "create" ? "/api/programs" : `/api/programs/${programId}`;
