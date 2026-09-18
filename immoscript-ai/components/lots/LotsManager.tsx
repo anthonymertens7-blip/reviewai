@@ -102,11 +102,18 @@ export function LotsManager({
   lots,
   programIsCoOwnership,
   programCondoLotsCount,
+  canManage,
 }: {
   programId: string;
   lots: LotSummary[];
   programIsCoOwnership?: boolean;
   programCondoLotsCount?: number | null;
+  /** Créer/modifier/dupliquer/supprimer un lot et gérer ses photos sont réservés au Promoteur/Admin
+   * côté backend (minRole "PROMOTEUR" sur toutes les routes d'écriture de lots et de photos) — sans
+   * ce flag, un Collaborateur voyait des boutons entièrement fonctionnels en apparence qui
+   * échouaient tous en 403, avec des messages d'erreur génériques ("Vérifiez les champs...") qui ne
+   * laissaient rien deviner du vrai problème (permission refusée, pas une erreur de saisie). */
+  canManage: boolean;
 }) {
   const [formValues, setFormValues] = useState<LotFormValues | null>(null);
   const [editingLotId, setEditingLotId] = useState<string | null>(null);
@@ -138,24 +145,25 @@ export function LotsManager({
 
   return (
     <div className="space-y-6">
-      {formValues ? (
-        <LotForm
-          key={formKey}
-          programId={programId}
-          lotId={editingLotId ?? undefined}
-          initialValues={formValues}
-          programIsCoOwnership={programIsCoOwnership}
-          onCancel={closeForm}
-          onSaved={closeForm}
-        />
-      ) : (
-        <button
-          onClick={openCreate}
-          className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
-        >
-          + Ajouter un lot
-        </button>
-      )}
+      {canManage &&
+        (formValues ? (
+          <LotForm
+            key={formKey}
+            programId={programId}
+            lotId={editingLotId ?? undefined}
+            initialValues={formValues}
+            programIsCoOwnership={programIsCoOwnership}
+            onCancel={closeForm}
+            onSaved={closeForm}
+          />
+        ) : (
+          <button
+            onClick={openCreate}
+            className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            + Ajouter un lot
+          </button>
+        ))}
 
       {lots.length === 0 ? (
         <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -198,24 +206,30 @@ export function LotsManager({
                       <Images className="h-3.5 w-3.5" />
                       Photos
                     </button>
-                    <button
-                      onClick={() => openEdit(lot)}
-                      className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                      Modifier
-                    </button>
-                    <button
-                      onClick={() => openDuplicate(lot)}
-                      className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      Dupliquer
-                    </button>
-                    <DeleteLotButton lotId={lot.id} />
+                    {canManage && (
+                      <>
+                        <button
+                          onClick={() => openEdit(lot)}
+                          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => openDuplicate(lot)}
+                          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                          Dupliquer
+                        </button>
+                        <DeleteLotButton lotId={lot.id} />
+                      </>
+                    )}
                   </div>
                 </div>
-                {isExpanded && <LotPhotosPanel lotId={lot.id} currentSpecialFeatures={lot.specialFeatures} />}
+                {isExpanded && (
+                  <LotPhotosPanel lotId={lot.id} currentSpecialFeatures={lot.specialFeatures} canManage={canManage} />
+                )}
               </li>
             );
           })}
