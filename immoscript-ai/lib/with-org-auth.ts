@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthContext, NoActiveOrganizationError, UnauthenticatedError, type AuthContext } from "@/lib/auth";
-import type { Role } from "@prisma/client";
+import { Prisma, type Role } from "@prisma/client";
 
 type RouteContext<P> = { params: Promise<P> };
 
@@ -42,6 +42,17 @@ export function withOrgAuth<P = Record<string, never>>(
       // client invalide, au lieu du 400 déjà renvoyé pour tout payload qui échoue la validation Zod.
       if (error instanceof SyntaxError) {
         return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+      }
+      // Course entre deux requêtes concurrentes sur la même ressource (ex: un DELETE et un PATCH
+      // envoyés en même temps depuis deux onglets) : chaque service vérifie déjà l'existence via
+      // un findUnique avant d'appeler update()/delete(), mais rien n'empêche la ressource de
+      // disparaître dans la fenêtre entre cette vérification et l'écriture elle-même. Prisma lève
+      // alors un P2025 ("No record was found for an update/delete") non applicatif — reproduit de
+      // façon fiable (8 requêtes sur 10) en envoyant PATCH et DELETE en parallèle sur le même lot.
+      // Sans ce cas, la requête qui perd la course répond 500 au lieu du 404 qu'elle aurait reçu si
+      // elle était arrivée une fraction de seconde plus tard.
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+        return NextResponse.json({ error: "not_found" }, { status: 404 });
       }
       throw error;
     }
