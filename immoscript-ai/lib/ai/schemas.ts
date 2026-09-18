@@ -10,7 +10,7 @@ import type { ContentType } from "./types";
 // d'edge-case a montré qu'un fragment de balise fermante isolé comme "</caption>" — sans le
 // "<parameter...>" qui l'accompagnait dans le cas observé en prod — passait la validation, alors
 // que c'est exactement la même classe d'artefact corrompu.
-const TOOL_CALL_ARTIFACT_PATTERN =
+export const TOOL_CALL_ARTIFACT_PATTERN =
   /<\/?(?:parameter|invoke|function_calls?|antml:\w+|title|description|caption|highlights?|hashtags?|cta|hook|textOverlay|voiceover|visual|angle)\b/i;
 
 function cleanText(field: z.ZodString) {

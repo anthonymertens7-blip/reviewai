@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { z } from "zod";
 import type { GenerateContentInput } from "./types";
-import { schemaForType, fieldSuggestionSchema } from "./schemas";
+import { schemaForType, fieldSuggestionSchema, TOOL_CALL_ARTIFACT_PATTERN } from "./schemas";
 import { buildAvailableDataBlock, buildMarketingBlock, buildSystemPrompt, PROMPT_VERSION } from "./prompts/system";
 import { buildListingInstructions } from "./prompts/listing";
 import { buildSocialInstructions } from "./prompts/social";
@@ -222,10 +222,27 @@ export class AIService {
 }
 
 /**
+ * Coupe une valeur de champ texte au premier artefact d'appel d'outil détecté (voir
+ * TOOL_CALL_ARTIFACT_PATTERN) : cas observé où le modèle enchaîne, à la suite d'un champ texte par
+ * ailleurs correct, un fragment de balise mal formée qui portait le champ suivant (ex: un
+ * "</caption>\n<parameter name=\"hashtags\">..." collé après une légende Instagram valide) — ce
+ * fragment n'est jamais lui-même une donnée utile, donc le tronquer ne perd aucune information
+ * réelle, seulement l'artefact.
+ */
+function truncateAtArtifact(value: string): string {
+  const match = TOOL_CALL_ARTIFACT_PATTERN.exec(value);
+  return match ? value.slice(0, match.index).trimEnd() : value;
+}
+
+/**
  * Répare une sortie IA invalide en ne redemandant que les champs requis manquants, à partir du
- * contenu déjà généré (par ailleurs valide). Ne s'applique que si TOUTES les erreurs de validation
- * sont des champs top-level manquants — un autre type d'erreur (mauvais format sur un champ déjà
- * présent) indique un problème plus profond qu'une simple omission, donc pas de réparation.
+ * contenu déjà généré (par ailleurs valide). S'applique quand toutes les erreurs de validation sont
+ * soit des champs top-level manquants, soit un artefact d'appel d'outil détecté dans un champ texte
+ * déjà présent — cas fréquent où l'artefact qui a fait échouer la génération est justement ce qui a
+ * "mangé" le champ suivant (voir truncateAtArtifact) : nettoyer ce champ puis ne redemander que le
+ * champ manquant récupère un contenu par ailleurs valide, plutôt que de jeter tout l'appel IA.
+ * Un autre type d'erreur (mauvais format sur un champ qui n'est pas concerné) indique un problème
+ * plus profond qu'une simple omission, donc pas de réparation.
  */
 async function repairMissingFields(
   partial: unknown,
@@ -244,9 +261,27 @@ async function repairMissingFields(
     ),
   ];
 
-  if (missingFields.length === 0 || missingFields.length !== error.issues.length) {
+  const artifactFields = [
+    ...new Set(
+      error.issues
+        .filter((issue) => issue.code === "custom" && issue.path.length === 1)
+        .map((issue) => String(issue.path[0]))
+    ),
+  ];
+
+  if (missingFields.length === 0 || missingFields.length + artifactFields.length !== error.issues.length) {
     return null;
   }
+
+  const cleanedPartial = { ...(partial as Record<string, unknown>) };
+  for (const field of artifactFields) {
+    const value = cleanedPartial[field];
+    if (typeof value !== "string") {
+      return null;
+    }
+    cleanedPartial[field] = truncateAtArtifact(value);
+  }
+  partial = cleanedPartial;
 
   const fullJsonSchema = zodToJsonSchema(schema) as JsonSchemaObject;
   const properties = (fullJsonSchema.properties ?? {}) as Record<string, unknown>;
