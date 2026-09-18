@@ -62,7 +62,7 @@ export default async function StatisticsPage() {
 
       <StatsSectionCard
         title="Performance réseaux sociaux"
-        subtitle="Saisie manuelle pour l'instant — colle le lien de tes publications depuis une carte de contenu Instagram/TikTok."
+        subtitle="Saisie manuelle pour l'instant — ajoute les stats depuis une carte de contenu Instagram/TikTok."
       >
         <SocialStatsSection data={stats.social} />
       </StatsSectionCard>

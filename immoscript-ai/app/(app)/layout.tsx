@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { BarChart3, Building2, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
@@ -9,11 +8,11 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { QuotaIndicator } from "@/components/layout/QuotaIndicator";
 import { SearchTrigger } from "@/components/layout/SearchTrigger";
 import { CommandPalette } from "@/components/layout/CommandPalette";
-import { isOwner } from "@/lib/auth";
+import { getRawAuth, isOwner } from "@/lib/auth";
 import { UsageService } from "@/lib/services/UsageService";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { orgId } = await auth();
+  const { orgId } = await getRawAuth();
   const showOwnerLink = orgId ? await isOwner() : false;
   const usage = orgId ? await UsageService.getUsage(orgId) : null;
 

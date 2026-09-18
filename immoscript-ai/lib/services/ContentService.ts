@@ -115,6 +115,13 @@ export class ContentService {
       data: { status: errors.length === 0 ? "done" : contents.length > 0 ? "partial" : "failed" },
     });
 
+    // Le quota a été réservé pour tous les jobs avant l'appel IA (voir plus haut) : celui des jobs
+    // qui ont échoué n'a servi à rien et doit être rendu, sous peine de facturer à l'organisation
+    // des générations qui n'ont produit aucun contenu.
+    if (errors.length > 0) {
+      await UsageService.release(organizationId, errors.length);
+    }
+
     return { generationRequest, contents, errors };
   }
 
@@ -191,14 +198,22 @@ export class ContentService {
       cta: existing.generationRequest.cta,
     };
 
-    const result = await AIService.generateContent({
-      type: existing.type as ContentType,
-      angle: (existing.angle ?? undefined) as VideoAngle | undefined,
-      duration: (existing.duration ?? undefined) as VideoDuration | undefined,
-      program: existing.program,
-      lot: existing.lot ?? undefined,
-      marketing,
-    });
+    let result;
+    try {
+      result = await AIService.generateContent({
+        type: existing.type as ContentType,
+        angle: (existing.angle ?? undefined) as VideoAngle | undefined,
+        duration: (existing.duration ?? undefined) as VideoDuration | undefined,
+        program: existing.program,
+        lot: existing.lot ?? undefined,
+        marketing,
+      });
+    } catch (error) {
+      // Le quota a été réservé plus haut avant l'appel IA : s'il échoue, aucun contenu n'a été
+      // produit et l'unité réservée doit être rendue (voir generateBatch pour le même principe).
+      await UsageService.release(organizationId, 1);
+      throw error;
+    }
 
     const [, created] = await db.$transaction([
       db.generatedContent.update({ where: { id: existing.id }, data: { status: "archived" } }),

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Heart, MessageCircle, Eye, ExternalLink } from "lucide-react";
 import type { SocialStatsSummary } from "@/lib/services/StatsService";
@@ -18,11 +20,11 @@ function formatCount(n: number): string {
 }
 
 export function SocialStatsSection({ data }: { data: SocialStatsSummary }) {
-  if (data.linkedPostsCount === 0) {
+  if (data.statsCount === 0) {
     return (
       <p className="rounded-2xl border border-dashed p-6 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-        Aucune publication liée pour le moment. Depuis un contenu Instagram/TikTok généré, colle le lien de ta
-        publication une fois postée pour suivre ses performances ici.
+        Aucune statistique saisie pour le moment. Depuis un contenu Instagram/TikTok généré, ajoute les likes/vues
+        (et éventuellement le lien de la publication) pour suivre ses performances ici.
       </p>
     );
   }

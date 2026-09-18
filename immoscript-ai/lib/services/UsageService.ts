@@ -64,6 +64,22 @@ export class UsageService {
     return { used: latest.generationsUsed, quota: latest.generationsQuota };
   }
 
+  /**
+   * Rend au quota du mois les unités réservées par assertQuotaAndReserve pour des générations qui
+   * ont finalement échoué côté IA (clé invalide, timeout, réponse invalide...) — sans ça, un appel
+   * IA qui échoue consomme quand même le quota de l'organisation alors qu'aucun token n'a servi à
+   * produire un contenu utilisable.
+   */
+  static async release(organizationId: string, amount: number): Promise<void> {
+    if (amount <= 0 || (await isOwner())) return;
+
+    const { periodStart } = currentPeriod();
+    await prisma.usageCounter.updateMany({
+      where: { organizationId, periodStart, generationsUsed: { gte: amount } },
+      data: { generationsUsed: { decrement: amount } },
+    });
+  }
+
   static async getUsage(organizationId: string): Promise<{ used: number; quota: number | null; periodEnd: Date }> {
     const { periodStart, periodEnd } = currentPeriod();
 
