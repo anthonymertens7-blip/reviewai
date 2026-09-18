@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pgInt } from "./pgInt";
 
 // Les champs optionnels sont aussi .nullable() : sur le formulaire d'édition (contrairement à la
 // création, où il n'y a rien à effacer), un champ vidé par l'utilisateur doit explicitement
@@ -12,7 +13,7 @@ export const createProgramSchema = z.object({
   description: z.string().nullable().optional(),
   deliveryDate: z.coerce.date().nullable().optional(),
   programType: z.string().nullable().optional(),
-  unitsCount: z.coerce.number().int().positive().nullable().optional(),
+  unitsCount: pgInt.positive().nullable().optional(),
   environment: z.string().nullable().optional(),
   transport: z.string().nullable().optional(),
   schools: z.string().nullable().optional(),
@@ -22,7 +23,7 @@ export const createProgramSchema = z.object({
   features: z.string().nullable().optional(),
   advantages: z.string().nullable().optional(),
   isCoOwnership: z.boolean().optional(),
-  condoLotsCount: z.coerce.number().int().positive().nullable().optional(),
+  condoLotsCount: pgInt.positive().nullable().optional(),
 });
 
 // L'adresse est requise à la création mais peut être effacée à l'édition (un programme dupliqué
