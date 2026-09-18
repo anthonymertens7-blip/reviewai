@@ -335,7 +335,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
                 </button>
               </div>
             </div>
-          ) : socialStats.url ? (
+          ) : socialStats.url || socialStats.likes != null || socialStats.views != null || socialStats.comments != null ? (
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                 <span className="flex items-center gap-1">

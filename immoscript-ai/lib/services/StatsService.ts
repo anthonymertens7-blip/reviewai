@@ -1,7 +1,15 @@
+import type { Prisma } from "@prisma/client";
 import type { AuthContext } from "@/lib/auth";
 import { UsageService } from "./UsageService";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
 import type { ContentType } from "@/lib/ai/types";
+
+// Le lien de publication est une info secondaire facultative (voir SocialStatsSection) : filtrer
+// sur externalPostUrl exclurait à tort les stats saisies sans lien, qui sont le cas d'usage
+// principal (saisie manuelle rapide de likes/vues sans forcément coller l'URL du post).
+const HAS_SOCIAL_STATS: Prisma.GeneratedContentWhereInput = {
+  OR: [{ externalLikes: { not: null } }, { externalViews: { not: null } }, { externalComments: { not: null } }],
+};
 
 const MONTHS_HISTORY = 6;
 // Rendu en camembert : le skill dataviz plafonne le "part-to-whole en un coup d'œil" à 6 segments
@@ -50,7 +58,7 @@ export interface SocialStatsSummary {
   totalLikes: number;
   totalViews: number;
   totalComments: number;
-  linkedPostsCount: number;
+  statsCount: number;
   topPosts: TopSocialPost[];
 }
 
@@ -123,10 +131,10 @@ export class StatsService {
       db.generatedContent.aggregate({
         _sum: { externalLikes: true, externalViews: true, externalComments: true },
         _count: { _all: true },
-        where: { externalPostUrl: { not: null } },
+        where: HAS_SOCIAL_STATS,
       }),
       db.generatedContent.findMany({
-        where: { externalPostUrl: { not: null } },
+        where: HAS_SOCIAL_STATS,
         orderBy: { externalLikes: "desc" },
         take: MAX_TOP_POSTS,
         select: {
@@ -191,7 +199,7 @@ export class StatsService {
       totalLikes: socialAggregate._sum.externalLikes ?? 0,
       totalViews: socialAggregate._sum.externalViews ?? 0,
       totalComments: socialAggregate._sum.externalComments ?? 0,
-      linkedPostsCount: socialAggregate._count._all,
+      statsCount: socialAggregate._count._all,
       topPosts: topPostsRaw.map((p) => ({
         id: p.id,
         type: p.type,
