@@ -11,7 +11,17 @@ export const createProgramSchema = z.object({
   address: z.string().min(1, "L'adresse est requise"),
   district: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  deliveryDate: z.coerce.date().nullable().optional(),
+  // Bornée à une plage de calendrier normale (millésime à 4 chiffres) : au-delà, la notation ISO
+  // 8601 étendue ("+099999-01-01...") que produit new Date() pour une année à 5+ chiffres n'est pas
+  // convertible par le moteur de requête Prisma (PrismaClientUnknownRequestError non rattrapée,
+  // 500 au lieu d'une erreur de validation propre) — et une date de livraison en l'an 99999 n'a de
+  // toute façon aucun sens métier.
+  deliveryDate: z.coerce
+    .date()
+    .min(new Date("1900-01-01"), "Date de livraison trop ancienne")
+    .max(new Date("2200-12-31"), "Date de livraison trop lointaine")
+    .nullable()
+    .optional(),
   programType: z.string().nullable().optional(),
   unitsCount: pgInt.positive().nullable().optional(),
   environment: z.string().nullable().optional(),
