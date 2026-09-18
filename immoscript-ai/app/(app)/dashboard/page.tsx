@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Building2, FileText, Zap } from "lucide-react";
+import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { CARD_ACCENT_STYLES } from "@/components/ui/cardAccents";
 import { UsageService } from "@/lib/services/UsageService";
@@ -8,21 +9,29 @@ import { ActivityFeed, type ActivityItem } from "@/components/dashboard/Activity
 import { planLabel } from "@/lib/organizations/planLabels";
 
 export default async function DashboardPage() {
-  const { db, organizationId } = await getAuthContext();
+  const { db, organizationId, userId, role } = await getAuthContext();
+
+  // Un Collaborateur ne voit, partout ailleurs dans l'app (ProgramService.list, StatsService),
+  // que les programmes auxquels il a un accès explicite. Sans ce filtre ici, le dashboard —
+  // première page vue après connexion, avant toute navigation — contournait cette restriction :
+  // "Programmes récents" et "Activité récente" affichaient le nom de programmes non accessibles,
+  // et ce dernier expose même le nom/email de qui a généré le contenu.
+  const programScope = role === Role.COLLABORATEUR ? { access: { some: { userId } } } : {};
 
   const [organization, programCount, lotCount, contentCount, memberCount, recentPrograms, recentActivity, usage] = await Promise.all([
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true, plan: true } }),
-    db.program.count(),
-    db.lot.count(),
-    db.generatedContent.count({ where: { status: { not: "archived" } } }),
+    db.program.count({ where: programScope }),
+    db.lot.count({ where: { program: programScope } }),
+    db.generatedContent.count({ where: { status: { not: "archived" }, program: programScope } }),
     db.user.count(),
     db.program.findMany({
+      where: programScope,
       orderBy: { updatedAt: "desc" },
       take: 5,
       select: { id: true, name: true, city: true, updatedAt: true },
     }),
     db.generatedContent.findMany({
-      where: { status: { not: "archived" } },
+      where: { status: { not: "archived" }, program: programScope },
       orderBy: { createdAt: "desc" },
       take: 6,
       select: {
