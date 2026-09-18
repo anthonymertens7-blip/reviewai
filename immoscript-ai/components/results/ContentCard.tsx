@@ -172,6 +172,7 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     const { content: updated } = await res.json();
     setContent(updated.content);
     setStatus(updated.status);
+    setApprovalStatus((updated.approvalStatus as ApprovalStatus) ?? "draft");
     setIsEditing(false);
   }
 
