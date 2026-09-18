@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Copy, Images } from "lucide-react";
+import { AlertTriangle, Copy, Images, Pencil } from "lucide-react";
 import { LotForm, EMPTY_LOT_VALUES, type LotFormValues } from "./LotForm";
 import { DeleteLotButton } from "./DeleteLotButton";
 import { LotPhotosPanel } from "./LotPhotosPanel";
@@ -65,6 +65,38 @@ function duplicateValues(lot: LotSummary): LotFormValues {
   };
 }
 
+// Contrairement à duplicateValues : on édite ce lot précis, donc référence, DPE et charges de
+// copropriété sont conservés tels quels plutôt qu'effacés (voir le commentaire de duplicateValues
+// pour la raison de l'effacement dans le cas de la duplication, qui ne s'applique pas ici).
+function editValues(lot: LotSummary): LotFormValues {
+  return {
+    reference: lot.reference,
+    propertyType: lot.propertyType,
+    roomsCount: lot.roomsCount?.toString() ?? "",
+    livingArea: lot.livingArea?.toString() ?? "",
+    outdoorArea: lot.outdoorArea?.toString() ?? "",
+    floor: lot.floor?.toString() ?? "",
+    orientation: lot.orientation ?? "",
+    exposure: lot.exposure ?? "",
+    view: lot.view ?? "",
+    price: lot.price?.toString() ?? "",
+    pricePerSqm: lot.pricePerSqm?.toString() ?? "",
+    availability: lot.availability ?? "",
+    specialFeatures: lot.specialFeatures ?? "",
+    hasBalcony: lot.hasBalcony,
+    hasTerrace: lot.hasTerrace,
+    hasGarden: lot.hasGarden,
+    hasParking: lot.hasParking,
+    hasCellar: lot.hasCellar,
+    hasEquippedKitchen: lot.hasEquippedKitchen,
+    isFurnished: lot.isFurnished,
+    furnishedEquipment: lot.furnishedEquipment,
+    dpeEnergyClass: lot.dpeEnergyClass ?? "",
+    dpeGesClass: lot.dpeGesClass ?? "",
+    condoAnnualCharges: lot.condoAnnualCharges?.toString() ?? "",
+  };
+}
+
 export function LotsManager({
   programId,
   lots,
@@ -77,17 +109,31 @@ export function LotsManager({
   programCondoLotsCount?: number | null;
 }) {
   const [formValues, setFormValues] = useState<LotFormValues | null>(null);
+  const [editingLotId, setEditingLotId] = useState<string | null>(null);
   const [formKey, setFormKey] = useState(0);
   const [expandedLotId, setExpandedLotId] = useState<string | null>(null);
 
   function openCreate() {
+    setEditingLotId(null);
     setFormValues(EMPTY_LOT_VALUES);
     setFormKey((k) => k + 1);
   }
 
   function openDuplicate(lot: LotSummary) {
+    setEditingLotId(null);
     setFormValues(duplicateValues(lot));
     setFormKey((k) => k + 1);
+  }
+
+  function openEdit(lot: LotSummary) {
+    setEditingLotId(lot.id);
+    setFormValues(editValues(lot));
+    setFormKey((k) => k + 1);
+  }
+
+  function closeForm() {
+    setFormValues(null);
+    setEditingLotId(null);
   }
 
   return (
@@ -96,10 +142,11 @@ export function LotsManager({
         <LotForm
           key={formKey}
           programId={programId}
+          lotId={editingLotId ?? undefined}
           initialValues={formValues}
           programIsCoOwnership={programIsCoOwnership}
-          onCancel={() => setFormValues(null)}
-          onCreated={() => setFormValues(null)}
+          onCancel={closeForm}
+          onSaved={closeForm}
         />
       ) : (
         <button
@@ -150,6 +197,13 @@ export function LotsManager({
                     >
                       <Images className="h-3.5 w-3.5" />
                       Photos
+                    </button>
+                    <button
+                      onClick={() => openEdit(lot)}
+                      className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Modifier
                     </button>
                     <button
                       onClick={() => openDuplicate(lot)}

@@ -66,16 +66,19 @@ export const EMPTY_LOT_VALUES: LotFormValues = {
 
 export function LotForm({
   programId,
+  lotId,
   initialValues,
   programIsCoOwnership,
   onCancel,
-  onCreated,
+  onSaved,
 }: {
   programId: string;
+  /** Présent = édition d'un lot existant (PATCH) ; absent = création (POST), y compris pour une duplication. */
+  lotId?: string;
   initialValues: LotFormValues;
   programIsCoOwnership?: boolean;
   onCancel: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<LotFormValues>(initialValues);
@@ -111,20 +114,23 @@ export function LotForm({
     setIsSubmitting(true);
     setError(null);
 
+    // null (pas undefined) pour un champ optionnel vidé : sur une édition, seule une valeur
+    // explicite efface la colonne existante — undefined serait simplement absent du JSON envoyé
+    // (JSON.stringify omet les clés undefined) et laisserait l'ancienne valeur inchangée en base.
     const payload = {
       reference: values.reference,
       propertyType: values.propertyType,
-      roomsCount: values.roomsCount || undefined,
-      livingArea: values.livingArea || undefined,
-      outdoorArea: values.outdoorArea || undefined,
-      floor: values.floor || undefined,
-      orientation: values.orientation || undefined,
-      exposure: values.exposure || undefined,
-      view: values.view || undefined,
-      price: values.price || undefined,
-      pricePerSqm: values.pricePerSqm || undefined,
-      availability: values.availability || undefined,
-      specialFeatures: values.specialFeatures || undefined,
+      roomsCount: values.roomsCount || null,
+      livingArea: values.livingArea || null,
+      outdoorArea: values.outdoorArea || null,
+      floor: values.floor || null,
+      orientation: values.orientation || null,
+      exposure: values.exposure || null,
+      view: values.view || null,
+      price: values.price || null,
+      pricePerSqm: values.pricePerSqm || null,
+      availability: values.availability || null,
+      specialFeatures: values.specialFeatures || null,
       hasBalcony: values.hasBalcony,
       hasTerrace: values.hasTerrace,
       hasGarden: values.hasGarden,
@@ -132,14 +138,14 @@ export function LotForm({
       hasCellar: values.hasCellar,
       hasEquippedKitchen: values.hasEquippedKitchen,
       isFurnished: values.isFurnished,
-      furnishedEquipment: values.isFurnished && values.furnishedEquipment.length > 0 ? values.furnishedEquipment : undefined,
-      dpeEnergyClass: values.dpeEnergyClass || undefined,
-      dpeGesClass: values.dpeGesClass || undefined,
-      condoAnnualCharges: values.condoAnnualCharges || undefined,
+      furnishedEquipment: values.isFurnished ? values.furnishedEquipment : [],
+      dpeEnergyClass: values.dpeEnergyClass || null,
+      dpeGesClass: values.dpeGesClass || null,
+      condoAnnualCharges: values.condoAnnualCharges || null,
     };
 
-    const res = await fetch(`/api/programs/${programId}/lots`, {
-      method: "POST",
+    const res = await fetch(lotId ? `/api/lots/${lotId}` : `/api/programs/${programId}/lots`, {
+      method: lotId ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
@@ -155,12 +161,12 @@ export function LotForm({
             .map(([field, messages]) => `${field} : ${messages.join(", ")}`)
             .join(" · ")
         : undefined;
-      setError(detail || "La création a échoué. Vérifiez les champs et réessayez.");
+      setError(detail || (lotId ? "L'enregistrement a échoué. Vérifiez les champs et réessayez." : "La création a échoué. Vérifiez les champs et réessayez."));
       return;
     }
 
     router.refresh();
-    onCreated();
+    onSaved();
   }
 
   return (
@@ -275,7 +281,7 @@ export function LotForm({
           disabled={isSubmitting}
           className="rounded-full bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700 disabled:opacity-50"
         >
-          {isSubmitting ? "Création..." : "Créer le lot"}
+          {isSubmitting ? (lotId ? "Enregistrement..." : "Création...") : lotId ? "Enregistrer les modifications" : "Créer le lot"}
         </button>
         <button
           type="button"
