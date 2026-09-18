@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export function FormField({
   label,
   required,
@@ -13,13 +15,15 @@ export function FormField({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
         {label}
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <input
+        id={id}
         type={type}
         required={required}
         value={value}

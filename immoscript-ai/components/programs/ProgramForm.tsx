@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Building2, FileText, MapPin, Megaphone, Wand2 } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
@@ -291,6 +291,7 @@ function FieldWithSuggest({
   const [error, setError] = useState<string | null>(null);
   const canSuggest = context.address.trim().length > 0 && context.city.trim().length > 0;
   const textareaRef = useAutoGrowTextarea(value);
+  const id = useId();
 
   async function handleSuggest() {
     if (!canSuggest || isLoading) return;
@@ -323,7 +324,7 @@ function FieldWithSuggest({
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
         <button
           type="button"
           onClick={handleSuggest}
@@ -336,6 +337,7 @@ function FieldWithSuggest({
         </button>
       </div>
       <textarea
+        id={id}
         ref={textareaRef}
         rows={1}
         value={value}

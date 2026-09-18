@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrowTextarea";
 
 export function FormTextArea({
@@ -16,14 +17,16 @@ export function FormTextArea({
   rows?: number;
 }) {
   const ref = useAutoGrowTextarea(value);
+  const id = useId();
 
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
         {label}
         {required && <span className="ml-0.5 text-red-500">*</span>}
       </label>
       <textarea
+        id={id}
         ref={ref}
         required={required}
         value={value}
