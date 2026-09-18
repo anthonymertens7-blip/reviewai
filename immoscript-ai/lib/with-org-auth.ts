@@ -36,6 +36,13 @@ export function withOrgAuth<P = Record<string, never>>(
       if (error instanceof NoActiveOrganizationError) {
         return NextResponse.json({ error: "no_active_organization" }, { status: 403 });
       }
+      // req.json() lève une SyntaxError (pas une erreur applicative) sur un corps de requête
+      // absent ou invalide — sans ce cas, chaque route POST/PATCH de l'app (toutes passent par
+      // `const body = await req.json()`) répondait 500 pour ce qui est en réalité une entrée
+      // client invalide, au lieu du 400 déjà renvoyé pour tout payload qui échoue la validation Zod.
+      if (error instanceof SyntaxError) {
+        return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+      }
       throw error;
     }
   };
