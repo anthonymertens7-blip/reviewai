@@ -5,7 +5,13 @@ import type { ContentType } from "./types";
 // des fragments qui ressemblent à un appel d'outil mal formé (ex: "</caption>",
 // '<parameter name="hashtags">...'). Le schéma ne vérifie que le type des champs, pas la qualité du
 // texte — sans ce refine, ce contenu corrompu passerait la validation et serait affiché tel quel.
-const TOOL_CALL_ARTIFACT_PATTERN = /<\/?(?:parameter|invoke|function_calls?|antml:\w+)\b/i;
+//
+// Le motif inclut aussi les noms de champs du schéma (caption, highlights, cta...) : un test
+// d'edge-case a montré qu'un fragment de balise fermante isolé comme "</caption>" — sans le
+// "<parameter...>" qui l'accompagnait dans le cas observé en prod — passait la validation, alors
+// que c'est exactement la même classe d'artefact corrompu.
+const TOOL_CALL_ARTIFACT_PATTERN =
+  /<\/?(?:parameter|invoke|function_calls?|antml:\w+|title|description|caption|highlights?|hashtags?|cta|hook|textOverlay|voiceover|visual|angle)\b/i;
 
 function cleanText(field: z.ZodString) {
   return field.refine((value) => !TOOL_CALL_ARTIFACT_PATTERN.test(value), {
