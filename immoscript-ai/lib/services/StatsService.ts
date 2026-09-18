@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Role, type Prisma } from "@prisma/client";
 import type { AuthContext } from "@/lib/auth";
 import { UsageService } from "./UsageService";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
@@ -85,7 +85,16 @@ function monthKey(date: Date): string {
 
 export class StatsService {
   static async getOverview(authContext: AuthContext): Promise<StatsOverview> {
-    const { db, organizationId } = authContext;
+    const { db, organizationId, userId, role } = authContext;
+
+    // Un Collaborateur ne voit, partout ailleurs dans l'app (ProgramService.list), que les
+    // programmes auxquels il a un accès explicite. Sans ce filtre ici, les statistiques
+    // contournaient cette restriction : programmes les plus actifs (avec leur nom), volumes de
+    // contenu, tendances mensuelles et stats sociales portaient sur TOUTE l'organisation, révélant
+    // des données sur des programmes/clients auxquels le Collaborateur ne devrait pas avoir accès.
+    const programScope: Prisma.ProgramWhereInput = role === Role.COLLABORATEUR ? { access: { some: { userId } } } : {};
+    const contentWhereBase: Prisma.GeneratedContentWhereInput = { status: { not: "archived" }, program: programScope };
+    const socialWhere: Prisma.GeneratedContentWhereInput = { ...HAS_SOCIAL_STATS, program: programScope };
 
     const historyStart = new Date();
     historyStart.setUTCMonth(historyStart.getUTCMonth() - (MONTHS_HISTORY - 1), 1);
@@ -103,38 +112,38 @@ export class StatsService {
       socialAggregate,
       topPostsRaw,
     ] = await Promise.all([
-      db.program.count(),
-      db.lot.count(),
-      db.generatedContent.count({ where: { status: { not: "archived" } } }),
+      db.program.count({ where: programScope }),
+      db.lot.count({ where: { program: programScope } }),
+      db.generatedContent.count({ where: contentWhereBase }),
       UsageService.getUsage(organizationId),
       db.generatedContent.findMany({
-        where: { status: { not: "archived" }, createdAt: { gte: historyStart } },
+        where: { ...contentWhereBase, createdAt: { gte: historyStart } },
         select: { createdAt: true },
       }),
       db.generatedContent.groupBy({
         by: ["type"],
         _count: { _all: true },
-        where: { status: { not: "archived" } },
+        where: contentWhereBase,
       }),
       db.generatedContent.groupBy({
         by: ["approvalStatus"],
         _count: { _all: true },
-        where: { status: { not: "archived" } },
+        where: contentWhereBase,
       }),
       db.generatedContent.groupBy({
         by: ["programId"],
         _count: { _all: true },
-        where: { status: { not: "archived" } },
+        where: contentWhereBase,
         orderBy: { _count: { programId: "desc" } },
         take: MAX_TOP_PROGRAMS,
       }),
       db.generatedContent.aggregate({
         _sum: { externalLikes: true, externalViews: true, externalComments: true },
         _count: { _all: true },
-        where: HAS_SOCIAL_STATS,
+        where: socialWhere,
       }),
       db.generatedContent.findMany({
-        where: HAS_SOCIAL_STATS,
+        where: socialWhere,
         orderBy: { externalLikes: "desc" },
         take: MAX_TOP_POSTS,
         select: {
