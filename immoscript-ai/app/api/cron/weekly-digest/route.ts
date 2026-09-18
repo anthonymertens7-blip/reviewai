@@ -39,8 +39,8 @@ export async function GET(req: Request) {
         const result = await resend.emails.send({
           from: DIGEST_FROM_EMAIL,
           to: recipient.email,
-          subject: buildWeeklyDigestSubject(digest),
-          html: buildWeeklyDigestHtml(digest, recipient.name),
+          subject: buildWeeklyDigestSubject(digest, recipient),
+          html: buildWeeklyDigestHtml(digest, recipient),
         });
 
         if (result.error) {
