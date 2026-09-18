@@ -64,9 +64,10 @@ model Program {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  lots     Lot[]
-  access   ProgramAccess[]
-  contents GeneratedContent[]
+  lots               Lot[]
+  access             ProgramAccess[]
+  contents           GeneratedContent[]
+  generationRequests GenerationRequest[]
 
   @@index([organizationId])
 }
@@ -138,6 +139,7 @@ model LotPhoto {
 model GenerationRequest {
   id             String   @id @default(cuid())
   programId      String
+  program        Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
   lotId          String?
   organizationId String
   requestedById  String
