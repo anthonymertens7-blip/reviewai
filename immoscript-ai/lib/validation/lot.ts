@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pgInt } from "./pgInt";
 
 // Les champs optionnels sont aussi .nullable() : sur le formulaire d'édition (contrairement à la
 // création, où il n'y a rien à effacer), un champ vidé par l'utilisateur doit explicitement
@@ -7,10 +8,10 @@ import { z } from "zod";
 export const createLotSchema = z.object({
   reference: z.string().min(1, "La référence est requise"),
   propertyType: z.string().min(1, "Le type de bien est requis"),
-  roomsCount: z.coerce.number().int().nonnegative().nullable().optional(),
+  roomsCount: pgInt.nonnegative().nullable().optional(),
   livingArea: z.coerce.number().nonnegative().nullable().optional(),
   outdoorArea: z.coerce.number().nonnegative().nullable().optional(),
-  floor: z.coerce.number().int().nullable().optional(),
+  floor: pgInt.nullable().optional(),
   orientation: z.string().nullable().optional(),
   exposure: z.string().nullable().optional(),
   view: z.string().nullable().optional(),
