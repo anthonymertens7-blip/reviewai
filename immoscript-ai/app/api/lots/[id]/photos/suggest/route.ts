@@ -1,3 +1,4 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { withOrgAuth } from "@/lib/with-org-auth";
 import { LotPhotoService } from "@/lib/services/LotPhotoService";
@@ -22,7 +23,16 @@ export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {
 
     await UsageService.assertQuotaAndReserve(authContext.organizationId, 1);
 
-    const suggestions = await AIService.suggestFromPhotos(photos);
+    let suggestions;
+    try {
+      suggestions = await AIService.suggestFromPhotos(photos);
+    } catch (aiError) {
+      // Le quota a été réservé avant l'appel IA (voir UsageService.assertQuotaAndReserve) : s'il
+      // échoue, même pour une erreur SDK brute (image invalide, service indisponible...) et pas
+      // seulement une AIGenerationError, l'unité réservée doit être rendue.
+      await UsageService.release(authContext.organizationId, 1);
+      throw aiError;
+    }
     return NextResponse.json({ suggestions });
   } catch (error) {
     if (error instanceof LotNotFoundError) {
@@ -35,6 +45,12 @@ export const POST = withOrgAuth<Params>(async (_req, authContext, { id }) => {
       return NextResponse.json({ error: "quota_exceeded", message: error.message }, { status: 429 });
     }
     if (error instanceof AIGenerationError) {
+      return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
+    }
+    // Erreur SDK Anthropic brute (image invalide, service indisponible, quota fournisseur...) : pas
+    // une AIGenerationError (celle-ci enveloppe une sortie mal formée, pas un échec de l'appel
+    // lui-même), mais reste une défaillance côté IA à renvoyer proprement plutôt qu'un 500 opaque.
+    if (error instanceof Anthropic.APIError) {
       return NextResponse.json({ error: "ai_generation_failed", message: error.message }, { status: 502 });
     }
     throw error;
