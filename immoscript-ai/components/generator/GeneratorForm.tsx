@@ -218,8 +218,9 @@ export function GeneratorForm({
         <ContentTypeChecklist value={requestedTypes} onChange={setRequestedTypes} />
 
         <div className="mt-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Variantes (A/B testing)</label>
+          <label htmlFor="generator-variants" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Variantes (A/B testing)</label>
           <select
+            id="generator-variants"
             value={variantsCount}
             onChange={(e) => setVariantsCount(Number(e.target.value) as 1 | 2 | 3)}
             className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
@@ -237,8 +238,9 @@ export function GeneratorForm({
               Script vidéo
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Angle</label>
+              <label htmlFor="generator-angle" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Angle</label>
               <select
+                id="generator-angle"
                 value={angle}
                 onChange={(e) => setAngle(e.target.value as VideoAngle | "")}
                 className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
@@ -252,8 +254,9 @@ export function GeneratorForm({
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Durée</label>
+              <label htmlFor="generator-duration" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Durée</label>
               <select
+                id="generator-duration"
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value) as VideoDuration)}
                 className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"

@@ -193,8 +193,8 @@ export function LotForm({
             <FormField label="Prix (€)" type="number" {...field("price")} />
             <FormField label="Prix/m² (€)" type="number" {...field("pricePerSqm")} />
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Disponibilité</label>
-              <select {...field("availability")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+              <label htmlFor="lot-availability" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Disponibilité</label>
+              <select id="lot-availability" {...field("availability")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
                 <option value="">—</option>
                 <option value="disponible">Disponible</option>
                 <option value="réservé">Réservé</option>
@@ -240,8 +240,8 @@ export function LotForm({
         </p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe DPE</label>
-            <select {...field("dpeEnergyClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+            <label htmlFor="lot-dpe-energy" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe DPE</label>
+            <select id="lot-dpe-energy" {...field("dpeEnergyClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
               <option value="">—</option>
               {DPE_CLASSES.map((c) => (
                 <option key={c} value={c}>
@@ -251,8 +251,8 @@ export function LotForm({
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe GES</label>
-            <select {...field("dpeGesClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
+            <label htmlFor="lot-dpe-ges" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Classe GES</label>
+            <select id="lot-dpe-ges" {...field("dpeGesClass")} className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
               <option value="">—</option>
               {DPE_CLASSES.filter((c) => c !== "vierge").map((c) => (
                 <option key={c} value={c}>
