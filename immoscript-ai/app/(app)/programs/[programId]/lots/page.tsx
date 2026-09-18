@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Role } from "@prisma/client";
 import { getAuthContext } from "@/lib/auth";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 import { LotsManager } from "@/components/lots/LotsManager";
@@ -31,7 +32,13 @@ export default async function ProgramLotsPage({
         <h1 className="mt-1 text-2xl font-semibold">Lots</h1>
       </div>
 
-      <LotsManager programId={programId} lots={program.lots} programIsCoOwnership={program.isCoOwnership} programCondoLotsCount={program.condoLotsCount} />
+      <LotsManager
+        programId={programId}
+        lots={program.lots}
+        programIsCoOwnership={program.isCoOwnership}
+        programCondoLotsCount={program.condoLotsCount}
+        canManage={authContext.role !== Role.COLLABORATEUR}
+      />
     </div>
   );
 }

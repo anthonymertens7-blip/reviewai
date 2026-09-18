@@ -9,7 +9,18 @@ interface Photo {
   mimeType: string;
 }
 
-export function LotPhotosPanel({ lotId, currentSpecialFeatures }: { lotId: string; currentSpecialFeatures?: string | null }) {
+export function LotPhotosPanel({
+  lotId,
+  currentSpecialFeatures,
+  canManage,
+}: {
+  lotId: string;
+  currentSpecialFeatures?: string | null;
+  /** Uploader/supprimer une photo ou générer une description sont réservés au Promoteur/Admin côté
+   * backend (minRole "PROMOTEUR") — un Collaborateur garde un accès en lecture seule aux photos
+   * déjà présentes (GET reste ouvert à tous les rôles ayant accès au programme). */
+  canManage: boolean;
+}) {
   const router = useRouter();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,8 +60,18 @@ export function LotPhotosPanel({ lotId, currentSpecialFeatures }: { lotId: strin
   }
 
   async function handleDelete(photoId: string) {
+    const removed = photos.find((photo) => photo.id === photoId);
     setPhotos((p) => p.filter((photo) => photo.id !== photoId));
-    await fetch(`/api/lots/${lotId}/photos/${photoId}`, { method: "DELETE" });
+    setError(null);
+
+    const res = await fetch(`/api/lots/${lotId}/photos/${photoId}`, { method: "DELETE" });
+    if (!res.ok && removed) {
+      // La suppression a échoué côté serveur : on annule la mise à jour optimiste plutôt que de
+      // laisser la photo disparaître silencieusement de l'écran alors qu'elle existe toujours
+      // (même principe que BrandVoiceSection.handleDelete).
+      setPhotos((p) => [...p, removed]);
+      setError("La suppression de la photo a échoué.");
+    }
   }
 
   async function handleGenerate() {
@@ -98,48 +119,56 @@ export function LotPhotosPanel({ lotId, currentSpecialFeatures }: { lotId: strin
     <div className="mt-3 rounded-2xl bg-gray-50 p-3 dark:bg-gray-900">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Photos du lot</p>
-        <label className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
-          <ImagePlus className="h-3.5 w-3.5" />
-          {isUploading ? "Envoi..." : "Ajouter des photos"}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            hidden
-            disabled={isUploading}
-            onChange={(e) => handleUpload(e.target.files)}
-          />
-        </label>
+        {canManage && (
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
+            <ImagePlus className="h-3.5 w-3.5" />
+            {isUploading ? "Envoi..." : "Ajouter des photos"}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              hidden
+              disabled={isUploading}
+              onChange={(e) => handleUpload(e.target.files)}
+            />
+          </label>
+        )}
       </div>
 
       {photos.length === 0 ? (
-        <p className="text-xs text-gray-500 dark:text-gray-400">Aucune photo. Ajoutez-en pour générer une description ancrée sur le réel.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {canManage ? "Aucune photo. Ajoutez-en pour générer une description ancrée sur le réel." : "Aucune photo."}
+        </p>
       ) : (
         <div className="mb-3 flex flex-wrap gap-2">
           {photos.map((photo) => (
             <div key={photo.id} className="group relative h-16 w-16 overflow-hidden rounded-lg border dark:border-gray-700">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/api/lots/${lotId}/photos/${photo.id}`} alt="" className="h-full w-full object-cover" />
-              <button
-                onClick={() => handleDelete(photo.id)}
-                aria-label="Supprimer la photo"
-                className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white opacity-0 group-hover:opacity-100"
-              >
-                <X className="h-3 w-3" />
-              </button>
+              {canManage && (
+                <button
+                  onClick={() => handleDelete(photo.id)}
+                  aria-label="Supprimer la photo"
+                  className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white opacity-0 group-hover:opacity-100"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      <button
-        onClick={handleGenerate}
-        disabled={photos.length === 0 || isGenerating}
-        className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 text-xs font-medium hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-gray-800"
-      >
-        <Wand2 className={`h-3.5 w-3.5 ${isGenerating ? "animate-pulse" : ""}`} />
-        {isGenerating ? "Analyse des photos..." : "Générer une description depuis les photos"}
-      </button>
+      {canManage && (
+        <button
+          onClick={handleGenerate}
+          disabled={photos.length === 0 || isGenerating}
+          className="flex items-center gap-1.5 rounded-md border dark:border-gray-700 px-3 py-1.5 text-xs font-medium hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-gray-800"
+        >
+          <Wand2 className={`h-3.5 w-3.5 ${isGenerating ? "animate-pulse" : ""}`} />
+          {isGenerating ? "Analyse des photos..." : "Générer une description depuis les photos"}
+        </button>
+      )}
 
       {applied && <p className="mt-2 text-xs text-teal-600 dark:text-teal-400">Ajouté aux caractéristiques spéciales du lot ✓</p>}
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
