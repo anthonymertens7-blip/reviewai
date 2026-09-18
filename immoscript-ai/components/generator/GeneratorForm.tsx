@@ -174,6 +174,14 @@ export function GeneratorForm({
             onChange={(e) => {
               const preset = brandVoicePresets.find((p) => p.id === e.target.value);
               if (!preset) return;
+              // Charger un préréglage écrase Cible/Ton/Argument/CTA d'un coup : si l'un de ces
+              // champs contient déjà du texte saisi à la main, on demande confirmation plutôt que
+              // de le perdre silencieusement (même principe que les suppressions dans cette app).
+              const hasExistingText = [target, tone, mainArgument, cta].some((v) => v.trim().length > 0);
+              if (hasExistingText && !confirm("Remplacer le contenu déjà saisi (cible, ton, argument, appel à l'action) par ce préréglage ?")) {
+                e.target.value = "";
+                return;
+              }
               if (preset.target) setTarget(preset.target);
               if (preset.tone) setTone(preset.tone);
               if (preset.mainArgument) setMainArgument(preset.mainArgument);
