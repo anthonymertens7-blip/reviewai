@@ -161,7 +161,7 @@ export function LotsManager({
                     <DeleteLotButton lotId={lot.id} />
                   </div>
                 </div>
-                {isExpanded && <LotPhotosPanel lotId={lot.id} />}
+                {isExpanded && <LotPhotosPanel lotId={lot.id} currentSpecialFeatures={lot.specialFeatures} />}
               </li>
             );
           })}

@@ -9,7 +9,7 @@ interface Photo {
   mimeType: string;
 }
 
-export function LotPhotosPanel({ lotId }: { lotId: string }) {
+export function LotPhotosPanel({ lotId, currentSpecialFeatures }: { lotId: string; currentSpecialFeatures?: string | null }) {
   const router = useRouter();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,10 +75,15 @@ export function LotPhotosPanel({ lotId }: { lotId: string }) {
 
     const { suggestions } = (await res.json()) as { suggestions: string[] };
 
+    // Ajoute aux caractéristiques déjà saisies plutôt que de les remplacer : un promoteur qui a
+    // déjà rédigé du texte manuel (avant d'ajouter des photos) ne doit pas le perdre en un clic.
+    const existing = currentSpecialFeatures?.trim();
+    const merged = existing ? `${existing}, ${suggestions.join(", ")}` : suggestions.join(", ");
+
     const patchRes = await fetch(`/api/lots/${lotId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ specialFeatures: suggestions.join(", ") }),
+      body: JSON.stringify({ specialFeatures: merged }),
     });
 
     if (patchRes.ok) {
