@@ -244,6 +244,23 @@ function truncateAtArtifact(value: string): string {
  * Un autre type d'erreur (mauvais format sur un champ qui n'est pas concerné) indique un problème
  * plus profond qu'une simple omission, donc pas de réparation.
  */
+function getAtPath(obj: unknown, path: (string | number)[]): unknown {
+  let current = obj;
+  for (const key of path) {
+    if (typeof current !== "object" || current === null) return undefined;
+    current = (current as Record<string | number, unknown>)[key];
+  }
+  return current;
+}
+
+function setAtPath(obj: Record<string | number, unknown>, path: (string | number)[], value: unknown): void {
+  let current = obj;
+  for (let i = 0; i < path.length - 1; i++) {
+    current = current[path[i]!] as Record<string | number, unknown>;
+  }
+  current[path[path.length - 1]!] = value;
+}
+
 async function repairMissingFields(
   partial: unknown,
   error: z.ZodError,
@@ -261,27 +278,35 @@ async function repairMissingFields(
     ),
   ];
 
-  const artifactFields = [
-    ...new Set(
-      error.issues
-        .filter((issue) => issue.code === "custom" && issue.path.length === 1)
-        .map((issue) => String(issue.path[0]))
-    ),
-  ];
+  // Un artefact "custom" (cleanText, voir schemas.ts) peut être détecté à n'importe quelle
+  // profondeur, pas seulement sur un champ top-level : highlights/hashtags sont des tableaux de
+  // chaînes (path ["highlights", i]), et les scènes de script vidéo sont des objets dans un
+  // tableau (path ["scenes", i, "visual"]). Restreindre ce nettoyage aux erreurs de longueur 1
+  // ratait exactement les champs que le motif d'artefact cible le plus (highlights, hashtags,
+  // textOverlay, voiceover, visual), faisant jeter tout un contenu par ailleurs valide au lieu de
+  // le réparer.
+  const artifactIssues = error.issues.filter((issue) => issue.code === "custom");
 
-  if (missingFields.length === 0 || missingFields.length + artifactFields.length !== error.issues.length) {
+  if (missingFields.length + artifactIssues.length !== error.issues.length) {
     return null;
   }
 
-  const cleanedPartial = { ...(partial as Record<string, unknown>) };
-  for (const field of artifactFields) {
-    const value = cleanedPartial[field];
+  const cleanedPartial = JSON.parse(JSON.stringify(partial)) as Record<string, unknown>;
+  for (const issue of artifactIssues) {
+    const value = getAtPath(cleanedPartial, issue.path);
     if (typeof value !== "string") {
       return null;
     }
-    cleanedPartial[field] = truncateAtArtifact(value);
+    setAtPath(cleanedPartial, issue.path, truncateAtArtifact(value));
   }
   partial = cleanedPartial;
+
+  if (missingFields.length === 0) {
+    // Uniquement des artefacts, aucun champ manquant : le nettoyage local suffit, pas besoin d'un
+    // appel IA supplémentaire pour redemander quoi que ce soit.
+    const cleanedAttempt = schema.safeParse(partial);
+    return cleanedAttempt.success ? cleanedAttempt.data : null;
+  }
 
   const fullJsonSchema = zodToJsonSchema(schema) as JsonSchemaObject;
   const properties = (fullJsonSchema.properties ?? {}) as Record<string, unknown>;
