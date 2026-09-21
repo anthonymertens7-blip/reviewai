@@ -70,12 +70,17 @@ export function BrandVoiceSection() {
     setPresets((p) => p.filter((preset) => preset.id !== id));
     setError(null);
 
-    const res = await fetch(`/api/brand-voice-presets/${id}`, { method: "DELETE" });
-    if (!res.ok && removed) {
-      // La suppression a échoué côté serveur : on annule la mise à jour optimiste plutôt que de
-      // laisser le préréglage disparaître silencieusement de l'écran alors qu'il existe toujours.
-      setPresets((p) => [...p, removed].sort((a, b) => a.name.localeCompare(b.name)));
-      setError("La suppression a échoué.");
+    try {
+      const res = await fetch(`/api/brand-voice-presets/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("request_failed");
+    } catch {
+      // Échec réseau (hors ligne, requête interrompue) ou réponse serveur non-ok : dans les deux
+      // cas on annule la mise à jour optimiste plutôt que de laisser le préréglage disparaître
+      // silencieusement de l'écran alors qu'il existe toujours côté serveur.
+      if (removed) {
+        setPresets((p) => [...p, removed].sort((a, b) => a.name.localeCompare(b.name)));
+        setError("La suppression a échoué.");
+      }
     }
   }
 
