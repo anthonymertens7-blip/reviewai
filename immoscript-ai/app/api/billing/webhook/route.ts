@@ -42,12 +42,19 @@ export async function POST(req: Request) {
       const plan = priceId ? planForStripePriceId(priceId) : null;
       const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
 
-      if (plan) {
+      // "incomplete" (paiement pas encore confirmé) / "past_due" / "unpaid" : l'abonnement existe
+      // côté Stripe mais l'argent n'a pas (encore, ou plus) été encaissé. Un moyen de paiement à
+      // encaissement différé (prélèvement SEPA, courant en B2B France) laisse l'abonnement dans cet
+      // état plusieurs jours ouvrés avant confirmation — sans ce filtre, l'organisation recevait le
+      // quota complet du plan dès la création de l'abonnement, avant toute confirmation de paiement.
+      const isConfirmed = subscription.status === "active" || subscription.status === "trialing";
+
+      if (plan && isConfirmed) {
         await prisma.organization.updateMany({
           where: { stripeCustomerId: customerId },
           data: { plan, stripeSubscriptionId: subscription.id },
         });
-      } else {
+      } else if (!plan) {
         // Price ID reçu de Stripe qui ne correspond à aucune variable STRIPE_PRICE_* configurée :
         // signale une désynchronisation config Stripe / lib/billing/plans.ts plutôt que d'échouer
         // silencieusement en laissant l'organisation sur son ancien plan.

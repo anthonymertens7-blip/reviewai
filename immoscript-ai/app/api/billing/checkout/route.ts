@@ -59,14 +59,22 @@ export const POST = withOrgAuth(
     // directement l'abonnement (avec proration), ce qui déclenche customer.subscription.updated —
     // le webhook reste la seule source de vérité qui écrit Organization.plan.
     if (org.stripeSubscriptionId) {
-      const subscription = await stripe.subscriptions.retrieve(org.stripeSubscriptionId);
-      const itemId = subscription.items.data[0]?.id;
-      if (itemId) {
-        await stripe.subscriptions.update(org.stripeSubscriptionId, {
-          items: [{ id: itemId, price: priceId }],
-          proration_behavior: "create_prorations",
-        });
-        return NextResponse.json({ url: `${origin}/settings?checkout=success` });
+      try {
+        const subscription = await stripe.subscriptions.retrieve(org.stripeSubscriptionId);
+        const itemId = subscription.items.data[0]?.id;
+        if (itemId && subscription.status !== "canceled") {
+          await stripe.subscriptions.update(org.stripeSubscriptionId, {
+            items: [{ id: itemId, price: priceId }],
+            proration_behavior: "create_prorations",
+          });
+          return NextResponse.json({ url: `${origin}/settings?checkout=success` });
+        }
+      } catch {
+        // L'abonnement stocké en base peut être périmé (ex: résilié via le portail client juste
+        // avant ce clic — le webhook customer.subscription.deleted qui aurait remis
+        // stripeSubscriptionId à null n'a pas encore été livré/traité). Plutôt que de laisser
+        // stripe.subscriptions.retrieve/update échouer en 500 opaque, on retombe sur la création
+        // d'un nouvel abonnement ci-dessous, comme pour une toute première souscription.
       }
     }
 
