@@ -129,6 +129,28 @@ Erreurs (client, serveur, edge) capturées via [Sentry](https://sentry.io) (`@se
   affiche l'auteur de chaque retour avec un lien `mailto:` pré-rempli pour y répondre
   directement.
 
+## Tests
+
+```bash
+DATABASE_URL="postgresql://..." npm test
+```
+
+Quelques tests d'intégration ciblés (Vitest, voir `vitest.config.mts`) sur la logique la plus
+sensible aux régressions silencieuses — pas une suite exhaustive, mais assez pour verrouiller ce
+qui a déjà cassé une fois :
+
+- `lib/services/UsageService.test.ts` : le quota mensuel ne doit jamais être dépassé sous accès
+  concurrent (20 réservations en parallèle pour un quota de 5 → exactement 5 doivent réussir).
+- `lib/services/StatsService.test.ts` : le classement "publications les plus performantes" ne doit
+  jamais faire remonter un post sans likes saisis au-dessus d'un post ayant de vrais likes (piège
+  NULLS FIRST de PostgreSQL sur un tri décroissant).
+- `lib/billing/subscriptionStatus.test.ts` : le plan payant n'est accordé que pour un abonnement
+  Stripe `active`/`trialing`, jamais `incomplete`/`past_due`/etc.
+
+Ces tests tournent contre une vraie base Postgres (comme `DATABASE_URL` pour le reste de l'app) et
+non contre un mock Prisma : ce sont précisément des comportements que seul le vrai moteur SQL
+exerce fidèlement (verrouillage de ligne, ordre NULLS FIRST/LAST) — un mock les aurait masqués.
+
 ## Points d'architecture à connaître
 
 - **Ne jamais importer `lib/prisma.ts` directement dans du code métier.** Toute lecture/

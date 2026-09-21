@@ -11,7 +11,9 @@ import { quotaForPlan } from "@/lib/billing/plans";
 // l'organisation active — c'est son propre usage de test/démo, pas celui d'un client.
 export class QuotaExceededError extends Error {}
 
-function currentPeriod() {
+// Exporté uniquement pour permettre aux tests de calculer le même periodStart que
+// assertQuotaAndReserve (voir UsageService.test.ts) sans dupliquer ce calcul.
+export function currentPeriod() {
   const now = new Date();
   const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
