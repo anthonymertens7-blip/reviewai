@@ -24,22 +24,29 @@ export function FeedbackButton() {
     setIsSubmitting(true);
     setError(null);
 
-    const res = await fetch("/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, page: pathname }),
-    });
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, page: pathname }),
+      });
 
-    setIsSubmitting(false);
+      if (!res.ok) {
+        setError("L'envoi a échoué. Réessayez.");
+        return;
+      }
 
-    if (!res.ok) {
+      setIsSent(true);
+      setMessage("");
+      setTimeout(close, 1500);
+    } catch {
+      // Échec réseau (hors ligne, requête interrompue) : sans ce catch, isSubmitting restait à
+      // true indéfiniment — le bouton "Envoyer" restait désactivé sans recours autre qu'un
+      // rechargement complet de la page.
       setError("L'envoi a échoué. Réessayez.");
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSent(true);
-    setMessage("");
-    setTimeout(close, 1500);
   }
 
   return (

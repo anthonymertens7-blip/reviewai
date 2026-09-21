@@ -86,53 +86,60 @@ export function GeneratorForm({
       cta: cta || undefined,
     };
 
-    const res = await fetch(isBulk ? "/api/generate/bulk" : "/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        programId,
-        ...(isBulk ? {} : { lotId: lotId || undefined }),
-        requestedTypes,
-        angle: needsVideoParams && angle ? angle : undefined,
-        duration: needsVideoParams ? duration : undefined,
-        variantsCount,
-        ...marketing,
-      }),
-    });
+    try {
+      const res = await fetch(isBulk ? "/api/generate/bulk" : "/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programId,
+          ...(isBulk ? {} : { lotId: lotId || undefined }),
+          requestedTypes,
+          angle: needsVideoParams && angle ? angle : undefined,
+          duration: needsVideoParams ? duration : undefined,
+          variantsCount,
+          ...marketing,
+        }),
+      });
 
-    setIsGenerating(false);
-
-    if (res.status === 429) {
-      const body = await res.json().catch(() => null);
-      setError(body?.message ?? "Quota IA mensuel atteint.");
-      return;
-    }
-
-    if (!res.ok && res.status !== 502) {
-      setError("La génération a échoué. Vérifiez les paramètres et réessayez.");
-      return;
-    }
-
-    const body = await res.json();
-
-    if (isBulk) {
-      const grouped = (body.results ?? []).map((r: { lot: { id: string; reference: string }; contents: ContentCardData[]; errors: string[] }) => ({
-        lotId: r.lot.id,
-        lotReference: r.lot.reference,
-        contents: r.contents,
-        errors: r.errors,
-      }));
-      setBulkResults(grouped);
-      const totalErrors = grouped.reduce((sum: number, g: { errors: string[] }) => sum + g.errors.length, 0);
-      if (totalErrors > 0) {
-        setError(`${totalErrors} contenu(s) n'ont pas pu être générés sur l'ensemble des lots.`);
+      if (res.status === 429) {
+        const body = await res.json().catch(() => null);
+        setError(body?.message ?? "Quota IA mensuel atteint.");
+        return;
       }
-      return;
-    }
 
-    setResults(body.contents ?? []);
-    if (body.errors?.length) {
-      setError(`${body.errors.length} contenu(s) n'ont pas pu être générés.`);
+      if (!res.ok && res.status !== 502) {
+        setError("La génération a échoué. Vérifiez les paramètres et réessayez.");
+        return;
+      }
+
+      const body = await res.json();
+
+      if (isBulk) {
+        const grouped = (body.results ?? []).map((r: { lot: { id: string; reference: string }; contents: ContentCardData[]; errors: string[] }) => ({
+          lotId: r.lot.id,
+          lotReference: r.lot.reference,
+          contents: r.contents,
+          errors: r.errors,
+        }));
+        setBulkResults(grouped);
+        const totalErrors = grouped.reduce((sum: number, g: { errors: string[] }) => sum + g.errors.length, 0);
+        if (totalErrors > 0) {
+          setError(`${totalErrors} contenu(s) n'ont pas pu être générés sur l'ensemble des lots.`);
+        }
+        return;
+      }
+
+      setResults(body.contents ?? []);
+      if (body.errors?.length) {
+        setError(`${body.errors.length} contenu(s) n'ont pas pu être générés.`);
+      }
+    } catch {
+      // Échec réseau (connexion coupée pendant un appel IA potentiellement long) : sans ce catch,
+      // isGenerating restait à true indéfiniment — le bouton "Générer" restait bloqué en chargement
+      // sans aucun message, sans autre recours qu'un rechargement complet de la page.
+      setError("La génération a échoué (connexion perdue). Réessayez.");
+    } finally {
+      setIsGenerating(false);
     }
   }
 
