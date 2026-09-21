@@ -27,6 +27,11 @@ model User {
   role           Role     @default(COLLABORATEUR)
   email          String
   name           String?
+  // Préférence d'apparence (voir lib/appearance/backgroundPresets.ts) : en base, pas seulement en
+  // localStorage, pour qu'elle suive l'utilisateur d'un appareil/navigateur à l'autre. null = pas
+  // encore de préférence explicite enregistrée sur le compte (le client retombe sur son réglage
+  // local, ou le défaut).
+  backgroundPreset String?
   createdAt      DateTime @default(now())
 
   programAccess ProgramAccess[]
