@@ -13,10 +13,10 @@ export default async function ProgramLibraryPage({
   searchParams,
 }: {
   params: Promise<{ programId: string }>;
-  searchParams: Promise<{ type?: string; lotId?: string }>;
+  searchParams: Promise<{ type?: string; lotId?: string; q?: string }>;
 }) {
   const { programId } = await params;
-  const { type, lotId } = await searchParams;
+  const { type, lotId, q } = await searchParams;
   const authContext = await getAuthContext();
 
   let program;
@@ -29,7 +29,7 @@ export default async function ProgramLibraryPage({
     throw error;
   }
 
-  const contents = await authContext.db.generatedContent.findMany({
+  let contents = await authContext.db.generatedContent.findMany({
     where: {
       programId,
       status: { not: "archived" },
@@ -38,6 +38,17 @@ export default async function ProgramLibraryPage({
     },
     orderBy: { createdAt: "desc" },
   });
+
+  // Filtre texte libre appliqué après coup plutôt qu'en base : le contenu (titre, description,
+  // légende, hashtags, scènes...) est stocké en JSON dont la forme diffère selon le type
+  // (ListingOutput/SocialOutput/VideoScriptOutput), donc pas de chemin JSON unique à cibler avec
+  // les filtres typés de Prisma — chercher dans le JSON sérialisé couvre tous les types d'un coup,
+  // sans SQL brut, et sans coût supplémentaire réel puisque cette page charge déjà tout en mémoire
+  // (pas de pagination sur la bibliothèque).
+  const trimmedQuery = q?.trim().toLowerCase();
+  if (trimmedQuery) {
+    contents = contents.filter((content) => JSON.stringify(content.content).toLowerCase().includes(trimmedQuery));
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -53,6 +64,20 @@ export default async function ProgramLibraryPage({
       </div>
 
       <form className="flex flex-wrap items-end gap-3 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4" method="get">
+        <div>
+          <label htmlFor="q" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Recherche
+          </label>
+          <input
+            type="search"
+            id="q"
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Mot-clé dans le contenu..."
+            className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
+          />
+        </div>
+
         <div>
           <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Type de contenu
@@ -86,7 +111,7 @@ export default async function ProgramLibraryPage({
         <button type="submit" className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
           Filtrer
         </button>
-        {(type || lotId) && (
+        {(type || lotId || q) && (
           <Link href={`/library/${programId}`} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">
             Réinitialiser
           </Link>
