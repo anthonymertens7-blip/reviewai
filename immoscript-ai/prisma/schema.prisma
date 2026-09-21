@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Organization {
-  id            String         @id // = Clerk organization id
-  name          String
-  plan          String         @default("trial") // trial, starter, pro, agency
-  createdAt     DateTime       @default(now())
-  users         User[]
-  programs      Program[]
-  usageCounters UsageCounter[]
-  brandVoicePresets BrandVoicePreset[]
+  id                   String         @id // = Clerk organization id
+  name                 String
+  plan                 String         @default("trial") // trial, starter, pro, agency — voir lib/billing/plans.ts
+  stripeCustomerId     String?        @unique // créé au premier passage par le checkout Stripe
+  stripeSubscriptionId String?        @unique // abonnement actif ; null si résilié ou jamais souscrit
+  createdAt            DateTime       @default(now())
+  users                User[]
+  programs             Program[]
+  usageCounters        UsageCounter[]
+  brandVoicePresets    BrandVoicePreset[]
 }
 
 model User {

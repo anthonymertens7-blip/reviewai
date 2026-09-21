@@ -23,9 +23,8 @@ implémentées :
 - Page Générateur (positionnement, cible, ton, CTA, checklist de types de contenu,
   paramètres vidéo) + affichage des résultats (copier / modifier / régénérer)
 
-**Pas encore fait** (voir le plan de phases du document d'architecture) : quotas/usage
-réels, facturation Stripe, invitations d'équipe via Clerk, export PDF/DOCX, panel admin,
-monitoring Sentry.
+**Pas encore fait** (voir le plan de phases du document d'architecture) : inscription
+libre-service, monitoring Sentry.
 
 ## Démarrage
 
@@ -48,6 +47,8 @@ monitoring Sentry.
    - `ANTHROPIC_API_KEY` : clé API Anthropic
    - `RESEND_API_KEY` / `DIGEST_FROM_EMAIL` / `CRON_SECRET` (optionnels) : digest hebdomadaire
      par email — voir "Digest hebdomadaire" ci-dessous
+   - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_PRICE_*` (optionnels) :
+     facturation par abonnement — voir "Facturation" ci-dessous
 
 3. Appliquer le schéma à la base :
 
@@ -78,6 +79,25 @@ organisation. Fonctionnement :
 - `vercel.json` déclenche cette route chaque lundi 8h UTC si l'app est déployée sur
   Vercel (Vercel Cron). Sur un autre hébergeur, planifier un appel HTTP équivalent
   (ex: cron système + `curl`) avec le même header d'autorisation.
+
+## Facturation
+
+Abonnement par plan (`lib/billing/plans.ts` : Essai gratuit / Starter / Pro / Agence),
+géré via Stripe Checkout + Billing Portal :
+
+- Onglet **Facturation** dans les paramètres (visible ADMIN/PROMOTEUR uniquement) :
+  usage du mois, changement de plan, accès au portail client Stripe.
+- `POST /api/billing/checkout` démarre un abonnement (Stripe Checkout Session) ;
+  `POST /api/billing/portal` ouvre le portail Stripe (moyen de paiement, factures,
+  résiliation) — tous deux nécessitent `STRIPE_SECRET_KEY` et le Price ID du plan
+  concerné (`STRIPE_PRICE_STARTER` / `_PRO` / `_AGENCY`), sinon 501.
+- `POST /api/billing/webhook` (route publique, authentifiée par signature Stripe via
+  `STRIPE_WEBHOOK_SECRET`, pas par session Clerk) est la source de vérité du plan actif
+  d'une organisation : elle applique `customer.subscription.created/updated/deleted` à
+  `Organization.plan`. À configurer côté Stripe Dashboard sur
+  `<votre domaine>/api/billing/webhook`.
+- Sans `STRIPE_SECRET_KEY`, toute la facturation répond 501 (`billing_not_configured`)
+  plutôt que de planter — utile en dev/démo avant de brancher un compte Stripe réel.
 
 ## Points d'architecture à connaître
 
