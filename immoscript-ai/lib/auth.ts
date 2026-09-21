@@ -2,6 +2,7 @@ import { auth as clerkAuth, clerkClient, currentUser } from "@clerk/nextjs/serve
 import { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getScopedPrismaClient, type ScopedPrismaClient } from "@/lib/db/scoped-client";
+import { OnboardingService } from "@/lib/services/OnboardingService";
 
 export class UnauthenticatedError extends Error {}
 export class NoActiveOrganizationError extends Error {}
@@ -47,6 +48,19 @@ export interface AuthContext {
   db: ScopedPrismaClient;
 }
 
+// Ne seed qu'une fois par organisation (flag Organization.onboardingSeeded) — jamais recréé après
+// coup, y compris si supprimé par l'utilisateur. Coût nul pour les requêtes suivantes : ce flag
+// est déjà lu dans le même upsert que la synchronisation JIT de l'organisation, donc aucune requête
+// supplémentaire pour l'immense majorité des appels (organisation déjà seedée).
+// Exporté pour être testé directement (voir lib/auth.test.ts) sans avoir à simuler une session
+// Clerk complète — la logique intéressante à verrouiller (jamais reseedé une fois le flag posé)
+// est ici, indépendamment de getAuthContext.
+export async function ensureOnboardingSeed(organizationId: string, userId: string, alreadySeeded: boolean) {
+  if (alreadySeeded) return;
+  await OnboardingService.seedDemoProgram(organizationId, userId);
+  await prisma.organization.update({ where: { id: organizationId }, data: { onboardingSeeded: true } });
+}
+
 /**
  * Résout la session Clerk courante, synchronise (JIT) l'Organization et le
  * User correspondants dans notre base, et retourne un client Prisma déjà
@@ -66,26 +80,29 @@ export async function getAuthContext(): Promise<AuthContext> {
   const role = mapClerkOrgRole(orgRole);
 
   if (isLocalTestMode()) {
-    await prisma.organization.upsert({
+    const org = await prisma.organization.upsert({
       where: { id: orgId },
       create: { id: orgId, name: "Organisation de test locale" },
       update: {},
+      select: { onboardingSeeded: true },
     });
     await prisma.user.upsert({
       where: { id: userId },
       create: { id: userId, organizationId: orgId, role, email: LOCAL_TEST_EMAIL, name: "Testeur local" },
       update: { organizationId: orgId, role },
     });
+    await ensureOnboardingSeed(orgId, userId, org.onboardingSeeded);
     return { userId, organizationId: orgId, role, db: getScopedPrismaClient(orgId) };
   }
 
   const [user, client] = await Promise.all([currentUser(), clerkClient()]);
   const organization = await client.organizations.getOrganization({ organizationId: orgId });
 
-  await prisma.organization.upsert({
+  const org = await prisma.organization.upsert({
     where: { id: orgId },
     create: { id: orgId, name: organization.name },
     update: { name: organization.name },
+    select: { onboardingSeeded: true },
   });
 
   await prisma.user.upsert({
@@ -103,6 +120,8 @@ export async function getAuthContext(): Promise<AuthContext> {
       email: user?.primaryEmailAddress?.emailAddress ?? undefined,
     },
   });
+
+  await ensureOnboardingSeed(orgId, userId, org.onboardingSeeded);
 
   return {
     userId,

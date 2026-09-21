@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight, Check, ShieldCheck, Sparkles, Video } from "lucide-react";
 import { PersonalizedGreeting } from "@/components/home/PersonalizedGreeting";
+import { ShowcaseExample } from "@/components/home/ShowcaseExample";
 import { CARD_ACCENT_STYLES, type CardAccent } from "@/components/ui/cardAccents";
 import { PLANS, PLAN_ORDER, formatPlanPrice } from "@/lib/billing/plans";
 import { SUPPORT_EMAIL } from "@/lib/support";
@@ -67,6 +68,8 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        <ShowcaseExample />
 
         <div className="w-full">
           <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">Tarifs</h2>

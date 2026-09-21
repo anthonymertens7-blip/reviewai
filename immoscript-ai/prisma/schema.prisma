@@ -13,6 +13,10 @@ model Organization {
   plan                 String         @default("trial") // trial, starter, pro, agency — voir lib/billing/plans.ts
   stripeCustomerId     String?        @unique // créé au premier passage par le checkout Stripe
   stripeSubscriptionId String?        @unique // abonnement actif ; null si résilié ou jamais souscrit
+  // Vrai une fois le programme de démonstration créé pour cette organisation (voir
+  // lib/services/OnboardingService.ts) — jamais recréé après coup, y compris si l'utilisateur
+  // supprime ce programme d'exemple (sans ce flag, il réapparaîtrait à chaque nouvelle requête).
+  onboardingSeeded     Boolean        @default(false)
   createdAt            DateTime       @default(now())
   users                User[]
   programs             Program[]
