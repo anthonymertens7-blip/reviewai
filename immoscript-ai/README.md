@@ -23,8 +23,8 @@ implémentées :
 - Page Générateur (positionnement, cible, ton, CTA, checklist de types de contenu,
   paramètres vidéo) + affichage des résultats (copier / modifier / régénérer)
 
-**Pas encore fait** (voir le plan de phases du document d'architecture) : mentions
-légales (CGU/CGV/confidentialité) et canal de support.
+Voir le plan de phases du document d'architecture pour la suite (au-delà de ce qui est
+listé ci-dessus).
 
 ## Démarrage
 
@@ -51,6 +51,7 @@ légales (CGU/CGV/confidentialité) et canal de support.
      facturation par abonnement — voir "Facturation" ci-dessous
    - `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` (optionnels) : monitoring d'erreurs —
      voir "Monitoring" ci-dessous
+   - `SUPPORT_EMAIL` (optionnel) : adresse affichée comme canal de support dans l'app
 
 3. Appliquer le schéma à la base :
 
@@ -115,6 +116,18 @@ Erreurs (client, serveur, edge) capturées via [Sentry](https://sentry.io) (`@se
 - `SENTRY_ORG` / `SENTRY_PROJECT` / `SENTRY_AUTH_TOKEN` (optionnels, build uniquement) : upload
   des source maps pour des stack traces lisibles en production — sans eux, `next build` fonctionne
   normalement, juste sans source maps côté Sentry.
+
+## Pages légales et support
+
+- `/mentions-legales`, `/cgu`, `/cgv`, `/confidentialite` : pages publiques (routes
+  déclarées dans `middleware.ts`), avec l'identité de la société en placeholders
+  (`lib/legal/company.ts`) tant qu'aucune société n'est immatriculée — **à remplacer et
+  à faire relire par un juriste avant toute mise en ligne publique**. Le contenu des CGV
+  (grille tarifaire) se dérive automatiquement de `lib/billing/plans.ts`.
+- Canal de support : une adresse e-mail (`SUPPORT_EMAIL`), affichée via un lien
+  "Contacter le support" dans l'app et sur la page d'accueil. La page `/admin/feedback`
+  affiche l'auteur de chaque retour avec un lien `mailto:` pré-rempli pour y répondre
+  directement.
 
 ## Points d'architecture à connaître
 

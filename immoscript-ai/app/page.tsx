@@ -4,6 +4,7 @@ import { ArrowRight, Check, ShieldCheck, Sparkles, Video } from "lucide-react";
 import { PersonalizedGreeting } from "@/components/home/PersonalizedGreeting";
 import { CARD_ACCENT_STYLES, type CardAccent } from "@/components/ui/cardAccents";
 import { PLANS, PLAN_ORDER, formatPlanPrice } from "@/lib/billing/plans";
+import { SUPPORT_EMAIL } from "@/lib/support";
 
 const FEATURES: { icon: typeof Sparkles; title: string; description: string; accent: CardAccent }[] = [
   {
@@ -111,6 +112,24 @@ export default function HomePage() {
           </Link>
         </div>
       </SignedIn>
+
+      <footer className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
+        <Link href="/mentions-legales" className="hover:underline">
+          Mentions légales
+        </Link>
+        <Link href="/cgu" className="hover:underline">
+          CGU
+        </Link>
+        <Link href="/cgv" className="hover:underline">
+          CGV
+        </Link>
+        <Link href="/confidentialite" className="hover:underline">
+          Confidentialité
+        </Link>
+        <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline">
+          Contact
+        </a>
+      </footer>
     </main>
   );
 }

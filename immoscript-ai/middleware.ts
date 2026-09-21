@@ -5,6 +5,10 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/mentions-legales",
+  "/cgu",
+  "/cgv",
+  "/confidentialite",
   "/api/billing/webhook",
   "/api/cron(.*)", // auth par secret dédié (CRON_SECRET), pas par session Clerk — voir app/api/cron/*
 ]);
