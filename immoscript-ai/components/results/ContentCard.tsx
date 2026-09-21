@@ -133,11 +133,24 @@ export function ContentCard({ data }: { data: ContentCardData }) {
     // brouillon sans stats de publication — sans ça, la carte continuait d'afficher "Approuvé" (ou
     // les stats de l'ancien post) sur un contenu IA fraîchement généré et non relu.
     setApprovalStatus((newContent.approvalStatus as ApprovalStatus) ?? "draft");
-    setSocialStats({
+    const freshStats = {
       url: newContent.externalPostUrl ?? "",
       likes: newContent.externalLikes,
       views: newContent.externalViews,
       comments: newContent.externalComments,
+    };
+    setSocialStats(freshStats);
+    // Si le panneau "Modifier les stats" était ouvert (pré-rempli avec les stats de l'ANCIEN
+    // contenu, potentiellement déjà publié), le refermer et vider son brouillon : sinon il restait
+    // ouvert avec ces anciennes valeurs, et un "Enregistrer" ultérieur les écrivait sur le contenu
+    // fraîchement régénéré (id vient de changer ci-dessus) — un brouillon IA jamais relu se
+    // retrouvait alors affiché avec les stats d'engagement de l'ancien post publié.
+    setIsEditingSocialStats(false);
+    setSocialStatsDraft({
+      url: freshStats.url,
+      likes: freshStats.likes?.toString() ?? "",
+      views: freshStats.views?.toString() ?? "",
+      comments: freshStats.comments?.toString() ?? "",
     });
   }
 
