@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { BarChart3, Building2, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
+import { BarChart3, Building2, HelpCircle, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -10,6 +10,7 @@ import { SearchTrigger } from "@/components/layout/SearchTrigger";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { getRawAuth, isOwner } from "@/lib/auth";
 import { UsageService } from "@/lib/services/UsageService";
+import { SUPPORT_EMAIL } from "@/lib/support";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { orgId } = await getRawAuth();
@@ -69,6 +70,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NavIcon href="/settings" icon={<Settings className="h-5 w-5" />} label="Paramètres" />
           <ThemeToggle />
           <FeedbackButton />
+          <NavIcon
+            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("ImmoScript AI - Support")}`}
+            icon={<HelpCircle className="h-5 w-5" />}
+            label="Contacter le support"
+          />
           <OrganizationSwitcher
             hidePersonal
             afterSelectOrganizationUrl="/dashboard"

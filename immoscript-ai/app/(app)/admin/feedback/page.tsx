@@ -15,11 +15,20 @@ export default async function FeedbackAdminPage() {
     take: 200,
   });
 
-  const organizations = await prisma.organization.findMany({
-    where: { id: { in: [...new Set(feedbacks.map((f) => f.organizationId))] } },
-    select: { id: true, name: true },
-  });
+  const [organizations, users] = await Promise.all([
+    prisma.organization.findMany({
+      where: { id: { in: [...new Set(feedbacks.map((f) => f.organizationId))] } },
+      select: { id: true, name: true },
+    }),
+    // Feedback.userId n'a pas de relation Prisma vers User (juste un id stocké) : jointure
+    // manuelle, nécessaire pour pouvoir répondre à l'auteur d'un retour (voir mailto ci-dessous).
+    prisma.user.findMany({
+      where: { id: { in: [...new Set(feedbacks.map((f) => f.userId))] } },
+      select: { id: true, name: true, email: true },
+    }),
+  ]);
   const organizationNames = new Map(organizations.map((o) => [o.id, o.name]));
+  const usersById = new Map(users.map((u) => [u.id, u]));
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -34,18 +43,31 @@ export default async function FeedbackAdminPage() {
         </p>
       ) : (
         <ul className="space-y-3">
-          {feedbacks.map((feedback) => (
-            <li key={feedback.id} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
-              <div className="mb-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>{organizationNames.get(feedback.organizationId) ?? feedback.organizationId}</span>
-                <span>
-                  {feedback.createdAt.toLocaleString("fr-FR")}
-                  {feedback.page ? ` · ${feedback.page}` : ""}
-                </span>
-              </div>
-              <p className="whitespace-pre-wrap text-sm text-gray-800">{feedback.message}</p>
-            </li>
-          ))}
+          {feedbacks.map((feedback) => {
+            const author = usersById.get(feedback.userId);
+            return (
+              <li key={feedback.id} className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
+                <div className="mb-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>
+                    {author?.name ?? "Utilisateur inconnu"} · {organizationNames.get(feedback.organizationId) ?? feedback.organizationId}
+                  </span>
+                  <span>
+                    {feedback.createdAt.toLocaleString("fr-FR")}
+                    {feedback.page ? ` · ${feedback.page}` : ""}
+                  </span>
+                </div>
+                <p className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">{feedback.message}</p>
+                {author?.email && (
+                  <a
+                    href={`mailto:${author.email}?subject=${encodeURIComponent("Re : votre feedback ImmoScript AI")}`}
+                    className="mt-2 inline-block text-xs font-medium text-brand-600 hover:underline"
+                  >
+                    Répondre à {author.email}
+                  </a>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
