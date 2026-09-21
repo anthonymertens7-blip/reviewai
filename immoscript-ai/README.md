@@ -23,8 +23,8 @@ implémentées :
 - Page Générateur (positionnement, cible, ton, CTA, checklist de types de contenu,
   paramètres vidéo) + affichage des résultats (copier / modifier / régénérer)
 
-**Pas encore fait** (voir le plan de phases du document d'architecture) : inscription
-libre-service, monitoring Sentry.
+**Pas encore fait** (voir le plan de phases du document d'architecture) : mentions
+légales (CGU/CGV/confidentialité) et canal de support.
 
 ## Démarrage
 
@@ -49,6 +49,8 @@ libre-service, monitoring Sentry.
      par email — voir "Digest hebdomadaire" ci-dessous
    - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_PRICE_*` (optionnels) :
      facturation par abonnement — voir "Facturation" ci-dessous
+   - `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` (optionnels) : monitoring d'erreurs —
+     voir "Monitoring" ci-dessous
 
 3. Appliquer le schéma à la base :
 
@@ -98,6 +100,21 @@ géré via Stripe Checkout + Billing Portal :
   `<votre domaine>/api/billing/webhook`.
 - Sans `STRIPE_SECRET_KEY`, toute la facturation répond 501 (`billing_not_configured`)
   plutôt que de planter — utile en dev/démo avant de brancher un compte Stripe réel.
+
+## Monitoring
+
+Erreurs (client, serveur, edge) capturées via [Sentry](https://sentry.io) (`@sentry/nextjs`) :
+
+- `instrumentation.ts` (Node/Edge) + `instrumentation-client.ts` (navigateur) initialisent le
+  SDK et capturent automatiquement les erreurs non gérées des Server Components et Route
+  Handlers (`onRequestError`), sans avoir à instrumenter chaque route individuellement.
+- `app/error.tsx` / `app/global-error.tsx` : capture manuelle en plus de l'affichage de l'écran
+  d'erreur, pour les erreurs de rendu React qui remontent jusqu'à ces limites.
+- Sans `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`, `Sentry.init` ne fait rien (aucun envoi) — comme
+  pour Stripe/Resend, la fonctionnalité est simplement absente tant que le compte n'est pas créé.
+- `SENTRY_ORG` / `SENTRY_PROJECT` / `SENTRY_AUTH_TOKEN` (optionnels, build uniquement) : upload
+  des source maps pour des stack traces lisibles en production — sans eux, `next build` fonctionne
+  normalement, juste sans source maps côté Sentry.
 
 ## Points d'architecture à connaître
 
