@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { isOwner } from "@/lib/auth";
+import { quotaForPlan } from "@/lib/billing/plans";
 
 // Filet de sécurité minimal contre l'emballement des coûts IA (risque n°1 identifié
-// dès le document d'architecture) : un plafond mensuel par organisation, sans
-// dépendance à un fournisseur de facturation. `generationsQuota` reste stocké par
-// ligne pour permettre plus tard des quotas différenciés par plan.
+// dès le document d'architecture) : un plafond mensuel par organisation. `generationsQuota`
+// reste stocké par ligne (pas recalculé à chaque lecture) : un changement de plan en cours de mois
+// ne modifie pas rétroactivement le quota déjà consommé sur la période en cours, seul le mois
+// suivant applique le nouveau plan — voir lib/billing/plans.ts pour la grille par plan.
 // Le propriétaire de l'app (OWNER_EMAIL) n'est jamais limité, quelle que soit
 // l'organisation active — c'est son propre usage de test/démo, pas celui d'un client.
-const DEFAULT_MONTHLY_QUOTA = Number(process.env.MONTHLY_GENERATION_QUOTA ?? 300);
-
 export class QuotaExceededError extends Error {}
 
 function currentPeriod() {
@@ -16,6 +16,11 @@ function currentPeriod() {
   const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   return { periodStart, periodEnd };
+}
+
+async function getOrganizationPlan(organizationId: string): Promise<string> {
+  const org = await prisma.organization.findUnique({ where: { id: organizationId }, select: { plan: true } });
+  return org?.plan ?? "trial";
 }
 
 export class UsageService {
@@ -32,10 +37,11 @@ export class UsageService {
     }
 
     const { periodStart, periodEnd } = currentPeriod();
+    const plan = await getOrganizationPlan(organizationId);
 
     const counter = await prisma.usageCounter.upsert({
       where: { organizationId_periodStart: { organizationId, periodStart } },
-      create: { organizationId, periodStart, periodEnd, generationsUsed: 0, generationsQuota: DEFAULT_MONTHLY_QUOTA },
+      create: { organizationId, periodStart, periodEnd, generationsUsed: 0, generationsQuota: quotaForPlan(plan) },
       update: {},
     });
 
@@ -90,6 +96,14 @@ export class UsageService {
     const counter = await prisma.usageCounter.findUnique({
       where: { organizationId_periodStart: { organizationId, periodStart } },
     });
-    return { used: counter?.generationsUsed ?? 0, quota: counter?.generationsQuota ?? DEFAULT_MONTHLY_QUOTA, periodEnd };
+    if (counter) {
+      return { used: counter.generationsUsed, quota: counter.generationsQuota, periodEnd };
+    }
+    // Aucune génération ce mois-ci pour cette organisation : pas encore de UsageCounter créé
+    // (assertQuotaAndReserve ne le crée qu'à la première génération), donc le quota du plan actuel
+    // n'a jamais été figé en base — on le lit à la volée plutôt que d'afficher un quota par défaut
+    // qui ignorerait le plan réel de l'organisation.
+    const plan = await getOrganizationPlan(organizationId);
+    return { used: 0, quota: quotaForPlan(plan), periodEnd };
   }
 }

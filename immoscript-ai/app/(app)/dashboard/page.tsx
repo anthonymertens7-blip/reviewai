@@ -6,7 +6,7 @@ import { CARD_ACCENT_STYLES } from "@/components/ui/cardAccents";
 import { UsageService } from "@/lib/services/UsageService";
 import { OnboardingChecklist, type ChecklistStep } from "@/components/dashboard/OnboardingChecklist";
 import { ActivityFeed, type ActivityItem } from "@/components/dashboard/ActivityFeed";
-import { planLabel } from "@/lib/organizations/planLabels";
+import { planLabel } from "@/lib/billing/plans";
 
 export default async function DashboardPage() {
   const { db, organizationId, userId, role } = await getAuthContext();
