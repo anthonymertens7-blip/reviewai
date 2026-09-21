@@ -144,7 +144,12 @@ export class StatsService {
       }),
       db.generatedContent.findMany({
         where: socialWhere,
-        orderBy: { externalLikes: "desc" },
+        // PostgreSQL trie NULL en premier par défaut sur un ORDER BY DESC (contrairement à
+        // l'intuition, et à l'inverse de ASC) — sans "nulls: last", un post dont seules les vues
+        // ou les commentaires ont été saisis (externalLikes resté vide, cas courant vu
+        // HAS_SOCIAL_STATS ci-dessus) remontait au-dessus de posts ayant réellement des likes
+        // enregistrés, inversant silencieusement le classement "les plus performants".
+        orderBy: { externalLikes: { sort: "desc", nulls: "last" } },
         take: MAX_TOP_POSTS,
         select: {
           id: true,
