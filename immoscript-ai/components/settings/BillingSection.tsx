@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CreditCard, Check, Loader2 } from "lucide-react";
-import { PLANS, PLAN_ORDER, planLabel, type PlanId } from "@/lib/billing/plans";
+import { PLANS, PLAN_ORDER, planLabel, formatPlanPrice, type PlanId } from "@/lib/billing/plans";
 
 export interface BillingInfo {
   plan: string;
@@ -13,10 +13,6 @@ export interface BillingInfo {
 }
 
 const PAYABLE_PLANS = PLAN_ORDER.filter((id) => id !== "trial") as Exclude<PlanId, "trial">[];
-
-function formatPrice(cents: number) {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", minimumFractionDigits: 0 });
-}
 
 export function BillingSection({ billing }: { billing: BillingInfo }) {
   const [loadingPlan, setLoadingPlan] = useState<PlanId | "portal" | null>(null);
@@ -126,7 +122,7 @@ export function BillingSection({ billing }: { billing: BillingInfo }) {
             >
               <h3 className="font-semibold">{config.label}</h3>
               <p className="mt-1 text-2xl font-bold">
-                {formatPrice(config.priceEurCents)}
+                {formatPlanPrice(config.priceEurCents)}
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> / mois</span>
               </p>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{config.monthlyQuota} générations / mois</p>

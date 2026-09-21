@@ -67,6 +67,10 @@ export function planLabel(plan: string): string {
   return isPlanId(plan) ? PLANS[plan].label : plan;
 }
 
+export function formatPlanPrice(cents: number): string {
+  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", minimumFractionDigits: 0 });
+}
+
 export function planForStripePriceId(priceId: string): PlanId | null {
   for (const plan of PLAN_ORDER) {
     const envVar = PLANS[plan].stripePriceEnvVar;
