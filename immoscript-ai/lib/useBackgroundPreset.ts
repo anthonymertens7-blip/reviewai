@@ -1,16 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { BACKGROUND_PRESETS, type BackgroundPresetId } from "@/lib/appearance/backgroundPresets";
 
-export const BACKGROUND_PRESETS = [
-  { id: "cyan", label: "Cyan (défaut)", swatch: "linear-gradient(135deg, #E3FBFF, #7FD9EC)" },
-  { id: "violet", label: "Violet", swatch: "linear-gradient(135deg, #F3E8FF, #C4B5FD)" },
-  { id: "rose", label: "Rose", swatch: "linear-gradient(135deg, #FFE4E9, #FDA4C0)" },
-  { id: "vert", label: "Vert d'eau", swatch: "linear-gradient(135deg, #ECFDF5, #6EE7B7)" },
-  { id: "neutre", label: "Neutre", swatch: "linear-gradient(135deg, #F8FAFC, #CBD5E1)" },
-] as const;
-
-export type BackgroundPresetId = (typeof BACKGROUND_PRESETS)[number]["id"];
+export { BACKGROUND_PRESETS };
+export type { BackgroundPresetId };
 
 const STORAGE_KEY = "immoscript-bg";
 const DEFAULT_PRESET: BackgroundPresetId = "cyan";
@@ -23,7 +17,7 @@ export function useBackgroundPreset() {
     setPresetState(attr ?? DEFAULT_PRESET);
   }, []);
 
-  const setPreset = useCallback((next: BackgroundPresetId) => {
+  const setPreset = useCallback((next: BackgroundPresetId, options?: { persist?: boolean }) => {
     setPresetState(next);
     if (next === DEFAULT_PRESET) {
       document.documentElement.removeAttribute("data-bg");
@@ -34,6 +28,22 @@ export function useBackgroundPreset() {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
       // localStorage indisponible (navigation privée...) : le fond reste appliqué pour la session en cours
+    }
+
+    // Persiste sur le compte (en base) pour que la préférence suive l'utilisateur d'un appareil/
+    // navigateur à l'autre — le localStorage ci-dessus ne couvre que CE navigateur. `persist: false`
+    // est utilisé par la resynchronisation au chargement (BackgroundPreferenceSync) pour éviter de
+    // renvoyer au serveur la valeur qu'on vient tout juste de lui lire.
+    if (options?.persist !== false) {
+      fetch("/api/preferences", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ backgroundPreset: next }),
+      }).catch(() => {
+        // Préférence purement esthétique : un échec de synchronisation ne doit pas interrompre
+        // l'utilisateur ni afficher d'erreur — le localStorage local reste la source de vérité pour
+        // ce navigateur quoi qu'il arrive.
+      });
     }
   }, []);
 

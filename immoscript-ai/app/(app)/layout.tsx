@@ -8,14 +8,24 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { QuotaIndicator } from "@/components/layout/QuotaIndicator";
 import { SearchTrigger } from "@/components/layout/SearchTrigger";
 import { CommandPalette } from "@/components/layout/CommandPalette";
+import { BackgroundPreferenceSync } from "@/components/layout/BackgroundPreferenceSync";
 import { getRawAuth, isOwner } from "@/lib/auth";
 import { UsageService } from "@/lib/services/UsageService";
 import { SUPPORT_EMAIL } from "@/lib/support";
+import { prisma } from "@/lib/prisma";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { orgId } = await getRawAuth();
+  const { userId, orgId } = await getRawAuth();
   const showOwnerLink = orgId ? await isOwner() : false;
   const usage = orgId ? await UsageService.getUsage(orgId) : null;
+  // Lecture directe de sa PROPRE ligne User par son propre id authentifié (pas une entrée choisie
+  // par l'utilisateur) : même justification que les lectures prisma.organization.* des routes de
+  // facturation pour ne pas passer par le client scopé ici — voir lib/db/scoped-client.ts. Peut
+  // renvoyer null si le JIT-sync du User (getAuthContext) n'a pas encore eu lieu — traité comme
+  // "pas de préférence enregistrée" par BackgroundPreferenceSync.
+  const storedBackgroundPreset = orgId
+    ? (await prisma.user.findUnique({ where: { id: userId }, select: { backgroundPreset: true } }))?.backgroundPreset ?? null
+    : null;
 
   if (!orgId) {
     return (
@@ -87,6 +97,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <PageTransition>{children}</PageTransition>
       </main>
       <CommandPalette />
+      <BackgroundPreferenceSync storedPreset={storedBackgroundPreset} />
     </div>
   );
 }
