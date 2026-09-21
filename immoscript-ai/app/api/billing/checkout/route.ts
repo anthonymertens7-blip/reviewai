@@ -51,6 +51,25 @@ export const POST = withOrgAuth(
 
     const origin = req.headers.get("origin") ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
+    // Organisation déjà abonnée (changement de plan, pas première souscription) : repasser par
+    // Stripe Checkout créerait un SECOND abonnement Stripe actif sur le même client, double-facturé,
+    // plutôt que de changer le plan de l'abonnement existant — Checkout n'a pas de notion
+    // "remplacer mon abonnement en cours", c'est toujours une nouvelle souscription. Un moyen de
+    // paiement est déjà enregistré, donc pas besoin de repasser par Checkout : on modifie
+    // directement l'abonnement (avec proration), ce qui déclenche customer.subscription.updated —
+    // le webhook reste la seule source de vérité qui écrit Organization.plan.
+    if (org.stripeSubscriptionId) {
+      const subscription = await stripe.subscriptions.retrieve(org.stripeSubscriptionId);
+      const itemId = subscription.items.data[0]?.id;
+      if (itemId) {
+        await stripe.subscriptions.update(org.stripeSubscriptionId, {
+          items: [{ id: itemId, price: priceId }],
+          proration_behavior: "create_prorations",
+        });
+        return NextResponse.json({ url: `${origin}/settings?checkout=success` });
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: stripeCustomerId,
