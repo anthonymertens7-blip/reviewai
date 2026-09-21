@@ -129,6 +129,20 @@ Erreurs (client, serveur, edge) capturées via [Sentry](https://sentry.io) (`@se
   affiche l'auteur de chaque retour avec un lien `mailto:` pré-rempli pour y répondre
   directement.
 
+## Valeur perçue
+
+Deux ajouts pour rendre la promesse du produit tangible avant et juste après l'inscription :
+
+- **Page d'accueil** (`components/home/ShowcaseExample.tsx`) : un exemple avant/après (les
+  quelques champs saisis, à côté du texte marketing généré). Contenu réel produit par
+  `AIService.generateContent`, figé en static plutôt que régénéré à chaque visite (pas d'appel IA
+  sur une page publique).
+- **Programme de démonstration** (`lib/services/OnboardingService.ts`) : à la toute première
+  connexion d'une nouvelle organisation, un programme d'exemple (même contenu que la page
+  d'accueil) est créé automatiquement — pas d'écran vide, premier contenu à explorer sans avoir
+  encore rien saisi. Créé une seule fois (`Organization.onboardingSeeded`), jamais recréé après
+  coup même si l'utilisateur le supprime. Ne coûte aucun appel IA ni quota (contenu pré-rempli).
+
 ## Tests
 
 ```bash
