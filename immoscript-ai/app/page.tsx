@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { ArrowRight, Check, ShieldCheck, Sparkles, Video } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles, Video } from "lucide-react";
 import { PersonalizedGreeting } from "@/components/home/PersonalizedGreeting";
 import { ShowcaseExample } from "@/components/home/ShowcaseExample";
+import { PublicNav } from "@/components/home/PublicNav";
 import { CARD_ACCENT_STYLES, type CardAccent } from "@/components/ui/cardAccents";
-import { PLANS, PLAN_ORDER, formatPlanPrice } from "@/lib/billing/plans";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
 const FEATURES: { icon: typeof Sparkles; title: string; description: string; accent: CardAccent }[] = [
@@ -32,6 +32,10 @@ export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-16 px-4 py-20">
       <SignedOut>
+        <div className="w-full">
+          <PublicNav active="accueil" />
+        </div>
+
         <div className="flex flex-col items-center gap-6 text-center">
           <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
             IA pour l&apos;immobilier neuf
@@ -71,35 +75,13 @@ export default function HomePage() {
 
         <ShowcaseExample />
 
-        <div className="w-full">
-          <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">Tarifs</h2>
-          <div className="grid w-full gap-6 sm:grid-cols-4">
-            {PLAN_ORDER.map((planId) => {
-              const config = PLANS[planId];
-              return (
-                <div
-                  key={planId}
-                  className="rounded-3xl border border-gray-200 bg-white p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]"
-                >
-                  <h3 className="font-semibold">{config.label}</h3>
-                  <p className="mt-1 text-2xl font-bold">
-                    {config.priceEurCents === 0 ? "0 €" : formatPlanPrice(config.priceEurCents)}
-                    {config.priceEurCents > 0 && (
-                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> / mois</span>
-                    )}
-                  </p>
-                  <p className="mt-2 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
-                    <Check className="h-4 w-4 shrink-0 text-brand-600" />
-                    {config.monthlyQuota} générations / mois
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            Sans carte bancaire pour l&apos;essai gratuit. Changez ou annulez votre plan à tout moment.
-          </p>
-        </div>
+        <Link
+          href="/tarifs"
+          className="flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Voir les tarifs
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </SignedOut>
 
       <SignedIn>
