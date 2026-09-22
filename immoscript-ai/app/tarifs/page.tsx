@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
-import { PublicNav } from "@/components/home/PublicNav";
+import { PublicHeader } from "@/components/home/PublicHeader";
 import { PricingSection } from "@/components/home/PricingSection";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
@@ -10,12 +10,7 @@ export const metadata = { title: "Tarifs — ImmoScript AI" };
 export default function TarifsPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center gap-10 px-4 py-12">
-      <div className="flex w-full items-center justify-between">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          ImmoScript AI
-        </Link>
-        <PublicNav active="tarifs" />
-      </div>
+      <PublicHeader active="tarifs" />
 
       <div className="flex flex-col items-center gap-3 text-center">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Tarifs</h1>
@@ -54,22 +49,25 @@ export default function TarifsPage() {
         </Link>
       </SignedIn>
 
-      <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
-        <Link href="/mentions-legales" className="hover:underline">
-          Mentions légales
-        </Link>
-        <Link href="/cgu" className="hover:underline">
-          CGU
-        </Link>
-        <Link href="/cgv" className="hover:underline">
-          CGV
-        </Link>
-        <Link href="/confidentialite" className="hover:underline">
-          Confidentialité
-        </Link>
-        <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline">
-          Contact
-        </a>
+      <footer className="mt-auto flex flex-col items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+          <Link href="/mentions-legales" className="hover:underline">
+            Mentions légales
+          </Link>
+          <Link href="/cgu" className="hover:underline">
+            CGU
+          </Link>
+          <Link href="/cgv" className="hover:underline">
+            CGV
+          </Link>
+          <Link href="/confidentialite" className="hover:underline">
+            Confidentialité
+          </Link>
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline">
+            Contact
+          </a>
+        </div>
+        <p>© {new Date().getFullYear()} ImmoScript AI</p>
       </footer>
     </main>
   );
