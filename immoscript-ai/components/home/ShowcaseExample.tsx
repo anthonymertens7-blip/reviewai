@@ -31,7 +31,7 @@ export function ShowcaseExample() {
       </p>
 
       <div className="grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
-        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
+        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] transition-shadow hover:shadow-[0_16px_36px_-10px_rgba(15,23,42,0.22)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
             Ce que vous saisissez
           </p>
@@ -47,7 +47,7 @@ export function ShowcaseExample() {
 
         <ArrowRight className="mx-auto hidden h-6 w-6 shrink-0 text-gray-300 dark:text-gray-600 sm:block" />
 
-        <div className="rounded-3xl border border-brand-200 bg-brand-50 p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-brand-900/60 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
+        <div className="rounded-3xl border border-brand-200 bg-brand-50 p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] transition-shadow hover:shadow-[0_16px_36px_-10px_rgba(15,23,42,0.22)] dark:border-brand-900/60 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">
             Ce que génère l&apos;IA
           </p>

@@ -7,11 +7,21 @@ export function PricingSection() {
       <div className="grid w-full gap-6 sm:grid-cols-4">
         {PLAN_ORDER.map((planId) => {
           const config = PLANS[planId];
+          const isFeatured = planId === "pro";
           return (
             <div
               key={planId}
-              className="rounded-3xl border border-gray-200 bg-white p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]"
+              className={`relative rounded-3xl border p-5 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] transition-all hover:-translate-y-1 hover:shadow-[0_16px_36px_-10px_rgba(15,23,42,0.22)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] ${
+                isFeatured
+                  ? "border-brand-600 bg-brand-50 dark:border-brand-500 dark:bg-gray-800"
+                  : "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+              }`}
             >
+              {isFeatured && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-3 py-0.5 text-xs font-medium text-white">
+                  Populaire
+                </span>
+              )}
               <h3 className="font-semibold">{config.label}</h3>
               <p className="mt-1 text-2xl font-bold">
                 {config.priceEurCents === 0 ? "0 €" : formatPlanPrice(config.priceEurCents)}
