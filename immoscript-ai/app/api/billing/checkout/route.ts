@@ -86,6 +86,19 @@ export const POST = withOrgAuth(
       success_url: `${origin}/settings?checkout=success`,
       cancel_url: `${origin}/settings?checkout=cancelled`,
       metadata: { organizationId: org.id, plan: parsed.data.plan },
+      // Configuré via Checkout Studio (Dashboard Stripe, compte reviewAI) — customer/client_reference_id/
+      // metadata ci-dessus restent inchangés : ce sont eux qui relient un paiement à une organisation
+      // via le webhook (voir app/api/billing/webhook/route.ts), pas des valeurs générées par l'outil.
+      ui_mode: "hosted_page",
+      billing_address_collection: "auto",
+      phone_number_collection: { enabled: false },
+      automatic_tax: { enabled: false },
+      allow_promotion_codes: false,
+      payment_method_collection: "always",
+      submit_type: "auto",
+      saved_payment_method_options: { payment_method_save: "enabled" },
+      integration_identifier: "hosted_web_0001",
+      origin_context: "web",
     });
 
     if (!session.url) {
