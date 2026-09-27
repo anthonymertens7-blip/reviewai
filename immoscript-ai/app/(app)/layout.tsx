@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CreateOrganization, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { BarChart3, Building2, HelpCircle, LayoutDashboard, Library, Plus, Settings, ShieldCheck } from "lucide-react";
+import { LogoMark } from "@/components/brand/LogoMark";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { NavIcon } from "@/components/layout/NavIcon";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -44,11 +45,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen">
       <aside className="relative z-10 flex w-20 flex-col items-center gap-3 border-r border-rose-200 bg-rose-100 py-5 shadow-[6px_0_24px_-6px_rgba(15,23,42,0.22)] dark:border-rose-900/60 dark:bg-rose-950/40 dark:shadow-[6px_0_24px_-6px_rgba(0,0,0,0.6)]">
-        <Link
-          href="/dashboard"
-          className="group relative mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#151F6D] text-sm font-bold text-white shadow-lg shadow-[#151F6D]/40"
-        >
-          I
+        <Link href="/dashboard" className="group relative mb-2 shadow-lg shadow-[#7FD9EC]/40 rounded-2xl">
+          <LogoMark size={44} className="rounded-2xl" />
           <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
             ImmoScript AI
           </span>
