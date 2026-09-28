@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LogoMark } from "@/components/brand/LogoMark";
 import { PublicNav } from "./PublicNav";
 
-export function PublicHeader({ active }: { active: "accueil" | "tarifs" }) {
+export function PublicHeader({ active }: { active: "accueil" | "tarifs" | "blog" }) {
   return (
     <header className="flex w-full items-center justify-between border-b border-gray-200/70 pb-5 dark:border-gray-700/70">
       <Link href="/" className="flex items-center gap-2.5">

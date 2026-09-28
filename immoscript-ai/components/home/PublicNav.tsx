@@ -3,6 +3,7 @@ import Link from "next/link";
 const TABS = [
   { id: "accueil", label: "Accueil", href: "/" },
   { id: "tarifs", label: "Tarifs", href: "/tarifs" },
+  { id: "blog", label: "Blog", href: "/blog" },
 ] as const;
 
 export function PublicNav({ active }: { active: (typeof TABS)[number]["id"] }) {
