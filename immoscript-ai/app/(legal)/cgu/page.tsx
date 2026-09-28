@@ -1,6 +1,6 @@
 import { COMPANY } from "@/lib/legal/company";
 
-export const metadata = { title: "Conditions générales d'utilisation — ImmoScript AI" };
+export const metadata = { title: "Conditions générales d'utilisation" };
 
 export default function CguPage() {
   return (

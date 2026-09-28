@@ -1,7 +1,7 @@
 import { COMPANY } from "@/lib/legal/company";
 import { PLANS, PLAN_ORDER, formatPlanPrice } from "@/lib/billing/plans";
 
-export const metadata = { title: "Conditions générales de vente — ImmoScript AI" };
+export const metadata = { title: "Conditions générales de vente" };
 
 export default function CgvPage() {
   return (

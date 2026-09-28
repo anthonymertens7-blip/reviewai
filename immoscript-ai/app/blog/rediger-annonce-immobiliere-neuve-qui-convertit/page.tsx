@@ -4,7 +4,7 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 const post = BLOG_POSTS.find((p) => p.slug === "rediger-annonce-immobiliere-neuve-qui-convertit")!;
 
 export const metadata = {
-  title: `${post.title} — ImmoScript AI`,
+  title: post.title,
   description: post.excerpt,
 };
 
