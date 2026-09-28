@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     title: "ImmoScript AI",
     description: DESCRIPTION,
   },
+  verification: {
+    google: "TcEWTszgGq2UL5kxl3NmpGFdf_lH5EG3K7cVSuekpb8",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
