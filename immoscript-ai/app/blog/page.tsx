@@ -4,7 +4,10 @@ import { PublicHeader } from "@/components/home/PublicHeader";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import { BLOG_POSTS, formatPostDate } from "@/lib/blog/posts";
 
-export const metadata = { title: "Blog — ImmoScript AI" };
+export const metadata = {
+  title: "Blog",
+  description: "Conseils pratiques pour le marketing des programmes immobiliers neufs.",
+};
 
 export default function BlogIndexPage() {
   return (

@@ -8,9 +8,27 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://immoscriptai.vercel.app";
+const DESCRIPTION =
+  "Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos programmes immobiliers neufs.";
+
 export const metadata: Metadata = {
-  title: "ImmoScript AI",
-  description: "Génération de contenu commercial pour promoteurs immobiliers",
+  metadataBase: new URL(SITE_URL),
+  title: { default: "ImmoScript AI", template: "%s — ImmoScript AI" },
+  description: DESCRIPTION,
+  openGraph: {
+    title: "ImmoScript AI",
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "ImmoScript AI",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "ImmoScript AI",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

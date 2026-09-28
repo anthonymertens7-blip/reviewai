@@ -5,7 +5,10 @@ import { PublicHeader } from "@/components/home/PublicHeader";
 import { PricingSection } from "@/components/home/PricingSection";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
-export const metadata = { title: "Tarifs — ImmoScript AI" };
+export const metadata = {
+  title: "Tarifs",
+  description: "Un plan pour chaque taille d'équipe, sans engagement — essai gratuit avec 30 générations.",
+};
 
 export default function TarifsPage() {
   return (

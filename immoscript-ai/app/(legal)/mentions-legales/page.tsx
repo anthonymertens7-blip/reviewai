@@ -1,6 +1,6 @@
 import { COMPANY } from "@/lib/legal/company";
 
-export const metadata = { title: "Mentions légales — ImmoScript AI" };
+export const metadata = { title: "Mentions légales" };
 
 export default function MentionsLegalesPage() {
   return (

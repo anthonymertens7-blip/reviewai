@@ -4,7 +4,7 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 const post = BLOG_POSTS.find((p) => p.slug === "mentions-obligatoires-annonce-immobiliere-neuve")!;
 
 export const metadata = {
-  title: `${post.title} — ImmoScript AI`,
+  title: post.title,
   description: post.excerpt,
 };
 

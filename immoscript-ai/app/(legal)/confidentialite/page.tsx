@@ -1,6 +1,6 @@
 import { COMPANY } from "@/lib/legal/company";
 
-export const metadata = { title: "Politique de confidentialité — ImmoScript AI" };
+export const metadata = { title: "Politique de confidentialité" };
 
 export default function ConfidentialitePage() {
   return (
