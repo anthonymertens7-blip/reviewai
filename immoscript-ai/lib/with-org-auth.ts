@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 import { getAuthContext, NoActiveOrganizationError, UnauthenticatedError, type AuthContext } from "@/lib/auth";
 import { Prisma, type Role } from "@prisma/client";
 
@@ -53,6 +54,12 @@ export function withOrgAuth<P = Record<string, never>>(
       // elle était arrivée une fraction de seconde plus tard.
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
         return NextResponse.json({ error: "not_found" }, { status: 404 });
+      }
+      // Sans ce cas, une erreur Stripe (price id introuvable, clé test/live incohérente...) fait
+      // planter la fonction serverless sans réponse — le fetch côté client échoue alors sur
+      // "Unexpected end of JSON input" au lieu du vrai message d'erreur Stripe.
+      if (error instanceof Stripe.errors.StripeError) {
+        return NextResponse.json({ error: "stripe_error", message: error.message }, { status: 502 });
       }
       throw error;
     }

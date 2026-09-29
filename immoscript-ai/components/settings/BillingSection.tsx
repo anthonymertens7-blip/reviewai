@@ -26,6 +26,9 @@ export function BillingSection({ billing }: { billing: BillingInfo }) {
       if (data.error === "billing_not_configured") {
         throw new Error("La facturation en ligne n'est pas encore activée. Contactez-nous pour souscrire.");
       }
+      if (data.error === "stripe_error") {
+        throw new Error(data.message ?? "Stripe a refusé la demande, réessayez dans un instant.");
+      }
       throw new Error("Une erreur est survenue, réessayez dans un instant.");
     }
     window.location.href = data.url;
