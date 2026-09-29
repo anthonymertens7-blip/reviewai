@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider appearance={{ variables: { colorPrimary: "#0284C7" } }}>
-      <html lang="fr" className={plusJakartaSans.variable}>
+      <html lang="fr" className={plusJakartaSans.variable} suppressHydrationWarning>
         <head>
           <script
             dangerouslySetInnerHTML={{
