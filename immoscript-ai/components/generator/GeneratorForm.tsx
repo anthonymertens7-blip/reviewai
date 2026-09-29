@@ -38,12 +38,14 @@ export function GeneratorForm({
   programIsCoOwnership,
   programCondoLotsCount,
   brandVoicePresets,
+  isTrial,
 }: {
   programId: string;
   lots: Lot[];
   programIsCoOwnership?: boolean;
   programCondoLotsCount?: number | null;
   brandVoicePresets?: BrandVoicePreset[];
+  isTrial?: boolean;
 }) {
   const [lotId, setLotId] = useState<string>("");
   const [requestedTypes, setRequestedTypes] = useState<ContentType[]>([]);
@@ -320,7 +322,7 @@ export function GeneratorForm({
       {results.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {results.map((content) => (
-            <ContentCard key={content.id} data={content} />
+            <ContentCard key={content.id} data={content} isTrial={isTrial} />
           ))}
         </div>
       )}
@@ -341,7 +343,7 @@ export function GeneratorForm({
               {group.contents.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {group.contents.map((content) => (
-                    <ContentCard key={content.id} data={content} />
+                    <ContentCard key={content.id} data={content} isTrial={isTrial} />
                   ))}
                 </div>
               ) : (

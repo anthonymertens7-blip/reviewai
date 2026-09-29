@@ -7,7 +7,7 @@ import { SUPPORT_EMAIL } from "@/lib/support";
 
 export const metadata = {
   title: "Tarifs",
-  description: "Un plan pour chaque taille d'équipe, sans engagement — essai gratuit avec 30 générations.",
+  description: "Un plan pour chaque taille d'équipe, sans engagement — essai gratuit avec 5 générations.",
 };
 
 export default function TarifsPage() {
