@@ -24,7 +24,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   trial: {
     id: "trial",
     label: "Essai gratuit",
-    monthlyQuota: 30,
+    monthlyQuota: 5,
     priceEurCents: 0,
     stripePriceEnvVar: "",
   },

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAuthContext } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { ProgramForbiddenError, ProgramNotFoundError, ProgramService } from "@/lib/services/ProgramService";
 import { ContentCard } from "@/components/results/ContentCard";
 import { CONTENT_TYPES } from "@/lib/ai/types";
@@ -49,6 +50,11 @@ export default async function ProgramLibraryPage({
   if (trimmedQuery) {
     contents = contents.filter((content) => JSON.stringify(content.content).toLowerCase().includes(trimmedQuery));
   }
+
+  // Même justification que generate/page.tsx : lecture directe via `prisma`, n'affecte que
+  // l'aperçu (teaser flouté) en plan gratuit.
+  const org = await prisma.organization.findUniqueOrThrow({ where: { id: authContext.organizationId }, select: { plan: true } });
+  const isTrial = org.plan === "trial";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -127,7 +133,7 @@ export default async function ProgramLibraryPage({
           {contents.map((content) => {
             const lot = content.lotId ? program.lots.find((l) => l.id === content.lotId) : undefined;
             const legalMentions = buildMandatoryMentionsText(program, lot);
-            return <ContentCard key={content.id} data={{ ...content, legalMentions }} />;
+            return <ContentCard key={content.id} data={{ ...content, legalMentions }} isTrial={isTrial} />;
           })}
         </div>
       )}

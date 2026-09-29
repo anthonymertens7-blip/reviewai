@@ -7,7 +7,7 @@ import { PublicHeader } from "@/components/home/PublicHeader";
 import { CARD_ACCENT_STYLES, type CardAccent } from "@/components/ui/cardAccents";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
-const REASSURANCES = ["Sans carte bancaire", "Essai gratuit 30 générations", "Annulable à tout moment"];
+const REASSURANCES = ["Sans carte bancaire", "Essai gratuit 5 générations", "Annulable à tout moment"];
 
 const FEATURES: { icon: typeof Sparkles; title: string; description: string; accent: CardAccent }[] = [
   {

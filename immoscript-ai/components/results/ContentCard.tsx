@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useOrganization } from "@clerk/nextjs";
 import { BarChart3, Check, Copy, Eye, FileDown, Heart, MessageCircle, Pencil, RotateCw, Send, ShieldCheck, Undo2 } from "lucide-react";
 import { CONTENT_TYPE_LABELS } from "@/lib/ai/labels";
@@ -58,7 +59,7 @@ function toPlainText(type: string, content: unknown, legalMentions?: string | nu
   return base;
 }
 
-export function ContentCard({ data }: { data: ContentCardData }) {
+export function ContentCard({ data, isTrial }: { data: ContentCardData; isTrial?: boolean }) {
   const { membership } = useOrganization();
   const canApprove = membership?.role !== "org:member";
 
@@ -284,6 +285,22 @@ export function ContentCard({ data }: { data: ContentCardData }) {
           rows={10}
           className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 font-mono text-xs"
         />
+      ) : isTrial ? (
+        <div className="relative max-h-40 overflow-hidden">
+          {data.type === "video_script" ? (
+            <VideoScriptCard script={content as VideoScriptOutput} />
+          ) : (
+            <p className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">{toPlainText(data.type, content, legalMentions)}</p>
+          )}
+          <div className="absolute inset-x-0 bottom-0 flex h-24 flex-col items-center justify-end gap-2 bg-gradient-to-t from-white via-white/90 to-transparent pb-2 backdrop-blur-sm dark:from-gray-800 dark:via-gray-800/90">
+            <Link
+              href="/settings"
+              className="pointer-events-auto rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700"
+            >
+              Passer à un plan payant pour voir la suite
+            </Link>
+          </div>
+        </div>
       ) : data.type === "video_script" ? (
         <VideoScriptCard script={content as VideoScriptOutput} />
       ) : (
