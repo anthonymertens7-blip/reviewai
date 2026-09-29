@@ -8,7 +8,7 @@ export function QuotaIndicator({ used, quota }: { used: number; quota: number | 
 
   return (
     <Link
-      href="/dashboard"
+      href="/tarifs"
       aria-label={label}
       className="group relative flex h-11 w-11 items-center justify-center rounded-full transition-transform active:scale-90"
       style={quota === null ? undefined : { background: `conic-gradient(${ringColor} ${percent}%, var(--quota-track) ${percent}%)` }}
