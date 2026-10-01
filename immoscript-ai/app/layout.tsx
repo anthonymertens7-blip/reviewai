@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body className="min-h-screen bg-[linear-gradient(to_bottom,var(--bg-from),var(--bg-to))] bg-fixed font-sans text-gray-900 antialiased dark:text-gray-100">
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
