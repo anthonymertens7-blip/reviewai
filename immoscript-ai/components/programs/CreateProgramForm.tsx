@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProgramForm } from "./ProgramForm";
+import { CreateBienForm } from "./CreateBienForm";
 
 export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -17,5 +17,5 @@ export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boole
     );
   }
 
-  return <ProgramForm mode="create" />;
+  return <CreateBienForm />;
 }

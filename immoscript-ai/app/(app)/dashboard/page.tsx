@@ -49,8 +49,7 @@ export default async function DashboardPage() {
   const firstProgramId = recentPrograms[0]?.id;
 
   const checklistSteps: ChecklistStep[] = [
-    { label: "Créer votre premier bien", done: programCount > 0, href: "/programs?create=1" },
-    { label: "Ajouter une annonce", done: lotCount > 0, href: firstProgramId ? `/programs/${firstProgramId}/lots` : "/programs" },
+    { label: "Créer votre premier bien", done: programCount > 0 && lotCount > 0, href: "/programs?create=1" },
     {
       label: "Générer votre premier contenu",
       done: contentCount > 0,

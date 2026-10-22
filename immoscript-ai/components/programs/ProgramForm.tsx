@@ -276,7 +276,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
   );
 }
 
-function FieldWithSuggest({
+export function FieldWithSuggest({
   label,
   suggestField,
   context,
