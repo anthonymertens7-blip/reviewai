@@ -15,9 +15,6 @@ export interface ProgramFormValues {
   city: string;
   address: string;
   district: string;
-  programType: string;
-  unitsCount: string;
-  deliveryDate: string;
   description: string;
   environment: string;
   transport: string;
@@ -36,9 +33,6 @@ export const EMPTY_PROGRAM_VALUES: ProgramFormValues = {
   city: "",
   address: "",
   district: "",
-  programType: "",
-  unitsCount: "",
-  deliveryDate: "",
   description: "",
   environment: "",
   transport: "",
@@ -63,9 +57,6 @@ function buildSuggestionContext(v: ProgramFormValues): SuggestionContext {
     address: v.address,
     city: v.city,
     district: v.district || undefined,
-    programType: v.programType || undefined,
-    unitsCount: v.unitsCount || undefined,
-    deliveryDate: v.deliveryDate || undefined,
     environment: v.environment || undefined,
     transport: v.transport || undefined,
     schools: v.schools || undefined,
@@ -114,9 +105,6 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
       city: values.city,
       address: values.address || null,
       district: values.district || null,
-      programType: values.programType || null,
-      unitsCount: values.unitsCount || null,
-      deliveryDate: values.deliveryDate || null,
       description: values.description || null,
       environment: values.environment || null,
       transport: values.transport || null,
@@ -165,9 +153,6 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
           <FormField label="Ville" required {...field("city")} />
           <FormField label="Adresse" required={mode === "create"} {...field("address")} />
           <FormField label="Quartier" {...field("district")} />
-          <FormField label="Type" {...field("programType")} placeholder="ancien, neuf, à rénover..." />
-          <FormField label="Nombre d'unités (le cas échéant)" type="number" {...field("unitsCount")} />
-          <FormField label="Date de disponibilité" type="date" {...field("deliveryDate")} />
         </div>
         <div className="mt-3 flex flex-wrap items-end gap-4">
           <label className="flex items-center gap-2 text-sm">

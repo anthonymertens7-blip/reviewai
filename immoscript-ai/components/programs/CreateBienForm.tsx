@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, ChevronDown, Compass, Euro, ShieldCheck, FileText, Megaphone, AlertTriangle } from "lucide-react";
+import { Building2, Compass, Euro, ShieldCheck, FileText, Megaphone, AlertTriangle } from "lucide-react";
 import { FormSection } from "@/components/ui/FormSection";
 import { FormField } from "@/components/ui/FormField";
 import { FormTextArea } from "@/components/ui/FormTextArea";
@@ -15,10 +15,10 @@ import type { SuggestionContext } from "@/lib/ai/prompts/fieldSuggestion";
 /**
  * Flux de création "un agent, un bien" : un seul formulaire crée en séquence un Program puis un
  * Lot (POST /api/programs, puis POST /api/programs/:id/lots) — la hiérarchie Program/Lot reste
- * inchangée en base (nécessaire pour la génération en masse sur les cas rares multi-unités), mais
- * l'agent ne voit qu'une seule étape "Ajouter un bien", conforme à son usage réel (un bien = un
- * mandat indépendant, pas une tranche d'un programme neuf). Les champs propres au neuf/multi-lots
- * (nombre d'unités, date de disponibilité au niveau du bien) sont repliés dans "Options avancées".
+ * inchangée en base, mais l'agent ne voit qu'une seule étape "Ajouter un bien", conforme à son
+ * usage réel (un bien = un mandat indépendant, pas une tranche d'un programme neuf à plusieurs
+ * unités). Les champs propres au neuf/multi-lots (type de programme, nombre d'unités, date de
+ * livraison) ne sont pas exposés ici : un agent n'en a pas l'usage.
  */
 interface BienFormValues {
   // Identité (Program + Lot)
@@ -65,10 +65,6 @@ interface BienFormValues {
   isCoOwnership: boolean;
   condoLotsCount: string;
   condoAnnualCharges: string;
-  // Options avancées (Program, cas multi-unités / neuf)
-  programType: string;
-  unitsCount: string;
-  deliveryDate: string;
 }
 
 const EMPTY_VALUES: BienFormValues = {
@@ -110,15 +106,11 @@ const EMPTY_VALUES: BienFormValues = {
   isCoOwnership: false,
   condoLotsCount: "",
   condoAnnualCharges: "",
-  programType: "",
-  unitsCount: "",
-  deliveryDate: "",
 };
 
 export function CreateBienForm() {
   const router = useRouter();
   const [values, setValues] = useState<BienFormValues>(EMPTY_VALUES);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -154,9 +146,6 @@ export function CreateBienForm() {
     address: values.address,
     city: values.city,
     district: values.district || undefined,
-    programType: values.programType || undefined,
-    unitsCount: values.unitsCount || undefined,
-    deliveryDate: values.deliveryDate || undefined,
     environment: values.environment || undefined,
     transport: values.transport || undefined,
     schools: values.schools || undefined,
@@ -175,9 +164,6 @@ export function CreateBienForm() {
       city: values.city,
       address: values.address || null,
       district: values.district || null,
-      programType: values.programType || null,
-      unitsCount: values.unitsCount || null,
-      deliveryDate: values.deliveryDate || null,
       description: values.description || null,
       environment: values.environment || null,
       transport: values.transport || null,
@@ -468,24 +454,6 @@ export function CreateBienForm() {
           )}
         </div>
       </FormSection>
-
-      <div>
-        <button
-          type="button"
-          onClick={() => setShowAdvanced((v) => !v)}
-          className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        >
-          <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
-          Options avancées (bien avec plusieurs unités)
-        </button>
-        {showAdvanced && (
-          <div className="mt-3 grid grid-cols-1 gap-3 rounded-2xl border border-dashed dark:border-gray-700 p-4 sm:grid-cols-3">
-            <FormField label="Type" placeholder="ancien, neuf, à rénover..." {...field("programType")} />
-            <FormField label="Nombre d'unités (le cas échéant)" type="number" {...field("unitsCount")} />
-            <FormField label="Date de disponibilité" type="date" {...field("deliveryDate")} />
-          </div>
-        )}
-      </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
