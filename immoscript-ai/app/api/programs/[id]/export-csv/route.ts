@@ -10,7 +10,7 @@ type Params = { id: string };
 const LISTING_TYPES = ["listing_full", "listing_short", "portal", "website"];
 
 const COLUMNS = [
-  "Référence lot",
+  "Référence annonce",
   "Type de bien",
   "Surface (m²)",
   "Pièces",
@@ -70,7 +70,7 @@ export const GET = withOrgAuth<Params>(async (_req, authContext, { id }) => {
   });
 
   const csv = buildCsv(COLUMNS, rows);
-  const filename = `${program.name}-lots.csv`.replace(/[^a-zA-Z0-9._-]+/g, "_");
+  const filename = `${program.name}-annonces.csv`.replace(/[^a-zA-Z0-9._-]+/g, "_");
 
   return new NextResponse(csv, {
     headers: {

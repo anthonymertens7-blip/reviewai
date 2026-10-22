@@ -34,7 +34,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="text-center">
           <h1 className="text-xl font-semibold">Créez ou sélectionnez une organisation</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            ImmoScript AI organise les programmes par organisation (une organisation = une équipe/un promoteur).
+            ImmoScript AI organise les biens par organisation (une organisation = une équipe/une agence).
           </p>
         </div>
         <CreateOrganization afterCreateOrganizationUrl="/dashboard" />
@@ -58,14 +58,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         >
           <Plus className="h-5 w-5" />
           <span className="pointer-events-none absolute left-full ml-3 -translate-x-1 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100">
-            Nouveau programme
+            Nouveau bien
           </span>
         </Link>
 
         <nav className="flex flex-col items-center gap-2">
           <SearchTrigger />
           <NavIcon href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" />
-          <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Programmes" />
+          <NavIcon href="/programs" icon={<Building2 className="h-5 w-5" />} label="Biens" />
           <NavIcon href="/library" icon={<Library className="h-5 w-5" />} label="Bibliothèque" />
           <NavIcon href="/statistics" icon={<BarChart3 className="h-5 w-5" />} label="Statistiques" />
           {showOwnerLink && (

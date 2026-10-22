@@ -118,7 +118,7 @@ export function LotPhotosPanel({
   return (
     <div className="mt-3 rounded-2xl bg-gray-50 p-3 dark:bg-gray-900">
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Photos du lot</p>
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Photos du bien</p>
         {canManage && (
           <label className="flex cursor-pointer items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
             <ImagePlus className="h-3.5 w-3.5" />
@@ -170,7 +170,7 @@ export function LotPhotosPanel({
         </button>
       )}
 
-      {applied && <p className="mt-2 text-xs text-teal-600 dark:text-teal-400">Ajouté aux caractéristiques spéciales du lot ✓</p>}
+      {applied && <p className="mt-2 text-xs text-teal-600 dark:text-teal-400">Ajouté aux caractéristiques spéciales du bien ✓</p>}
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
     </div>
   );

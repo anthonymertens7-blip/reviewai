@@ -18,8 +18,8 @@ export const createProgramSchema = z.object({
   // toute façon aucun sens métier.
   deliveryDate: z.coerce
     .date()
-    .min(new Date("1900-01-01"), "Date de livraison trop ancienne")
-    .max(new Date("2200-12-31"), "Date de livraison trop lointaine")
+    .min(new Date("1900-01-01"), "Date de disponibilité trop ancienne")
+    .max(new Date("2200-12-31"), "Date de disponibilité trop lointaine")
     .nullable()
     .optional(),
   programType: z.string().nullable().optional(),

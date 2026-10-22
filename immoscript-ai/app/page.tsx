@@ -38,13 +38,13 @@ export default function HomePage() {
 
         <div className="flex flex-col items-center gap-6 text-center">
           <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
-            IA pour l&apos;immobilier neuf
+            IA pour agents immobiliers
           </span>
           <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
-            Vos programmes immobiliers, prêts à publier en un clic
+            Vos annonces immobilières, prêtes à publier en un clic
           </h1>
           <p className="max-w-xl text-lg text-gray-600 dark:text-gray-400">
-            Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos programmes immobiliers.
+            Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos biens à vendre.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link

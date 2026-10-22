@@ -32,7 +32,7 @@ const PROGRAM_CHECKS: { key: keyof CompletenessProgram; label: string }[] = [
   { key: "pointsOfInterest", label: "Points d'intérêt" },
   { key: "features", label: "Caractéristiques" },
   { key: "advantages", label: "Avantages" },
-  { key: "deliveryDate", label: "Date de livraison" },
+  { key: "deliveryDate", label: "Date de disponibilité" },
 ];
 
 /**
@@ -55,7 +55,7 @@ export function computeProgramCompleteness(program: CompletenessProgram, lots: C
   }
 
   if (lots.length === 0) {
-    missing.push("Au moins un lot");
+    missing.push("Au moins une annonce");
   } else {
     passed++;
 
@@ -63,14 +63,14 @@ export function computeProgramCompleteness(program: CompletenessProgram, lots: C
     if (missingPriceCount === 0) {
       passed++;
     } else {
-      missing.push(`Prix sur ${missingPriceCount} lot(s)`);
+      missing.push(`Prix sur ${missingPriceCount} annonce(s)`);
     }
 
     const missingLegalCount = lots.filter((l) => getMissingMandatoryMentions(program, l).length > 0).length;
     if (missingLegalCount === 0) {
       passed++;
     } else {
-      missing.push(`Mentions légales sur ${missingLegalCount} lot(s)`);
+      missing.push(`Mentions légales sur ${missingLegalCount} annonce(s)`);
     }
   }
 

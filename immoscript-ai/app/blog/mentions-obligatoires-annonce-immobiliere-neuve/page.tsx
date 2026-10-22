@@ -23,37 +23,37 @@ export default function Article() {
       <p>
         Le diagnostic de performance énergétique (classe énergie et émissions de gaz à effet de serre) figure
         normalement dans une annonce, avec une estimation des dépenses énergétiques associées lorsque celle-ci est
-        disponible. Pour un logement neuf, cette information reste attendue au même titre que pour l&apos;ancien.
+        disponible. C&apos;est l&apos;un des premiers critères de tri des acheteurs, et une omission se remarque vite.
       </p>
 
-      <h2>La surface et les caractéristiques du lot</h2>
+      <h2>La surface et les caractéristiques du bien</h2>
       <p>
         Surface habitable, nombre de pièces, étage, présence d&apos;annexes (balcon, cave, parking) : ces informations
-        doivent correspondre exactement à ce qui figure dans les documents contractuels du programme, pas à une
-        estimation arrondie pour l&apos;annonce.
+        doivent correspondre exactement à ce qui figure dans les documents du mandat, pas à une estimation arrondie
+        pour l&apos;annonce.
       </p>
 
       <h2>Le prix et les frais associés</h2>
       <p>
-        Le prix affiché doit être sans ambiguïté sur ce qu&apos;il inclut (frais de notaire réduits du neuf, place de
-        parking, etc.). Si l&apos;annonce est diffusée par un intermédiaire percevant des honoraires, ceux-ci sont
-        généralement à mentionner explicitement.
+        Le prix affiché doit être sans ambiguïté sur ce qu&apos;il inclut (honoraires d&apos;agence à la charge de
+        l&apos;acheteur ou du vendeur, place de parking, etc.). Si l&apos;annonce est diffusée par un intermédiaire
+        percevant des honoraires, ceux-ci sont généralement à mentionner explicitement.
       </p>
 
       <h2>Le statut du bien et de la copropriété</h2>
       <p>
-        Pour un lot en copropriété (ce qui est le cas de la plupart des programmes collectifs), certaines mentions
-        relatives au régime de copropriété peuvent être attendues selon l&apos;avancement de la commercialisation et
-        le support de diffusion utilisé.
+        Pour un bien en copropriété, certaines mentions relatives au régime de copropriété (nombre de lots, montant
+        des charges, existence d&apos;une procédure en cours) peuvent être attendues selon le support de diffusion
+        utilisé.
       </p>
 
       <h2>Pourquoi ce n&apos;est pas qu&apos;une formalité</h2>
       <p>
         Une annonce incomplète ou approximative sur ces points peut retarder une vente, créer un désaccord avec un
         acquéreur qui découvre une information tardivement, ou exposer à un contrôle. À l&apos;échelle d&apos;un
-        programme avec plusieurs dizaines de lots, s&apos;assurer que chaque annonce reprend systématiquement les mêmes
-        informations obligatoires — sans variation d&apos;un lot à l&apos;autre par oubli — devient un vrai enjeu
-        opérationnel, pas seulement juridique.
+        portefeuille de plusieurs dizaines de mandats, s&apos;assurer que chaque annonce reprend systématiquement les
+        mêmes informations obligatoires — sans variation d&apos;un bien à l&apos;autre par oubli — devient un vrai
+        enjeu opérationnel, pas seulement juridique.
       </p>
     </BlogArticleLayout>
   );

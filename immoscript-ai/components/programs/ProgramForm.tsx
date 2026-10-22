@@ -161,13 +161,13 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
     <form onSubmit={handleSubmit} className="space-y-6">
       <FormSection icon={Building2} title="Identité" required accent="indigo">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <FormField label="Nom du programme" required {...field("name")} />
+          <FormField label="Nom du bien" required {...field("name")} />
           <FormField label="Ville" required {...field("city")} />
           <FormField label="Adresse" required={mode === "create"} {...field("address")} />
           <FormField label="Quartier" {...field("district")} />
-          <FormField label="Type" {...field("programType")} placeholder="neuf, rénové..." />
-          <FormField label="Nombre de lots" type="number" {...field("unitsCount")} />
-          <FormField label="Date de livraison" type="date" {...field("deliveryDate")} />
+          <FormField label="Type" {...field("programType")} placeholder="ancien, neuf, à rénover..." />
+          <FormField label="Nombre d'unités (le cas échéant)" type="number" {...field("unitsCount")} />
+          <FormField label="Date de disponibilité" type="date" {...field("deliveryDate")} />
         </div>
         <div className="mt-3 flex flex-wrap items-end gap-4">
           <label className="flex items-center gap-2 text-sm">
@@ -179,7 +179,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
             Soumis au statut de la copropriété
           </label>
           {values.isCoOwnership && (
-            <FormField label="Nombre de lots de la copropriété" type="number" {...field("condoLotsCount")} />
+            <FormField label="Nombre de lots dans la copropriété" type="number" {...field("condoLotsCount")} />
           )}
         </div>
       </FormSection>
@@ -268,7 +268,7 @@ export function ProgramForm({ mode, programId, initialValues }: ProgramFormProps
           disabled={isSubmitting}
           className="rounded-full bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700 disabled:opacity-50"
         >
-          {isSubmitting ? "Enregistrement..." : mode === "create" ? "Créer le programme" : "Enregistrer"}
+          {isSubmitting ? "Enregistrement..." : mode === "create" ? "Créer le bien" : "Enregistrer"}
         </button>
         <RequiredLegend />
       </div>

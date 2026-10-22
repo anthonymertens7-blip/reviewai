@@ -7,6 +7,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
+  // Liens courts pour la bio des réseaux sociaux (TikTok, etc.) — évite de dépendre d'un
+  // raccourcisseur tiers et garde les paramètres utm_* pour le suivi dans Vercel Analytics.
+  async redirects() {
+    return [
+      {
+        source: "/tt",
+        destination: "/?utm_source=tiktok&utm_medium=bio&utm_campaign=lancement",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 // withSentryConfig est un no-op utile même sans SENTRY_ORG/SENTRY_PROJECT/SENTRY_AUTH_TOKEN

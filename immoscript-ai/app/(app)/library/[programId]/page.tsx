@@ -61,7 +61,7 @@ export default async function ProgramLibraryPage({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link href="/library" className="text-sm text-brand-600 hover:underline">
-            ← Tous les programmes
+            ← Tous les biens
           </Link>
           <h1 className="mt-1 text-2xl font-semibold">{program.name}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">{contents.length} contenu(s)</p>
@@ -101,10 +101,10 @@ export default async function ProgramLibraryPage({
         {program.lots.length > 0 && (
           <div>
             <label htmlFor="lotId" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Lot
+              Annonce
             </label>
             <select id="lotId" name="lotId" defaultValue={lotId ?? ""} className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm">
-              <option value="">Tous les lots + programme</option>
+              <option value="">Toutes les annonces + bien</option>
               {program.lots.map((lot) => (
                 <option key={lot.id} value={lot.id}>
                   {lot.reference}

@@ -25,8 +25,8 @@ export default function ConfidentialitePage() {
           nous ne stockons jamais votre numéro de carte bancaire.
         </li>
         <li>
-          <strong>Contenu métier</strong> : les informations que vous saisissez sur vos programmes et lots
-          immobiliers (adresse, description, prix, photos), ainsi que le contenu marketing généré à partir
+          <strong>Contenu métier</strong> : les informations que vous saisissez sur vos biens et annonces
+          immobilières (adresse, description, prix, photos), ainsi que le contenu marketing généré à partir
           de ces informations.
         </li>
         <li>
@@ -50,7 +50,7 @@ export default function ConfidentialitePage() {
       <p>Nous faisons appel aux prestataires suivants, chacun agissant en tant que sous-traitant :</p>
       <ul>
         <li><strong>Clerk</strong> — authentification et gestion des comptes/organisations.</li>
-        <li><strong>Anthropic</strong> — génération du contenu marketing par intelligence artificielle, à partir des données de vos programmes et lots.</li>
+        <li><strong>Anthropic</strong> — génération du contenu marketing par intelligence artificielle, à partir des données de vos biens et annonces.</li>
         <li><strong>Stripe</strong> — traitement des paiements et de la facturation.</li>
         <li><strong>Resend</strong> — envoi des e-mails transactionnels (résumé hebdomadaire).</li>
         <li><strong>Sentry</strong> — suivi des erreurs techniques du service.</li>

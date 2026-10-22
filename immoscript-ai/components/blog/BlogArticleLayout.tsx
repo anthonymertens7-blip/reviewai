@@ -34,7 +34,7 @@ export function BlogArticleLayout({
 
         <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
           <p className="flex-1 text-sm text-gray-600 dark:text-gray-400">
-            ImmoScript AI génère vos annonces, posts réseaux sociaux et scripts vidéo à partir des informations de votre programme.
+            ImmoScript AI génère vos annonces, posts réseaux sociaux et scripts vidéo à partir des informations de votre bien.
           </p>
           <Link
             href="/sign-up"

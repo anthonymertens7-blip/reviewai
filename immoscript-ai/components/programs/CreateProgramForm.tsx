@@ -12,7 +12,7 @@ export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boole
         onClick={() => setIsOpen(true)}
         className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
       >
-        + Créer un programme
+        + Créer un bien
       </button>
     );
   }

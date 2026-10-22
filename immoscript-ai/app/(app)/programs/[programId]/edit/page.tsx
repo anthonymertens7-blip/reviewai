@@ -28,7 +28,7 @@ export default async function EditProgramPage({
     return (
       <div className="mx-auto max-w-2xl">
         <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Vous n&apos;avez pas les droits pour modifier ce programme.
+          Vous n&apos;avez pas les droits pour modifier ce bien.
         </p>
       </div>
     );
@@ -61,7 +61,7 @@ export default async function EditProgramPage({
         <Link href={`/programs/${programId}`} className="text-sm text-brand-600 hover:underline">
           ← {program.name}
         </Link>
-        <h1 className="mt-1 text-2xl font-semibold">Modifier le programme</h1>
+        <h1 className="mt-1 text-2xl font-semibold">Modifier le bien</h1>
       </div>
       <ProgramForm mode="edit" programId={programId} initialValues={initialValues} />
       <ProgramAccessSection programId={programId} />

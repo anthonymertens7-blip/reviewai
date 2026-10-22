@@ -36,7 +36,7 @@ export function ProgramsList({ programs }: { programs: ProgramSummary[] }) {
 
       {filtered.length === 0 ? (
         <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Aucun programme ne correspond à cette recherche.
+          Aucun bien ne correspond à cette recherche.
         </p>
       ) : (
         <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">

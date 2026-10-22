@@ -6,9 +6,9 @@ import type { ListingOutput } from "@/lib/ai/schemas";
 // components/home/ShowcaseExample.tsx sur la page d'accueil, pour que la promesse faite avant
 // inscription soit exactement ce que le nouvel utilisateur retrouve dans son compte.
 const DEMO_LISTING: ListingOutput = {
-  title: "T3 vue Garonne aux Rives d'Argent - Bacalan",
+  title: "T3 vue Garonne - Quai des Chartrons, Bacalan",
   description:
-    "À Bordeaux-Bacalan, dans la résidence neuve Les Rives d'Argent en bord de fleuve, découvrez ce T3 traversant de 64 m² au 2ème étage. Baigné de lumière grâce à ses larges baies vitrées, il offre une vue dégagée sur la Garonne et un balcon de 9 m² plein Sud-Ouest. Idéal pour jeunes actifs et primo-accédants séduits par un cadre de vie premium, à deux pas du tramway et de la Cité du Vin. Parking et cave inclus, DPE B. Un quartier en pleine mutation, une résidence à taille humaine (48 lots) : le moment idéal pour investir dans votre futur chez-vous.",
+    "À Bordeaux-Bacalan, à deux pas du quai des Chartrons, découvrez ce T3 traversant de 64 m² au 2ème étage d'un immeuble en pierre bien entretenu. Baigné de lumière grâce à ses larges baies vitrées, il offre une vue dégagée sur la Garonne et un balcon de 9 m² plein Sud-Ouest. Idéal pour jeunes actifs et primo-accédants séduits par un cadre de vie premium, à deux pas du tramway et de la Cité du Vin. Parking et cave inclus, DPE B. Un quartier en pleine mutation : le moment idéal pour investir dans votre futur chez-vous.",
   highlights: [
     "T3 traversant de 64 m² avec balcon 9 m²",
     "Vue dégagée sur la Garonne",
@@ -22,29 +22,29 @@ const DEMO_LISTING: ListingOutput = {
 
 export class OnboardingService {
   /**
-   * Programme d'exemple créé une seule fois à la création d'une organisation, pour que le premier
-   * écran ne soit jamais vide : l'utilisateur a immédiatement un programme, un lot et un contenu
+   * Bien d'exemple créé une seule fois à la création d'une organisation, pour que le premier
+   * écran ne soit jamais vide : l'utilisateur a immédiatement un bien, une annonce et un contenu
    * généré à explorer (régénérer, éditer, exporter...) avant même d'avoir saisi ses propres
    * données. Entièrement pré-rempli sans appel IA (contenu figé, voir DEMO_LISTING) : ne coûte
-   * rien et ne consomme aucun quota. Un programme comme un autre une fois créé — supprimable,
+   * rien et ne consomme aucun quota. Un bien comme un autre une fois créé — supprimable,
    * modifiable, sans aucun traitement spécial ailleurs dans l'app.
    */
   static async seedDemoProgram(organizationId: string, userId: string): Promise<void> {
     const program = await prisma.program.create({
       data: {
         organizationId,
-        name: "Les Rives d'Argent (exemple)",
+        name: "T3 Bacalan - Quai des Chartrons (exemple)",
         address: "12 quai des Chartrons",
         city: "Bordeaux",
         district: "Bacalan",
-        description: "Résidence neuve de standing en bord de Garonne, architecture contemporaine, larges baies vitrées.",
-        programType: "neuf",
+        description: "Appartement de standing en bord de Garonne, immeuble en pierre, larges baies vitrées.",
+        programType: "ancien",
         environment: "Bord de fleuve, quartier en pleine mutation",
         transport: "Tramway ligne B à 4 minutes à pied, gare Saint-Jean à 10 minutes",
         shops: "Commerces de proximité, Cité du Vin à 5 minutes",
         amenities: "Parking sécurisé, local à vélos, espaces verts paysagers",
         isCoOwnership: true,
-        condoLotsCount: 48,
+        condoLotsCount: 18,
       },
     });
 

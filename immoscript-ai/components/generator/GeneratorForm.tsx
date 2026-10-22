@@ -155,23 +155,23 @@ export function GeneratorForm({
             onChange={(e) => setLotId(e.target.value)}
             className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
           >
-            <option value="">Contenu programme (aucun lot spécifique)</option>
+            <option value="">Contenu du bien (aucune annonce spécifique)</option>
             {lots.map((lot) => (
               <option key={lot.id} value={lot.id}>
                 {lot.reference}
               </option>
             ))}
-            {lots.length > 1 && <option value={ALL_LOTS_VALUE}>Tous les lots ({lots.length}) — génération en masse</option>}
+            {lots.length > 1 && <option value={ALL_LOTS_VALUE}>Toutes les annonces ({lots.length}) — génération en masse</option>}
           </select>
           {isBulk && (
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Un contenu sera généré individuellement pour chacun des {lots.length} lots du programme.
+              Un contenu sera généré individuellement pour chacune des {lots.length} annonces du bien.
             </p>
           )}
           {missingMentions.length > 0 && (
             <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
               <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              Mentions légales manquantes pour ce lot : {missingMentions.join(", ")}. Complétez-les dans la fiche du lot avant publication.
+              Mentions légales manquantes pour cette annonce : {missingMentions.join(", ")}. Complétez-les dans la fiche avant publication.
             </p>
           )}
         </FormSection>
@@ -224,7 +224,7 @@ export function GeneratorForm({
               label="Argument principal"
               value={mainArgument}
               onChange={(e) => setMainArgument(e.target.value)}
-              placeholder="ex: dernières unités disponibles"
+              placeholder="ex: exposition sud, pas de vis-à-vis"
             />
             <FormField label="Appel à l'action" value={cta} onChange={(e) => setCta(e.target.value)} placeholder="ex: Prenez rendez-vous" />
           </div>
@@ -299,7 +299,7 @@ export function GeneratorForm({
             ? "Génération en cours..."
             : requestedTypes.length > 0
               ? isBulk
-                ? `Générer pour les ${lots.length} lots (${requestedTypes.length} format(s)${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
+                ? `Générer pour les ${lots.length} annonces (${requestedTypes.length} format(s)${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
                 : `Générer (${requestedTypes.length}${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
               : "Générer"}
         </button>

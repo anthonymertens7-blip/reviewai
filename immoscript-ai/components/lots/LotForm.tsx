@@ -251,7 +251,7 @@ export function LotForm({
               <option value="">—</option>
               {DPE_CLASSES.map((c) => (
                 <option key={c} value={c}>
-                  {c === "vierge" ? "Vierge (bien neuf VEFA)" : c}
+                  {c === "vierge" ? "Vierge (vente en VEFA)" : c}
                 </option>
               ))}
             </select>
@@ -281,7 +281,7 @@ export function LotForm({
           disabled={isSubmitting}
           className="rounded-full bg-brand-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700 disabled:opacity-50"
         >
-          {isSubmitting ? (lotId ? "Enregistrement..." : "Création...") : lotId ? "Enregistrer les modifications" : "Créer le lot"}
+          {isSubmitting ? (lotId ? "Enregistrement..." : "Création...") : lotId ? "Enregistrer les modifications" : "Créer l'annonce"}
         </button>
         <button
           type="button"

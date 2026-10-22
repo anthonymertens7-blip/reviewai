@@ -10,7 +10,7 @@ export function DeleteProgramButton({ programId }: { programId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
-    if (!confirm("Supprimer définitivement ce programme, ses lots et tous les contenus générés ? Cette action est irréversible.")) {
+    if (!confirm("Supprimer définitivement ce bien, ses annonces et tous les contenus générés ? Cette action est irréversible.")) {
       return;
     }
     setIsDeleting(true);

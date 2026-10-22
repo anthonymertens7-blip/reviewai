@@ -40,7 +40,7 @@ export default function CguPage() {
           copropriété, etc.) ;
         </li>
         <li>
-          n&apos;utilise que les informations que vous avez renseignées sur vos programmes et lots ; le
+          n&apos;utilise que les informations que vous avez renseignées sur vos biens et annonces ; le
           service s&apos;interdit d&apos;inventer des caractéristiques non fournies, mais ne garantit pas
           l&apos;absence totale d&apos;erreur — toute génération doit être relue avant diffusion.
         </li>

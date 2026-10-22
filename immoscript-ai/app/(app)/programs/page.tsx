@@ -21,13 +21,13 @@ export default async function ProgramsPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <h1 className="text-2xl font-semibold">Programmes</h1>
+      <h1 className="text-2xl font-semibold">Biens</h1>
 
       {canCreate && <CreateProgramForm defaultOpen={create === "1"} />}
 
       {programs.length === 0 ? (
         <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Aucun programme accessible pour le moment.
+          Aucun bien accessible pour le moment.
         </p>
       ) : (
         <ProgramsList programs={programs} />
