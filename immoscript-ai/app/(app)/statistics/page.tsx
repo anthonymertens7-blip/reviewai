@@ -22,8 +22,8 @@ export default async function StatisticsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatTile icon={Building2} label="Programmes" value={stats.programCount} accent="brand" />
-        <StatTile icon={Home} label="Lots" value={stats.lotCount} accent="violet" />
+        <StatTile icon={Building2} label="Biens" value={stats.programCount} accent="brand" />
+        <StatTile icon={Home} label="Annonces" value={stats.lotCount} accent="violet" />
         <StatTile icon={FileText} label="Contenus générés" value={stats.contentCount} accent="teal" />
         <StatTile
           icon={Zap}
@@ -56,7 +56,7 @@ export default async function StatisticsPage() {
         </StatsSectionCard>
       </div>
 
-      <StatsSectionCard title="Programmes les plus actifs" subtitle="Classés par nombre de contenus générés">
+      <StatsSectionCard title="Biens les plus actifs" subtitle="Classés par nombre de contenus générés">
         <TopProgramsList data={stats.topPrograms} />
       </StatsSectionCard>
 

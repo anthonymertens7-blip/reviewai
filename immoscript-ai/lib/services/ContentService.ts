@@ -258,7 +258,7 @@ export class ContentService {
 
   /**
    * Enregistre les stats de performance d'une publication (likes, vues, commentaires) saisies
-   * manuellement par le promoteur après publication sur Instagram/TikTok — pas de récupération
+   * manuellement par l'agent après publication sur Instagram/TikTok — pas de récupération
    * automatique via API tant que l'app Meta/TikTok n'est pas validée.
    */
   static async setSocialStats(authContext: AuthContext, contentId: string, stats: SocialStatsInput) {

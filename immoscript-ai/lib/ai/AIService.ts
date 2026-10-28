@@ -136,7 +136,7 @@ export class AIService {
       model: DEFAULT_MODEL,
       max_tokens: 512,
       system:
-        "Tu aides un promoteur immobilier à pré-remplir rapidement une fiche programme à partir d'une adresse. " +
+        "Tu aides un agent immobilier à pré-remplir rapidement une fiche bien à partir d'une adresse. " +
         "Reste réaliste et prudent : dans le doute, reste générique plutôt que d'inventer un nom propre.",
       messages: [{ role: "user", content: prompt }],
       tools: [
@@ -184,7 +184,7 @@ export class AIService {
       model: DEFAULT_MODEL,
       max_tokens: 512,
       system:
-        "Tu décris un bien immobilier à partir de photos fournies par un promoteur. " +
+        "Tu décris un bien immobilier à partir de photos fournies par un agent immobilier. " +
         "RÈGLE ABSOLUE : tu ne listes que ce qui est clairement visible sur au moins une photo " +
         "(matériaux, agencement, luminosité, équipements visibles...). Tu n'inventes jamais une pièce, " +
         "un équipement ou une caractéristique que tu ne peux pas voir. Dans le doute, tu n'en parles pas.",

@@ -13,8 +13,6 @@ import { VIDEO_ANGLE_LABELS } from "@/lib/ai/labels";
 import type { ContentType, VideoAngle, VideoDuration } from "@/lib/ai/types";
 import { getMissingMandatoryMentions } from "@/lib/legal/mandatoryMentions";
 
-const ALL_LOTS_VALUE = "__all__";
-
 interface Lot {
   id: string;
   reference: string;
@@ -59,12 +57,10 @@ export function GeneratorForm({
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [results, setResults] = useState<ContentCardData[]>([]);
-  const [bulkResults, setBulkResults] = useState<{ lotId: string; lotReference: string; contents: ContentCardData[]; errors: string[] }[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const needsVideoParams = requestedTypes.includes("video_script");
-  const isBulk = lotId === ALL_LOTS_VALUE;
-  const selectedLot = lotId && !isBulk ? lots.find((l) => l.id === lotId) : undefined;
+  const selectedLot = lotId ? lots.find((l) => l.id === lotId) : undefined;
   const missingMentions = getMissingMandatoryMentions(
     { isCoOwnership: !!programIsCoOwnership, condoLotsCount: programCondoLotsCount },
     selectedLot
@@ -79,7 +75,6 @@ export function GeneratorForm({
     setIsGenerating(true);
     setError(null);
     setResults([]);
-    setBulkResults([]);
 
     const marketing = {
       target: target || undefined,
@@ -89,12 +84,12 @@ export function GeneratorForm({
     };
 
     try {
-      const res = await fetch(isBulk ? "/api/generate/bulk" : "/api/generate", {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           programId,
-          ...(isBulk ? {} : { lotId: lotId || undefined }),
+          lotId: lotId || undefined,
           requestedTypes,
           angle: needsVideoParams && angle ? angle : undefined,
           duration: needsVideoParams ? duration : undefined,
@@ -115,21 +110,6 @@ export function GeneratorForm({
       }
 
       const body = await res.json();
-
-      if (isBulk) {
-        const grouped = (body.results ?? []).map((r: { lot: { id: string; reference: string }; contents: ContentCardData[]; errors: string[] }) => ({
-          lotId: r.lot.id,
-          lotReference: r.lot.reference,
-          contents: r.contents,
-          errors: r.errors,
-        }));
-        setBulkResults(grouped);
-        const totalErrors = grouped.reduce((sum: number, g: { errors: string[] }) => sum + g.errors.length, 0);
-        if (totalErrors > 0) {
-          setError(`${totalErrors} contenu(s) n'ont pas pu être générés sur l'ensemble des lots.`);
-        }
-        return;
-      }
 
       setResults(body.contents ?? []);
       if (body.errors?.length) {
@@ -155,23 +135,17 @@ export function GeneratorForm({
             onChange={(e) => setLotId(e.target.value)}
             className="w-full max-w-sm rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm"
           >
-            <option value="">Contenu programme (aucun lot spécifique)</option>
+            <option value="">Contenu du bien (aucune annonce spécifique)</option>
             {lots.map((lot) => (
               <option key={lot.id} value={lot.id}>
                 {lot.reference}
               </option>
             ))}
-            {lots.length > 1 && <option value={ALL_LOTS_VALUE}>Tous les lots ({lots.length}) — génération en masse</option>}
           </select>
-          {isBulk && (
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Un contenu sera généré individuellement pour chacun des {lots.length} lots du programme.
-            </p>
-          )}
           {missingMentions.length > 0 && (
             <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
               <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              Mentions légales manquantes pour ce lot : {missingMentions.join(", ")}. Complétez-les dans la fiche du lot avant publication.
+              Mentions légales manquantes pour cette annonce : {missingMentions.join(", ")}. Complétez-les dans la fiche avant publication.
             </p>
           )}
         </FormSection>
@@ -224,7 +198,7 @@ export function GeneratorForm({
               label="Argument principal"
               value={mainArgument}
               onChange={(e) => setMainArgument(e.target.value)}
-              placeholder="ex: dernières unités disponibles"
+              placeholder="ex: exposition sud, pas de vis-à-vis"
             />
             <FormField label="Appel à l'action" value={cta} onChange={(e) => setCta(e.target.value)} placeholder="ex: Prenez rendez-vous" />
           </div>
@@ -298,9 +272,7 @@ export function GeneratorForm({
           {isGenerating
             ? "Génération en cours..."
             : requestedTypes.length > 0
-              ? isBulk
-                ? `Générer pour les ${lots.length} lots (${requestedTypes.length} format(s)${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
-                : `Générer (${requestedTypes.length}${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
+              ? `Générer (${requestedTypes.length}${variantsCount > 1 ? ` × ${variantsCount} variantes` : ""})`
               : "Générer"}
         </button>
         <RequiredLegend />
@@ -323,33 +295,6 @@ export function GeneratorForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {results.map((content) => (
             <ContentCard key={content.id} data={content} isTrial={isTrial} />
-          ))}
-        </div>
-      )}
-
-      {bulkResults.length > 0 && (
-        <div className="space-y-6">
-          {bulkResults.map((group) => (
-            <div key={group.lotId}>
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <Building2 className="h-4 w-4" />
-                {group.lotReference}
-                {group.errors.length > 0 && (
-                  <span className="text-xs font-normal text-red-600">
-                    · {group.errors.length} contenu(s) en échec
-                  </span>
-                )}
-              </h3>
-              {group.contents.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {group.contents.map((content) => (
-                    <ContentCard key={content.id} data={content} isTrial={isTrial} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">Aucun contenu généré pour ce lot.</p>
-              )}
-            </div>
           ))}
         </div>
       )}

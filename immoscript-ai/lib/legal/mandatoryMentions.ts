@@ -14,7 +14,7 @@ export interface LegalMentionsLot {
 
 /**
  * Champs obligatoires (DPE, mentions copropriété — décret n° 2017-1103, loi ALUR)
- * qui manquent pour ce couple programme/lot. Utilisé pour alerter le promoteur
+ * qui manquent pour ce couple programme/lot. Utilisé pour alerter l'agent
  * avant publication, indépendamment de la génération IA.
  */
 export function getMissingMandatoryMentions(program: LegalMentionsProgram, lot?: LegalMentionsLot): string[] {
@@ -33,7 +33,7 @@ export function getMissingMandatoryMentions(program: LegalMentionsProgram, lot?:
       missing.push("Nombre de lots de la copropriété");
     }
     if (!lot.condoAnnualCharges && lot.condoAnnualCharges !== 0) {
-      missing.push("Charges annuelles de copropriété pour ce lot");
+      missing.push("Charges annuelles de copropriété pour ce bien");
     }
   }
 
@@ -67,7 +67,7 @@ export function buildMandatoryMentionsText(program: LegalMentionsProgram, lot?: 
       lot.condoAnnualCharges || lot.condoAnnualCharges === 0
         ? `${lot.condoAnnualCharges.toLocaleString("fr-FR")} € / an`
         : "montant non communiqué";
-    lines.push(`Bien soumis au statut de la copropriété (${lotsCount}). Charges annuelles prévisionnelles pour ce lot : ${charges}.`);
+    lines.push(`Bien soumis au statut de la copropriété (${lotsCount}). Charges annuelles prévisionnelles pour ce bien : ${charges}.`);
   }
 
   return lines.length > 0 ? lines.join("\n") : null;

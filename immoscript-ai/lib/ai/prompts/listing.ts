@@ -3,7 +3,7 @@ import type { ContentType } from "../types";
 const INSTRUCTIONS: Record<"listing_full" | "listing_short" | "portal" | "website", string> = {
   listing_full:
     "Rédige une annonce longue et détaillée (250 à 400 mots), structurée en paragraphes, " +
-    "pour une diffusion sur le site du promoteur ou un mailing.",
+    "pour une diffusion sur le site de l'agence ou un mailing.",
   listing_short:
     "Rédige une annonce courte et percutante (80 à 120 mots), pour une diffusion rapide " +
     "(SMS commercial, résumé de fiche).",
@@ -12,8 +12,8 @@ const INSTRUCTIONS: Record<"listing_full" | "listing_short" | "portal" | "websit
     "(SeLoger, Bien'ici, Leboncoin) : 500 à 800 caractères, phrases courtes, pas de mise en forme, " +
     "vocabulaire orienté recherche (type de bien, ville, nombre de pièces en premier).",
   website:
-    "Rédige un texte de présentation pour une page programme sur le site vitrine du promoteur : " +
-    "ton institutionnel, met en avant le positionnement du programme autant que le lot.",
+    "Rédige un texte de présentation pour la fiche bien sur le site vitrine de l'agence : " +
+    "ton professionnel et rassurant, met en avant le quartier autant que le bien lui-même.",
 };
 
 export function buildListingInstructions(type: ContentType): string {

@@ -16,7 +16,7 @@ export function CompletenessDetails({ score, missing }: { score: number; missing
   return (
     <div className="rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)] p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-medium text-gray-700 dark:text-gray-300">Complétude du programme</h2>
+        <h2 className="text-sm font-medium text-gray-700 dark:text-gray-300">Complétude du bien</h2>
         <CompletenessBadge score={score} />
       </div>
       <div className="mb-3 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">

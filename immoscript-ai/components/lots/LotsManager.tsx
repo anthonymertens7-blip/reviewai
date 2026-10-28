@@ -161,13 +161,13 @@ export function LotsManager({
             onClick={openCreate}
             className="rounded-md border dark:border-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            + Ajouter un lot
+            + Ajouter une annonce
           </button>
         ))}
 
       {lots.length === 0 ? (
         <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Aucun lot pour le moment.
+          Aucune annonce pour le moment.
         </p>
       ) : (
         <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">

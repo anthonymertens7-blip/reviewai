@@ -70,14 +70,14 @@ export default async function ProgramDetailPage({
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-medium">Lots ({program.lots.length})</h2>
+          <h2 className="text-lg font-medium">Annonces ({program.lots.length})</h2>
           <Link href={`/programs/${program.id}/lots`} className="text-sm text-brand-600 hover:underline">
-            Gérer les lots
+            Gérer les annonces
           </Link>
         </div>
         {program.lots.length === 0 ? (
           <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            Aucun lot pour le moment.
+            Aucune annonce pour le moment.
           </p>
         ) : (
           <ul className="divide-y dark:divide-gray-700 rounded-3xl border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-[0_10px_28px_-10px_rgba(15,23,42,0.16)] dark:shadow-[0_10px_28px_-10px_rgba(0,0,0,0.6)]">

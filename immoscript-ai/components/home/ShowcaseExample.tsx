@@ -11,9 +11,9 @@ const INPUT_FIELDS = [
   { icon: Gauge, label: "DPE B / GES A, parking et cave inclus" },
 ];
 
-const GENERATED_TITLE = "T3 vue Garonne aux Rives d'Argent - Bacalan";
+const GENERATED_TITLE = "T3 vue Garonne - Quai des Chartrons, Bacalan";
 const GENERATED_DESCRIPTION =
-  "À Bordeaux-Bacalan, dans la résidence neuve Les Rives d'Argent en bord de fleuve, découvrez ce T3 traversant de 64 m² au 2ème étage. Baigné de lumière grâce à ses larges baies vitrées, il offre une vue dégagée sur la Garonne et un balcon de 9 m² plein Sud-Ouest. Idéal pour jeunes actifs et primo-accédants séduits par un cadre de vie premium, à deux pas du tramway et de la Cité du Vin. Parking et cave inclus, DPE B. Un quartier en pleine mutation, une résidence à taille humaine (48 lots) : le moment idéal pour investir dans votre futur chez-vous.";
+  "À Bordeaux-Bacalan, à deux pas du quai des Chartrons, découvrez ce T3 traversant de 64 m² au 2ème étage d'un immeuble en pierre bien entretenu. Baigné de lumière grâce à ses larges baies vitrées, il offre une vue dégagée sur la Garonne et un balcon de 9 m² plein Sud-Ouest. Idéal pour jeunes actifs et primo-accédants séduits par un cadre de vie premium, à deux pas du tramway et de la Cité du Vin. Parking et cave inclus, DPE B. Un quartier en pleine mutation : le moment idéal pour investir dans votre futur chez-vous.";
 const GENERATED_HIGHLIGHTS = [
   "T3 traversant de 64 m² avec balcon 9 m²",
   "Vue dégagée sur la Garonne",

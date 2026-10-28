@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProgramForm } from "./ProgramForm";
+import { CreateBienForm } from "./CreateBienForm";
 
 export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -12,10 +12,10 @@ export function CreateProgramForm({ defaultOpen = false }: { defaultOpen?: boole
         onClick={() => setIsOpen(true)}
         className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
       >
-        + Créer un programme
+        + Créer un bien
       </button>
     );
   }
 
-  return <ProgramForm mode="create" />;
+  return <CreateBienForm />;
 }

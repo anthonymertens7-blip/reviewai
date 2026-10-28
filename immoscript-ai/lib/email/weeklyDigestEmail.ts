@@ -14,7 +14,7 @@ export function buildWeeklyDigestHtml(digest: OrganizationDigest, recipient: Dig
 
   const programsLine =
     recipient.recentProgramNames.length > 0
-      ? `<p>Programmes actifs cette semaine : ${recipient.recentProgramNames.map(escapeHtml).join(", ")}</p>`
+      ? `<p>Biens actifs cette semaine : ${recipient.recentProgramNames.map(escapeHtml).join(", ")}</p>`
       : "";
 
   return `

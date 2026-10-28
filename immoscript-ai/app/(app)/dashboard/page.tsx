@@ -49,8 +49,7 @@ export default async function DashboardPage() {
   const firstProgramId = recentPrograms[0]?.id;
 
   const checklistSteps: ChecklistStep[] = [
-    { label: "Créer votre premier programme", done: programCount > 0, href: "/programs?create=1" },
-    { label: "Ajouter un lot", done: lotCount > 0, href: firstProgramId ? `/programs/${firstProgramId}/lots` : "/programs" },
+    { label: "Créer votre premier bien", done: programCount > 0 && lotCount > 0, href: "/programs?create=1" },
     {
       label: "Générer votre premier contenu",
       done: contentCount > 0,
@@ -91,7 +90,7 @@ export default async function DashboardPage() {
             <Building2 className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Programmes</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Biens</p>
             <p className="text-2xl font-semibold">{programCount}</p>
           </div>
         </div>
@@ -126,16 +125,16 @@ export default async function DashboardPage() {
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-medium">Programmes récents</h2>
+          <h2 className="text-lg font-medium">Biens récents</h2>
           <Link href="/programs" className="text-sm text-brand-600 hover:underline">
-            Voir tous les programmes
+            Voir tous les biens
           </Link>
         </div>
         {recentPrograms.length === 0 ? (
           <p className="rounded-3xl border dark:border-gray-700 border-dashed p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            Aucun programme pour le moment.{" "}
+            Aucun bien pour le moment.{" "}
             <Link href="/programs" className="text-brand-600 hover:underline">
-              Créer le premier programme
+              Créer le premier bien
             </Link>
           </p>
         ) : (

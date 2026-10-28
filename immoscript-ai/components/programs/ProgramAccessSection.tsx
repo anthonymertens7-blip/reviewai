@@ -52,7 +52,7 @@ export function ProgramAccessSection({ programId }: { programId: string }) {
         <div>
           <h2 className="font-semibold">Accès collaborateurs</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Les collaborateurs ne voient que les programmes auxquels vous leur donnez accès ici.
+            Les collaborateurs ne voient que les biens auxquels vous leur donnez accès ici.
           </p>
         </div>
       </div>

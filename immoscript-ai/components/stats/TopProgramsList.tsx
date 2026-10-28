@@ -15,7 +15,7 @@ export function TopProgramsList({ data }: { data: TopProgramItem[] }) {
   }, []);
 
   if (data.length === 0) {
-    return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucun programme actif pour le moment.</p>;
+    return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucun bien actif pour le moment.</p>;
   }
 
   const max = Math.max(...data.map((d) => d.count));

@@ -6,7 +6,7 @@ import { BLOG_POSTS, formatPostDate } from "@/lib/blog/posts";
 
 export const metadata = {
   title: "Blog",
-  description: "Conseils pratiques pour le marketing des programmes immobiliers neufs.",
+  description: "Conseils pratiques pour le marketing des biens à vendre.",
 };
 
 export default function BlogIndexPage() {
@@ -17,7 +17,7 @@ export default function BlogIndexPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Blog</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Conseils pratiques pour le marketing des programmes immobiliers neufs.
+          Conseils pratiques pour le marketing des biens à vendre.
         </p>
       </div>
 

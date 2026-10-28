@@ -7,7 +7,7 @@ export interface ChangelogEntry {
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
     title: "Recherche rapide (Ctrl+K)",
-    description: "Sautez directement vers un programme ou une page depuis n'importe où dans l'app.",
+    description: "Sautez directement vers un bien ou une page depuis n'importe où dans l'app.",
   },
   {
     title: "Dashboard : checklist, activité récente et badge de plan",
@@ -19,11 +19,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   },
   {
     title: "Génération ancrée sur photos",
-    description: "Uploadez des photos par lot : l'IA décrit uniquement ce qui est réellement visible, jamais inventé.",
+    description: "Uploadez des photos par bien : l'IA décrit uniquement ce qui est réellement visible, jamais inventé.",
   },
   {
-    title: "Export CSV du programme",
-    description: "Exportez tous les lots et leurs annonces en un clic, prêt pour l'import vers un portail ou un CRM.",
+    title: "Export CSV du bien",
+    description: "Exportez toutes les annonces et leurs textes en un clic, prêt pour l'import vers un portail ou un CRM.",
   },
   {
     title: "Workflow de validation du contenu",
@@ -39,11 +39,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   },
   {
     title: "Génération en masse",
-    description: "Générez le contenu pour tous les lots d'un programme en un seul clic.",
+    description: "Générez le contenu pour toutes les annonces d'un bien en un seul clic.",
   },
   {
-    title: "Score de complétude et clonage de programme",
-    description: "Un indicateur visuel montre ce qu'il manque pour une génération optimale ; dupliquez un programme pour démarrer plus vite.",
+    title: "Score de complétude et clonage de bien",
+    description: "Un indicateur visuel montre ce qu'il manque pour une génération optimale ; dupliquez un bien pour démarrer plus vite.",
   },
   {
     title: "Mentions légales obligatoires",
@@ -51,7 +51,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   },
   {
     title: "Suggestions IA contextuelles",
-    description: "Pré-remplissez rapidement les champs d'un programme à partir de son adresse et de sa ville.",
+    description: "Pré-remplissez rapidement les champs d'un bien à partir de son adresse et de sa ville.",
   },
   {
     title: "Mode sombre et plafond de générations IA",

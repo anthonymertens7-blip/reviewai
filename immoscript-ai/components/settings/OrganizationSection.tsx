@@ -6,7 +6,7 @@ import { Mail, UserPlus, X } from "lucide-react";
 
 const ROLE_OPTIONS = [
   { value: "org:admin", label: "Administrateur" },
-  { value: "org:promoteur", label: "Promoteur" },
+  { value: "org:promoteur", label: "Agent" },
   { value: "org:member", label: "Collaborateur" },
 ];
 

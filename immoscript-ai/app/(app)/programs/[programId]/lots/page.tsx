@@ -29,7 +29,7 @@ export default async function ProgramLotsPage({
         <Link href={`/programs/${programId}`} className="text-sm text-brand-600 hover:underline">
           ← {program.name}
         </Link>
-        <h1 className="mt-1 text-2xl font-semibold">Lots</h1>
+        <h1 className="mt-1 text-2xl font-semibold">Annonces</h1>
       </div>
 
       <LotsManager

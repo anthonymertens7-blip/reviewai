@@ -32,7 +32,7 @@ export default function MentionsLegalesPage() {
       <h2>Contenus générés par l&apos;intelligence artificielle</h2>
       <p>
         ImmoScript AI génère du contenu marketing à partir des informations que vous saisissez sur vos
-        programmes et lots immobiliers, à l&apos;aide d&apos;un modèle d&apos;intelligence artificielle
+        biens et annonces immobilières, à l&apos;aide d&apos;un modèle d&apos;intelligence artificielle
         (Anthropic Claude). Ce contenu est une proposition de rédaction : il reste sous votre responsabilité
         de le relire et de le valider avant toute diffusion, notamment au regard des obligations légales
         applicables aux annonces immobilières (mentions DPE, ALUR, copropriété, etc.).

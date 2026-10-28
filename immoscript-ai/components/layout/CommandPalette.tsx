@@ -20,7 +20,7 @@ interface ResultItem {
 
 const STATIC_DESTINATIONS: Omit<ResultItem, "key">[] = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Programmes", href: "/programs", icon: Building2 },
+  { label: "Biens", href: "/programs", icon: Building2 },
   { label: "Bibliothèque", href: "/library", icon: Library },
   { label: "Paramètres", href: "/settings", icon: Settings },
 ];
@@ -113,7 +113,7 @@ export function CommandPalette() {
               setActiveIndex(0);
             }}
             onKeyDown={handleInputKeyDown}
-            placeholder="Rechercher un programme, une page..."
+            placeholder="Rechercher un bien, une page..."
             className="w-full border-0 bg-transparent p-0 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:text-gray-100"
           />
           <button onClick={() => setIsOpen(false)} className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">

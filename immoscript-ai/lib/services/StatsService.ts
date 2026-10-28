@@ -206,7 +206,7 @@ export class StatsService {
     const programs = programIds.length > 0 ? await db.program.findMany({ where: { id: { in: programIds } }, select: { id: true, name: true } }) : [];
     const programNameById = new Map(programs.map((p) => [p.id, p.name]));
     const topPrograms: TopProgramItem[] = programGroups
-      .map((g) => ({ id: g.programId, name: programNameById.get(g.programId) ?? "Programme supprimé", count: g._count._all }))
+      .map((g) => ({ id: g.programId, name: programNameById.get(g.programId) ?? "Bien supprimé", count: g._count._all }))
       .filter((p) => p.count > 0);
 
     const social: SocialStatsSummary = {

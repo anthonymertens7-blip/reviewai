@@ -11,7 +11,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://immoscriptai.vercel.app";
 const DESCRIPTION =
-  "Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos programmes immobiliers neufs.";
+  "Générez en un clic les annonces, réseaux sociaux et scripts vidéo de vos biens à vendre.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

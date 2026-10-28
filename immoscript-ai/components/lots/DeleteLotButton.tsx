@@ -9,7 +9,7 @@ export function DeleteLotButton({ lotId }: { lotId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
-    if (!confirm("Supprimer ce lot ?")) return;
+    if (!confirm("Supprimer cette annonce ?")) return;
     setIsDeleting(true);
     setError(null);
     const res = await fetch(`/api/lots/${lotId}`, { method: "DELETE" });

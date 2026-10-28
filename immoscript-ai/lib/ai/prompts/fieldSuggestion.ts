@@ -40,8 +40,8 @@ const FIELD_INSTRUCTIONS: Record<SuggestibleField, string> = {
     "Décris en 2 à 4 courtes suggestions le type de points d'intérêt probablement à proximité de cette adresse " +
     "(espaces verts, équipements...) SANS nommer de parc, monument ou lieu précis, sauf certitude raisonnable " +
     "qu'il est réellement proche de cette adresse.",
-  features: "Suggère 2 à 4 caractéristiques commerciales à mettre en avant pour ce programme (ce qui le distingue concrètement).",
-  advantages: "Suggère 2 à 4 avantages commerciaux à mettre en avant pour ce programme (bénéfices concrets pour un acheteur/locataire).",
+  features: "Suggère 2 à 4 caractéristiques commerciales à mettre en avant pour ce bien (ce qui le distingue concrètement).",
+  advantages: "Suggère 2 à 4 avantages commerciaux à mettre en avant pour ce bien (bénéfices concrets pour un acheteur/locataire).",
 };
 
 export function buildFieldSuggestionPrompt(context: SuggestionContext, field: SuggestibleField): string {
@@ -58,7 +58,7 @@ export function buildFieldSuggestionPrompt(context: SuggestionContext, field: Su
 
   if (!isLocationField) {
     const known = omitEmpty(context as unknown as Record<string, unknown>);
-    lines.push("", "Autres informations déjà renseignées sur ce programme :", JSON.stringify(known, null, 2));
+    lines.push("", "Autres informations déjà renseignées sur ce bien :", JSON.stringify(known, null, 2));
   }
 
   lines.push("", FIELD_INSTRUCTIONS[field], "");
@@ -78,7 +78,7 @@ export function buildFieldSuggestionPrompt(context: SuggestionContext, field: Su
   } else {
     lines.push(
       "Base-toi uniquement sur les informations déjà renseignées ci-dessus (localisation, environnement,",
-      "transports, date de livraison, type de bien...) pour suggérer des arguments plausibles.",
+      "transports, date de disponibilité, type de bien...) pour suggérer des arguments plausibles.",
       "N'invente aucune caractéristique qui ne découle pas de ces données."
     );
   }
